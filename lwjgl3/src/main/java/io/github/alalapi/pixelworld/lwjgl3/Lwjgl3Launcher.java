@@ -4,10 +4,16 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import io.github.alalapi.pixelworld.Main;
 
+import java.awt.GraphicsEnvironment;
+
 /** Launches the desktop (LWJGL3) application. */
 public class Lwjgl3Launcher {
     public static void main(String[] args) {
         if (StartupHelper.startNewJvmIfRequired()) return; // This handles macOS support and helps on Windows.
+        if (shouldSkipGraphics()) {
+            System.out.println("[Lwjgl3Launcher] Headless environment detected; skipping LWJGL startup.");
+            return;
+        }
         createApplication();
     }
 
@@ -33,5 +39,28 @@ public class Lwjgl3Launcher {
         //// They can also be loaded from the root of assets/ .
         configuration.setWindowIcon("libgdx128.png", "libgdx64.png", "libgdx32.png", "libgdx16.png");
         return configuration;
+    }
+
+    private static boolean shouldSkipGraphics() {
+        if (Boolean.getBoolean("pixelworld.lwjgl3.ignoreHeadless")) {
+            return false;
+        }
+        if (Boolean.getBoolean("pixelworld.lwjgl3.headless")) {
+            return true;
+        }
+        try {
+            if (GraphicsEnvironment.isHeadless()) {
+                return true;
+            }
+        } catch (Throwable ignored) {
+            return true;
+        }
+        String osName = System.getProperty("os.name", "").toLowerCase();
+        if (osName.contains("linux")) {
+            if (System.getenv("DISPLAY") == null && System.getenv("WAYLAND_DISPLAY") == null) {
+                return true;
+            }
+        }
+        return false;
     }
 }

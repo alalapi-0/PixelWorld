@@ -1,12 +1,7 @@
-configure(project(":core"), project(":html")) {
-  sourceCompatibility = JavaVersion.VERSION_11
-  targetCompatibility = JavaVersion.VERSION_11
-  tasks.withType(JavaCompile).configureEach { options.release = 11 }
-}
+import java.net.URL
+import java.util.UUID
+
 // === 顶层：插件 ===
-plugins {
-  id "de.undercouch.download" version "5.6.0" // 用于下载素材
-}
 
 
 // === 所有项目通用设置 ===
@@ -26,8 +21,12 @@ allprojects {
 configure(subprojects) {
   apply plugin: 'java-library'
   apply plugin: 'groovy'
-  sourceCompatibility = JavaVersion.VERSION_11
-  targetCompatibility = JavaVersion.VERSION_11
+
+  if (name in ['core', 'html']) {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+    tasks.withType(JavaCompile).configureEach { options.release = 11 }
+  }
 
   // 生成 assets.txt
   tasks.register('generateAssetList') {
@@ -64,17 +63,38 @@ eclipse.project.name = 'PixelWorld-parent'
 def assetsRoot = "${project.rootDir}/assets"
 def downloadsDir = layout.buildDirectory.dir("asset-downloads")
 
-tasks.register("assetsDownload", de.undercouch.gradle.tasks.download.Download) {
+tasks.register("assetsDownload") {
   onlyIf { file("${assetsRoot}/sources.txt").exists() }
-  src {
-    def lines = file("${assetsRoot}/sources.txt").readLines("UTF-8")
-    def urls = lines.collect { it.trim() }
+  doLast {
+    def downloadDir = downloadsDir.get().asFile
+    def urls = file("${assetsRoot}/sources.txt")
+      .readLines("UTF-8")
+      .collect { it.trim() }
       .findAll { it && !it.startsWith("#") && it.toLowerCase().endsWith(".zip") }
-    if (urls.empty) logger.lifecycle("[assetsDownload] no .zip links found in assets/sources.txt")
-    return urls
+
+    if (urls.empty) {
+      logger.lifecycle("[assetsDownload] no .zip links found in assets/sources.txt")
+      return
+    }
+
+    downloadDir.mkdirs()
+
+    urls.each { urlString ->
+      def url = new URL(urlString)
+      def fileName = url.getPath().tokenize('/').last()
+      if (!fileName) {
+        fileName = UUID.randomUUID().toString() + ".zip"
+      }
+      def target = new File(downloadDir, fileName)
+      logger.lifecycle("[assetsDownload] fetching ${urlString}")
+      target.delete()
+      url.openStream().withCloseable { input ->
+        target.withOutputStream { output ->
+          input.transferTo(output)
+        }
+      }
+    }
   }
-  dest downloadsDir.get().asFile
-  overwrite true
 }
 
 tasks.register("assetsUnpack", Copy) {

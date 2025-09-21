@@ -8,6 +8,128 @@ buildscript {
   }
   dependencies {
 
+// ── 自动下载 & 解压素材到根 assets/ ───────────────────────────────────────────────
+    plugins {
+      id "de.undercouch.download" version "5.6.0"
+    }
+
+    def assetsRoot = "${project.rootDir}/assets"
+    def downloadsDir = layout.buildDirectory.dir("asset-downloads")
+
+    tasks.register("assetsDownload", de.undercouch.gradle.tasks.download.Download) {
+      onlyIf { file("${assetsRoot}/sources.txt").exists() }
+      // 从 assets/sources.txt 读取每行直链 .zip
+      src {
+        def lines = file("${assetsRoot}/sources.txt").readLines("UTF-8")
+        def urls = lines.collect { it.trim() }
+          .findAll { it && !it.startsWith("#") && it.toLowerCase().endsWith(".zip") }
+        if (urls.empty) logger.lifecycle("[assetsDownload] no .zip links found in assets/sources.txt")
+        return urls
+      }
+      dest downloadsDir.get().asFile
+      overwrite true
+    }
+
+    tasks.register("assetsUnpack", Copy) {
+      dependsOn "assetsDownload"
+      from({ fileTree(downloadsDir).matching { include "**/*.zip" }.files.collect { zipTree(it) } })
+      into assetsRoot
+      doLast { println "[assetsUnpack] unpacked into ${assetsRoot}" }
+    }
+
+    tasks.register("assetsClean") {
+      doLast { delete downloadsDir.get().asFile }
+    }
+
+// 可选：方便命令别名（先解压素材再跑/构建）
+    tasks.register("runDesktop") {
+      dependsOn("assetsUnpack", ":lwjgl3:run")
+    }
+    tasks.register("buildWeb") {
+      dependsOn("assetsUnpack", ":html:dist")
+    }
+// 用法：
+//   ./gradlew runDesktop
+//   ./gradlew buildWeb
+// 或者显式：
+//   ./gradlew assetsUnpack lwjgl3:run
+//   ./gradlew assetsUnpack html:dist
+
+  }
+}
+
+allprojects {
+  apply plugin: 'eclipse'
+  apply plugin: 'idea'
+
+  // This allows you to "Build and run using IntelliJ IDEA", an option in IDEA's Settings.
+  idea {
+    module {
+      outputDir file('build/classes/java/main')
+      testOutputDir file('build/classes/java/test')
+    }
+  }
+}
+
+configure(subprojects) {
+  apply plugin: 'java-library'
+  apply plugin: 'groovy'
+  sourceCompatibility = 17
+
+  // From https://lyze.dev/2021/04/29/libGDX-Internal-Assets-List/
+  // The article can be helpful when using assets.txt in your project.
+  tasks.register('generateAssetList') {
+    inputs.dir("${project.rootDir}/assets/")
+    // projectFolder/assets
+    File assetsFolder = new File("${project.rootDir}/assets/")
+    // projectFolder/assets/assets.txt
+    File assetsFile = new File(assetsFolder, "assets.txt")
+    // delete that file in case we've already created it
+    assetsFile.delete()
+
+    // iterate through all files inside that folder
+    // convert it to a relative path
+    // and append it to the file assets.txt
+    fileTree(assetsFolder).collect { assetsFolder.relativePath(it) }.sort().each {
+      assetsFile.append(it + "\n")
+    }
+  }
+  processResources.dependsOn 'generateAssetList'
+
+  compileJava {
+    options.incremental = true
+  }
+}
+
+subprojects {
+  version = "$projectVersion"
+  ext.appName = 'PixelWorld'
+  repositories {
+    mavenCentral()
+//    maven { url 'https://s01.oss.sonatype.org' }
+    // You may want to remove the following line if you have errors downloading dependencies.
+    mavenLocal()
+//    maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+//    maven { url 'https://s01.oss.sonatype.org/content/repositories/snapshots/' }
+    maven { url 'https://central.sonatype.com/repository/maven-snapshots/' }
+    maven { url 'https://jitpack.io' }
+  }
+}
+
+eclipse.project.name = 'PixelWorld' + '-parent'
+
+
+
+buildscript {
+  repositories {
+    mavenCentral()
+    gradlePluginPortal()
+    mavenLocal()
+    google()
+    maven { url 'https://central.sonatype.com/repository/maven-snapshots/' }
+  }
+  dependencies {
+
 
   }
 }

@@ -1,0 +1,42 @@
+{
+  "seasons": [
+    "spring",
+    "summer",
+    "autumn",
+    "winter"
+  ],
+  "seasonLengthDays": 30,
+  "dayLengthMinutes": 24,
+  "light": {
+    "day": 1.0,
+    "dusk": 0.7,
+    "night": 0.4,
+    "dawn": 0.7
+  },
+  "weatherProb": {
+    "spring": {
+      "sunny": 0.6,
+      "rain": 0.3,
+      "storm": 0.1,
+      "snow": 0.0
+    },
+    "summer": {
+      "sunny": 0.5,
+      "rain": 0.3,
+      "storm": 0.2,
+      "snow": 0.0
+    },
+    "autumn": {
+      "sunny": 0.6,
+      "rain": 0.3,
+      "storm": 0.1,
+      "snow": 0.0
+    },
+    "winter": {
+      "sunny": 0.4,
+      "rain": 0.0,
+      "storm": 0.0,
+      "snow": 0.6
+    }
+  }
+}

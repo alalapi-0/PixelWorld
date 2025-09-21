@@ -1,0 +1,82 @@
+{
+  "spawners": {
+    "forest_day_animals": {
+      "time": "day",
+      "biome": "forest",
+      "limit": 5,
+      "respawnSec": 60,
+      "candidates": [
+        {
+          "id": "rabbit",
+          "weight": 3
+        },
+        {
+          "id": "deer",
+          "weight": 1
+        }
+      ]
+    },
+    "night_monsters": {
+      "time": "night",
+      "biome": "field",
+      "limit": 8,
+      "respawnSec": 45,
+      "candidates": [
+        {
+          "id": "slime",
+          "weight": 3
+        },
+        {
+          "id": "wolf",
+          "weight": 2
+        }
+      ]
+    }
+  },
+  "drops": {
+    "slime": [
+      {
+        "item": "slime_gel",
+        "prob": 0.7,
+        "min": 1,
+        "max": 3
+      },
+      {
+        "item": "coin",
+        "prob": 0.4,
+        "min": 1,
+        "max": 5
+      }
+    ],
+    "wolf": [
+      {
+        "item": "fur",
+        "prob": 0.6,
+        "min": 1,
+        "max": 2
+      },
+      {
+        "item": "meat",
+        "prob": 0.5,
+        "min": 1,
+        "max": 1
+      }
+    ],
+    "rabbit": [
+      {
+        "item": "fur",
+        "prob": 0.3,
+        "min": 1,
+        "max": 1
+      }
+    ],
+    "deer": [
+      {
+        "item": "meat",
+        "prob": 0.4,
+        "min": 1,
+        "max": 2
+      }
+    ]
+  }
+}

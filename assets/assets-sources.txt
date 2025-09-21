@@ -1,0 +1,4 @@
+# Put direct .zip links to asset packs here (one per line). Lines starting with # are comments.
+# Example:
+# https://example.com/some-pack.zip
+# https://example.com/another-pack.zip

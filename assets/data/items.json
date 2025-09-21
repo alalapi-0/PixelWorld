@@ -1,0 +1,82 @@
+{
+  "items": [
+    {
+      "id": "wood",
+      "name": "木材",
+      "type": "material",
+      "stack": 999
+    },
+    {
+      "id": "wood_plank",
+      "name": "木板",
+      "type": "material",
+      "stack": 999,
+      "recipe": [
+        {
+          "item": "wood",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "id": "wheat_seed",
+      "name": "小麦种子",
+      "type": "seed",
+      "stack": 99,
+      "plant": "wheat"
+    },
+    {
+      "id": "pumpkin_seed",
+      "name": "南瓜种子",
+      "type": "seed",
+      "stack": 99,
+      "plant": "pumpkin"
+    },
+    {
+      "id": "turnip_seed",
+      "name": "萝卜种子",
+      "type": "seed",
+      "stack": 99,
+      "plant": "turnip"
+    },
+    {
+      "id": "wheat_bundle",
+      "name": "小麦束",
+      "type": "crop",
+      "stack": 99,
+      "sellPrice": 15
+    },
+    {
+      "id": "pumpkin",
+      "name": "南瓜",
+      "type": "crop",
+      "stack": 99,
+      "sellPrice": 120
+    },
+    {
+      "id": "turnip",
+      "name": "萝卜",
+      "type": "crop",
+      "stack": 99,
+      "sellPrice": 35
+    },
+    {
+      "id": "slime_gel",
+      "name": "史莱姆凝胶",
+      "type": "loot",
+      "stack": 99
+    },
+    {
+      "id": "fur",
+      "name": "毛皮",
+      "type": "loot",
+      "stack": 99
+    },
+    {
+      "id": "meat",
+      "name": "生肉",
+      "type": "food",
+      "stack": 20
+    }
+  ]
+}

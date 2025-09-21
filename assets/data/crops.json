@@ -1,0 +1,55 @@
+{
+  "crops": {
+    "wheat": {
+      "season": [
+        "spring",
+        "autumn"
+      ],
+      "growDays": [
+        2,
+        2,
+        1
+      ],
+      "waterPerDay": 1,
+      "yield": {
+        "item": "wheat_bundle",
+        "min": 1,
+        "max": 3
+      },
+      "price": 15
+    },
+    "pumpkin": {
+      "season": [
+        "autumn"
+      ],
+      "growDays": [
+        3,
+        3,
+        2
+      ],
+      "waterPerDay": 2,
+      "yield": {
+        "item": "pumpkin",
+        "min": 1,
+        "max": 1
+      },
+      "price": 120
+    },
+    "turnip": {
+      "season": [
+        "spring"
+      ],
+      "growDays": [
+        2,
+        1
+      ],
+      "waterPerDay": 1,
+      "yield": {
+        "item": "turnip",
+        "min": 1,
+        "max": 2
+      },
+      "price": 35
+    }
+  }
+}

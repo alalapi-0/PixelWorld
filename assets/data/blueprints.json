@@ -1,0 +1,38 @@
+{
+  "blueprints": {
+    "hut_base": {
+      "name": "Small Hut Base",
+      "cost": [
+        {
+          "item": "wood_plank",
+          "count": 20
+        }
+      ],
+      "buildDays": 1,
+      "result": "hut_lv1",
+      "onStormDamageProb": 0.1
+    },
+    "fence": {
+      "name": "Wood Fence",
+      "cost": [
+        {
+          "item": "wood_plank",
+          "count": 2
+        }
+      ],
+      "buildDays": 0,
+      "result": "fence"
+    },
+    "chest": {
+      "name": "Storage Chest",
+      "cost": [
+        {
+          "item": "wood_plank",
+          "count": 8
+        }
+      ],
+      "buildDays": 0,
+      "result": "chest"
+    }
+  }
+}

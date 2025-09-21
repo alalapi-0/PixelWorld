@@ -1,0 +1,86 @@
+{
+  "npcs": [
+    {
+      "id": "anna",
+      "name": "Anna",
+      "personality": {
+        "extrovert": 0.8,
+        "diligent": 0.7,
+        "cautious": 0.3
+      },
+      "home": "house_a",
+      "schedule": {
+        "sunny": {
+          "day": [
+            "work_farm",
+            "shop"
+          ],
+          "night": [
+            "home"
+          ]
+        },
+        "rain": {
+          "day": [
+            "shop"
+          ],
+          "night": [
+            "home"
+          ]
+        }
+      },
+      "dialogues": {
+        "base": [
+          "今天还算顺利。",
+          "要不要来点新鲜的面包？"
+        ],
+        "extrovert_high": [
+          "走一圈集市？我听说有旅行商人来。"
+        ],
+        "rain": [
+          "下雨就不用我浇水了。"
+        ]
+      }
+    },
+    {
+      "id": "bruno",
+      "name": "Bruno",
+      "personality": {
+        "extrovert": 0.3,
+        "diligent": 0.9,
+        "cautious": 0.8
+      },
+      "home": "house_b",
+      "schedule": {
+        "sunny": {
+          "day": [
+            "mine",
+            "smith"
+          ],
+          "night": [
+            "home"
+          ]
+        },
+        "rain": {
+          "day": [
+            "mine"
+          ],
+          "night": [
+            "home"
+          ]
+        }
+      },
+      "dialogues": {
+        "base": [
+          "工具保养别偷懒。",
+          "矿洞今天也很安静。"
+        ],
+        "cautious_high": [
+          "晚上少出门，狼群最近很活跃。"
+        ],
+        "rain": [
+          "雨天出门要小心脚下。"
+        ]
+      }
+    }
+  ]
+}

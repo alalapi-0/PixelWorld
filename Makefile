@@ -10,3 +10,17 @@ map:
 # 启动静态服务器预览 Phaser 像素地图原型
 web-run:
 	python -m http.server -d frontend/phaser 8080
+
+# 将用户素材导入并标准化到 assets/build/**，自动更新映射
+user-import:
+	python scripts/import_user_assets.py
+
+# 校验用户素材目录与清单配置的匹配情况
+user-verify:
+	python scripts/verify_user_assets.py
+
+# 一键导入、校验并开启前端预览服务器
+user-preview:
+	python scripts/import_user_assets.py && \
+	python scripts/verify_user_assets.py && \
+	python -m http.server -d frontend/phaser 8080

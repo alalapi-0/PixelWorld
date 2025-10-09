@@ -1,0 +1,91 @@
+import localforage, { LocalForage } from 'localforage'; // 引入localforage用于存储
+import { deflate, inflate } from 'pako'; // 引入pako处理压缩
+import { Inventory } from './Inventory'; // 引入背包类型
+import { TileCell } from '../world/Types'; // 引入地图单元类型
+import { getAllNodes, setAllNodes, ResourceNode } from '../world/Nodes'; // 引入资源节点工具
+// 分隔注释 // 保持行有注释
+const STORAGE_PREFIX = 'miniworld:'; // 定义存档前缀
+let storage: LocalForage = localforage; // 可替换的存储实例
+// 分隔注释 // 保持行有注释
+export function __setStorage(custom: LocalForage): void { // 提供测试用的存储替换函数
+  storage = custom; // 设置自定义存储实例
+} // 函数结束
+// 分隔注释 // 保持行有注释
+interface SaveContainer { compressed: boolean; data: string; } // 定义存储结构
+// 分隔注释 // 保持行有注释
+interface SimpleBufferConstructor { from(data: string, encoding: string): { toString(encoding: string): string }; } // 定义简化的Buffer接口
+// 分隔注释 // 保持行有注释
+function base64Encode(raw: string): string { // 兼容环境的Base64编码函数
+  if (typeof btoa === 'function') { // 如果浏览器提供btoa
+    return btoa(raw); // 直接使用btoa
+  } // 条件结束
+  const globalBuffer = (globalThis as { Buffer?: SimpleBufferConstructor }).Buffer; // 尝试读取全局Buffer
+  if (globalBuffer) { // 如果存在Buffer
+    return globalBuffer.from(raw, 'binary').toString('base64'); // 使用Buffer编码
+  } // 条件结束
+  return raw; // 无法转换时返回原始字符串
+} // 函数结束
+// 分隔注释 // 保持行有注释
+function base64Decode(payload: string): string { // 兼容环境的Base64解码函数
+  if (typeof atob === 'function') { // 如果浏览器提供atob
+    return atob(payload); // 使用atob解码
+  } // 条件结束
+  const globalBuffer = (globalThis as { Buffer?: SimpleBufferConstructor }).Buffer; // 尝试读取全局Buffer
+  if (globalBuffer) { // 如果存在Buffer
+    return globalBuffer.from(payload, 'base64').toString('binary'); // 使用Buffer解码
+  } // 条件结束
+  return payload; // 无法转换时返回输入
+} // 函数结束
+// 分隔注释 // 保持行有注释
+function encodeCompressed(text: string): string | null { // 将文本压缩并编码为Base64
+  const compressed = deflate(text); // 压缩文本
+  let result = ''; // 初始化结果字符串
+  compressed.forEach((byte) => { // 遍历字节
+    result += String.fromCharCode(byte); // 累积字符
+  }); // 遍历结束
+  const encoded = base64Encode(result); // 转为Base64字符串
+  return encoded === result ? null : encoded; // 如果无法编码则返回空
+} // 函数结束
+// 分隔注释 // 保持行有注释
+function decodeCompressed(payload: string): string { // 将Base64文本解码并解压
+  const binary = base64Decode(payload); // Base64解码
+  const bytes = new Uint8Array(binary.length); // 创建字节数组
+  for (let i = 0; i < binary.length; i += 1) { // 遍历字符
+    bytes[i] = binary.charCodeAt(i); // 恢复字节
+  } // 循环结束
+  return inflate(bytes, { to: 'string' }); // 解压并返回字符串
+} // 函数结束
+// 分隔注释 // 保持行有注释
+export async function save(slot: string, state: unknown): Promise<void> { // 保存存档函数
+  const json = JSON.stringify(state); // 序列化状态
+  const encoded = encodeCompressed(json); // 尝试压缩并编码
+  const container: SaveContainer = encoded === null ? { compressed: false, data: json } : { compressed: true, data: encoded }; // 组装存储容器
+  await storage.setItem(`${STORAGE_PREFIX}${slot}`, container); // 写入存储
+} // 函数结束
+// 分隔注释 // 保持行有注释
+export async function load(slot: string): Promise<unknown | null> { // 读取存档函数
+  const container = (await storage.getItem(`${STORAGE_PREFIX}${slot}`)) as SaveContainer | null; // 读取容器
+  if (!container) { // 如果没有存档
+    return null; // 返回空
+  } // 条件结束
+  const text = container.compressed ? decodeCompressed(container.data) : container.data; // 根据标记解码
+  return JSON.parse(text); // 返回解析后的对象
+} // 函数结束
+// 分隔注释 // 保持行有注释
+interface BuildWorld { map: TileCell[][]; } // 定义世界数据接口
+interface BuildPlayer { x: number; y: number; } // 定义玩家数据接口
+// 分隔注释 // 保持行有注释
+export function buildState(world: BuildWorld, player: BuildPlayer, inventory: Inventory): { map: TileCell[][]; player: BuildPlayer; bag: ReturnType<Inventory['toJSON']>; nodes: ResourceNode[] } { // 构建存档状态
+  const mapCopy = world.map.map((row) => row.map((cell) => ({ ...cell }))); // 深拷贝地图
+  const playerCopy = { x: player.x, y: player.y }; // 拷贝玩家坐标
+  const bag = inventory.toJSON(); // 获取背包数据
+  const nodes = getAllNodes(); // 获取资源节点
+  return { map: mapCopy, player: playerCopy, bag, nodes }; // 返回组装好的状态对象
+} // 函数结束
+// 分隔注释 // 保持行有注释
+export function applyState(state: { map: TileCell[][]; player: BuildPlayer; bag: ReturnType<Inventory['toJSON']>; nodes: ResourceNode[] }, world: { setMapData: (map: TileCell[][]) => void }, player: { setPosition: (x: number, y: number) => void }, inventory: Inventory): void { // 应用存档状态
+  world.setMapData(state.map.map((row) => row.map((cell) => ({ ...cell })))); // 恢复地图数据
+  setAllNodes(state.nodes.map((node) => ({ pos: { ...node.pos }, type: node.type, loot: { ...node.loot } }))); // 恢复资源节点
+  inventory.loadFromJSON(state.bag); // 使用存档数据覆盖背包
+  player.setPosition(state.player.x, state.player.y); // 恢复玩家位置
+} // 函数结束

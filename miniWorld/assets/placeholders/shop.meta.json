@@ -1,0 +1,11 @@
+{
+  "panel": {
+    "background": "#2b2b3a",
+    "border": "#f0d97d"
+  },
+  "icons": {
+    "buy": "BUY",
+    "sell": "SELL",
+    "coin": "G"
+  }
+}

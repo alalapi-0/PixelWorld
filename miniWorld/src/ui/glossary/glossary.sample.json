@@ -1,0 +1,10 @@
+{
+  "categories": [
+    { "id": "world", "name": "世界" },
+    { "id": "items", "name": "物品" }
+  ],
+  "entries": [
+    { "id": "wood", "cat": "items", "name": "木头", "desc": "最基础的建材。", "img": "" },
+    { "id": "lake", "cat": "world", "name": "湖泊", "desc": "静谧的水域。", "img": "" }
+  ]
+}

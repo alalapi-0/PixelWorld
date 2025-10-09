@@ -1,0 +1,6 @@
+{
+  "list": [
+    { "id": "gather_wood_10", "name": "伐木新手", "desc": "收集 10 个木头。", "cond": { "type": "collect", "itemId": "wood", "count": 10 }, "icon": "" },
+    { "id": "first_save", "name": "初次存档", "desc": "完成第一次保存。", "cond": { "type": "event", "key": "save_once" }, "icon": "" }
+  ]
+}

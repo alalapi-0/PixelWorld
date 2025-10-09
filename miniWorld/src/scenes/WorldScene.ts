@@ -1,12 +1,17 @@
 import Phaser from 'phaser'; // 引入Phaser框架
-import { KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_INTERACT, KEY_SAVE, KEY_LOAD } from '../config/keys'; // 引入按键常量
+import { KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_INTERACT, KEY_SAVE, KEY_LOAD, KEY_GLOSSARY, KEY_ACHIEVEMENT } from '../config/keys'; // 引入按键常量
 import { genDemoMap, isWalkable, layerOf } from '../world/TileRules'; // 引入地图工具
 import { TileCell, GridPos } from '../world/Types'; // 引入类型定义
 import { getNodeAt, removeNodeAt } from '../world/Nodes'; // 引入资源节点接口
 import { Inventory } from '../systems/Inventory'; // 引入背包系统
-import { save, load, buildState, applyState } from '../systems/SaveLoad'; // 引入存档系统
+import { save, load, buildState, applyState, UISaveSettings, GameSaveState } from '../systems/SaveLoad'; // 引入存档系统
 import { LabelManager } from '../ui/LabelManager'; // 引入提示管理器
 import { PopupManager } from '../ui/PopupManager'; // 引入飘字管理器
+import { renderTextToTexture } from '../ui/TextTexture'; // 引入文字纹理工具
+import UIScene from './UIScene'; // 引入UI场景
+import { AutoTextController } from '../ui/AutoTextController'; // 引入自动文本控制器
+import { UIVisibilityManager } from '../ui/UIVisibilityManager'; // 引入UI显隐管理器
+import { AchievementManager, AchievementSave } from '../ui/achievements/AchievementManager'; // 引入成就管理器
 // 分隔注释 // 保持行有注释
 const TILE_SIZE = 32; // 定义瓦片像素大小
 // 分隔注释 // 保持行有注释
@@ -18,13 +23,26 @@ export default class WorldScene extends Phaser.Scene { // 定义世界场景
   private inventory: Inventory = new Inventory(); // 初始化背包
   private labelManager!: LabelManager; // 提示管理器引用
   private popupManager!: PopupManager; // 飘字管理器引用
+  private achievementManager!: AchievementManager; // 成就管理器引用
+  private autoController?: AutoTextController; // 自动文本控制器引用
+  private uiVisibility?: UIVisibilityManager; // UI显隐管理器引用
+  private pendingUISettings?: UISaveSettings; // 待应用的UI设置
   private cursors!: { up: Phaser.Input.Keyboard.Key; down: Phaser.Input.Keyboard.Key; left: Phaser.Input.Keyboard.Key; right: Phaser.Input.Keyboard.Key; }; // 方向按键引用
   private interactKey!: Phaser.Input.Keyboard.Key; // 交互按键引用
   private saveKey!: Phaser.Input.Keyboard.Key; // 保存按键引用
   private loadKey!: Phaser.Input.Keyboard.Key; // 读取按键引用
+  private glossaryKey!: Phaser.Input.Keyboard.Key; // 图鉴按键引用
+  private achievementKey!: Phaser.Input.Keyboard.Key; // 成就按键引用
   private hudSourceText!: Phaser.GameObjects.Text; // 素材来源文本
   private hudControlsText!: Phaser.GameObjects.Text; // 操作提示文本
   private playerSpeed = 80; // 玩家移动速度
+  private dialogueLines: string[] = ['这棵树看起来很结实。', '按 Z 采集木头并体验对话提示。', '按 A 自动播放，按 S 跳过当前段落。']; // 对话脚本
+  private dialogueIndex = 0; // 当前对话索引
+  private dialogueActive = false; // 是否处于对话状态
+  private dialogueElapsed = 0; // 当前段落耗时
+  private dialogueSprite?: Phaser.GameObjects.Image; // 对话精灵引用
+  private dialogueTextureKey?: string; // 对话纹理键
+  private dialogueTriggered = false; // 是否已经触发过对话
   // 分隔注释 // 保持行有注释
   public constructor() { // 构造函数
     super('WorldScene'); // 调用父类构造并设定场景键名
@@ -36,8 +54,35 @@ export default class WorldScene extends Phaser.Scene { // 定义世界场景
     this.createPlayer(); // 创建玩家实体
     this.labelManager = new LabelManager(this); // 初始化提示管理器
     this.popupManager = new PopupManager(this); // 初始化飘字管理器
+    this.achievementManager = new AchievementManager((def) => { // 初始化成就管理器并配置回调
+      this.popupManager.popup(this.playerContainer.x, this.playerContainer.y - TILE_SIZE, `达成：${def.name}`, '#ffdd66'); // 弹出提示
+    }); // 回调结束
+    void this.initAchievements(); // 异步加载成就数据
     this.setupInput(); // 配置输入
+    this.launchUIScene(); // 启动UI场景
     this.createHUD(); // 创建界面
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  private async initAchievements(): Promise<void> { // 初始化成就数据
+    await this.achievementManager.loadDefs(this); // 加载成就定义
+    await this.achievementManager.load(); // 载入持久化状态
+    if (this.pendingAchievementState) { // 如果有待应用的状态
+      this.achievementManager.importState(this.pendingAchievementState); // 应用状态
+      this.pendingAchievementState = undefined; // 清除缓存
+    } // 条件结束
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  private launchUIScene(): void { // 启动UI场景并绑定
+    this.scene.launch('UIScene'); // 启动UI场景
+    const uiScene = this.scene.get('UIScene') as UIScene; // 获取UI场景实例
+    uiScene.events.once('ui-ready', () => { // 监听UI准备事件
+      this.autoController = uiScene.getAutoCtrl(); // 获取自动控制器
+      this.uiVisibility = uiScene.getUIVisibility(); // 获取显隐管理器
+      if (this.pendingUISettings) { // 如果存在待应用UI设置
+        this.applyUISettings(this.pendingUISettings); // 应用设置
+        this.pendingUISettings = undefined; // 清空缓存
+      } // 条件结束
+    }); // 监听结束
   } // 方法结束
   // 分隔注释 // 保持行有注释
   private renderMap(): void { // 渲染地图方法
@@ -73,13 +118,24 @@ export default class WorldScene extends Phaser.Scene { // 定义世界场景
     this.interactKey = this.input.keyboard.addKey(KEY_INTERACT); // 创建交互键
     this.saveKey = this.input.keyboard.addKey(KEY_SAVE); // 创建保存键
     this.loadKey = this.input.keyboard.addKey(KEY_LOAD); // 创建读取键
+    this.glossaryKey = this.input.keyboard.addKey(KEY_GLOSSARY); // 创建图鉴键
+    this.achievementKey = this.input.keyboard.addKey(KEY_ACHIEVEMENT); // 创建成就键
+    this.achievementKey.on('down', (event: KeyboardEvent) => { // 绑定成就键事件
+      if (event.shiftKey) { // 如果按下Shift
+        return; // 避免与隐藏冲突
+      } // 条件结束
+      this.openAchievementScene(); // 打开成就界面
+    }); // 监听结束
+    this.glossaryKey.on('down', () => { // 绑定图鉴键事件
+      this.openGlossaryScene(); // 打开图鉴界面
+    }); // 监听结束
   } // 方法结束
   // 分隔注释 // 保持行有注释
   private createHUD(): void { // 创建界面元素
     const source = this.registry.get('assetSource') as string | undefined; // 读取素材来源
     this.hudSourceText = this.add.text(8, 8, `素材来源：${source ?? '占位纹理'}`, { fontFamily: 'sans-serif', fontSize: '12px', color: '#ffffff', backgroundColor: 'rgba(0,0,0,0.66)', padding: { x: 4, y: 2 } }); // 创建左上角文本
     this.hudSourceText.setDepth(1200); // 设置渲染深度
-    this.hudControlsText = this.add.text(312, 312, 'Z 采集 / S 保存 / L 读取', { fontFamily: 'sans-serif', fontSize: '12px', color: '#ffffff', backgroundColor: 'rgba(0,0,0,0.66)', padding: { x: 4, y: 2 }, align: 'right' }); // 创建右下角提示
+    this.hudControlsText = this.add.text(312, 312, 'Z 采集 / A 自动 / S 保存或跳过 / L 读取 / G 图鉴 / H 成就', { fontFamily: 'sans-serif', fontSize: '12px', color: '#ffffff', backgroundColor: 'rgba(0,0,0,0.66)', padding: { x: 4, y: 2 }, align: 'right' }); // 创建右下角提示
     this.hudControlsText.setOrigin(1, 1); // 设置锚点
     this.hudControlsText.setDepth(1200); // 设置深度
   } // 方法结束
@@ -89,6 +145,7 @@ export default class WorldScene extends Phaser.Scene { // 定义世界场景
     this.handleInteractionInput(); // 处理采集按键
     this.handleSaveLoadInput(); // 处理存读按键
     this.updateResourceHint(); // 更新提示
+    this.updateDialogue(delta); // 更新对话状态
     this.popupManager.update(delta); // 更新飘字动画
   } // 方法结束
   // 分隔注释 // 保持行有注释
@@ -173,11 +230,16 @@ export default class WorldScene extends Phaser.Scene { // 定义世界场景
       return; // 直接返回
     } // 条件结束
     this.inventory.add(node.loot.id, node.loot.name, node.loot.count); // 将物品加入背包
+    this.achievementManager.onCollect(node.loot.id, node.loot.count); // 通知成就系统
     removeNodeAt(grid); // 移除节点
     this.mapData[grid.y][grid.x] = { type: 'GRASS', layerTag: 'ground' }; // 将格子恢复为草地
     this.updateTileTexture(grid.x, grid.y); // 更新瓦片显示
     this.labelManager.hideAll(); // 隐藏提示
     this.popupManager.popup(this.playerContainer.x, this.playerContainer.y - TILE_SIZE / 2, `+${node.loot.count} ${node.loot.name}`, node.type === 'TREE' ? '#88ff88' : node.type === 'ROCK' ? '#ccccff' : '#ff99ff'); // 显示飘字
+    if (!this.dialogueTriggered && node.type === 'TREE') { // 如果第一次采集树木
+      this.dialogueTriggered = true; // 标记已触发
+      this.startDialogue(); // 开始对话
+    } // 条件结束
   } // 方法结束
   // 分隔注释 // 保持行有注释
   private updateTileTexture(x: number, y: number): void { // 更新单个瓦片纹理
@@ -199,38 +261,172 @@ export default class WorldScene extends Phaser.Scene { // 定义世界场景
     } // 条件结束
   } // 方法结束
   // 分隔注释 // 保持行有注释
-  private handleSaveLoadInput(): void { // 处理存读输入
-    if (Phaser.Input.Keyboard.JustDown(this.saveKey)) { // 检测保存键
-      void this.performSave(); // 执行保存
+  private handleSaveLoadInput(): void { // 处理存档读取逻辑
+    if (Phaser.Input.Keyboard.JustDown(this.saveKey)) { // 当按下S键
+      if (this.dialogueActive) { // 如果正在对话
+        if (this.autoController?.isSkip()) { // 如果已在跳过模式
+          this.autoController.disableSkip(); // 关闭跳过
+        } else { // 否则
+          this.autoController?.enableSkip(); // 开启跳过
+          this.advanceDialogue(); // 立即推进
+        } // 条件结束
+        return; // 阻止保存
+      } // 条件结束
+      void this.saveGame(); // 执行保存
     } // 条件结束
-    if (Phaser.Input.Keyboard.JustDown(this.loadKey)) { // 检测读取键
-      void this.performLoad(); // 执行读取
+    if (Phaser.Input.Keyboard.JustDown(this.loadKey)) { // 当按下读取键
+      void this.loadGame(); // 执行读取
     } // 条件结束
   } // 方法结束
   // 分隔注释 // 保持行有注释
-  private async performSave(): Promise<void> { // 执行保存逻辑
-    const state = buildState({ map: this.mapData }, { x: this.playerContainer.x, y: this.playerContainer.y }, this.inventory); // 构建状态
-    await save('slot1', state); // 保存到固定存档位
-    this.popupManager.popup(this.playerContainer.x, this.playerContainer.y - TILE_SIZE, '保存成功', '#66ccff'); // 提示保存成功
-  } // 方法结束
-  // 分隔注释 // 保持行有注释
-  private async performLoad(): Promise<void> { // 执行读取逻辑
-    const data = await load('slot1'); // 读取存档
-    if (!data) { // 如果没有存档
-      this.popupManager.popup(this.playerContainer.x, this.playerContainer.y - TILE_SIZE, '无存档', '#ffcc66'); // 提示无存档
-      return; // 结束函数
+  private async saveGame(): Promise<void> { // 保存游戏状态
+    const extras = { achievements: this.achievementManager.exportState(), uiSettings: this.collectUISaveSettings() }; // 构建额外数据
+    const state = buildState({ map: this.mapData }, { x: this.playerContainer.x, y: this.playerContainer.y }, this.inventory, extras); // 构建状态
+    await save('slot', state); // 保存状态
+    if (!this.achievementManager.isUnlocked('first_save')) { // 如果成就未解锁
+      this.achievementManager.onEvent('save_once'); // 触发成就
     } // 条件结束
-    applyState(data as ReturnType<typeof buildState>, { setMapData: (map) => this.setMapData(map) }, { setPosition: (x, y) => this.setPlayerPosition(x, y) }, this.inventory); // 应用状态
-    this.renderMap(); // 重新渲染地图
-    this.popupManager.popup(this.playerContainer.x, this.playerContainer.y - TILE_SIZE, '读取成功', '#66ffcc'); // 提示读取成功
   } // 方法结束
   // 分隔注释 // 保持行有注释
-  public setMapData(map: TileCell[][]): void { // 外部接口用于更新地图
-    this.mapData = map.map((row) => row.map((cell) => ({ ...cell }))); // 深拷贝赋值
+  private async loadGame(): Promise<void> { // 读取游戏状态
+    const data = (await load('slot')) as GameSaveState | null; // 读取存档
+    if (!data) { // 如果没有数据
+      return; // 直接返回
+    } // 条件结束
+    applyState(data, { setMapData: (map) => this.setMapData(map) }, { setPosition: (x, y) => this.setPlayerPosition(x, y) }, this.inventory, { applyAchievements: (payload) => this.applyAchievementState(payload), applyUISettings: (settings) => this.queueUISettings(settings) }); // 应用状态
   } // 方法结束
   // 分隔注释 // 保持行有注释
-  public setPlayerPosition(x: number, y: number): void { // 外部接口用于移动玩家
-    this.playerContainer.setPosition(x, y); // 设置位置
+  private setMapData(map: TileCell[][]): void { // 设置地图数据
+    this.mapData = map.map((row) => row.map((cell) => ({ ...cell }))); // 拷贝地图
+    this.renderMap(); // 重新渲染
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  private setPlayerPosition(x: number, y: number): void { // 设置玩家位置
+    this.playerContainer.setPosition(x, y); // 更新容器
     this.updatePlayerDepth(); // 更新深度
   } // 方法结束
+  // 分隔注释 // 保持行有注释
+  private collectUISaveSettings(): UISaveSettings { // 收集UI设置
+    const auto = this.autoController?.isAuto() ?? false; // 读取自动状态
+    const skip = this.autoController?.isSkip() ?? false; // 读取跳过状态
+    const hidden = this.uiVisibility?.isHidden() ?? false; // 读取隐藏状态
+    return { auto, skip, hidden }; // 返回结构
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  private queueUISettings(settings: UISaveSettings | undefined): void { // 应用或缓存UI设置
+    if (!settings) { // 如果没有设置
+      return; // 直接返回
+    } // 条件结束
+    if (this.autoController && this.uiVisibility) { // 如果UI已准备
+      this.applyUISettings(settings); // 直接应用
+    } else { // 否则
+      this.pendingUISettings = settings; // 缓存等待
+    } // 条件结束
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  private applyUISettings(settings: UISaveSettings): void { // 实际应用UI设置
+    if (this.autoController) { // 如果控制器存在
+      if (settings.skip) { // 如果保存为跳过
+        this.autoController.enableSkip(); // 启用跳过
+      } else if (settings.auto) { // 如果保存为自动
+        this.autoController.disableSkip(); // 关闭跳过
+        this.autoController.enableAuto(); // 启用自动
+      } else { // 否则
+        this.autoController.disableSkip(); // 关闭跳过
+        this.autoController.disableAuto(); // 关闭自动
+      } // 条件结束
+    } // 条件结束
+    if (this.uiVisibility) { // 如果存在显隐管理器
+      if (settings.hidden) { // 如果隐藏
+        this.uiVisibility.hideAll(10); // 立刻隐藏
+      } else { // 否则
+        this.uiVisibility.showAll(10); // 立刻显示
+      } // 条件结束
+    } // 条件结束
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  private applyAchievementState(payload: unknown): void { // 应用成就数据
+    const state = payload as AchievementSave | undefined; // 尝试转换
+    if (!state) { // 如果没有数据
+      return; // 直接返回
+    } // 条件结束
+    if (this.achievementManager) { // 如果管理器已存在
+      this.achievementManager.importState(state); // 应用状态
+    } else { // 否则
+      this.pendingAchievementState = state; // 缓存等待
+    } // 条件结束
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  private startDialogue(): void { // 开启示例对话
+    this.dialogueActive = true; // 标记状态
+    this.dialogueIndex = 0; // 重置索引
+    this.dialogueElapsed = 0; // 重置时间
+    this.showDialogueLine(); // 显示第一句
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  private showDialogueLine(): void { // 展示当前对话行
+    const text = this.dialogueLines[this.dialogueIndex]; // 获取文本
+    if (!text) { // 如果文本不存在
+      this.endDialogue(); // 结束对话
+      return; // 直接返回
+    } // 条件结束
+    if (this.dialogueTextureKey) { // 如果存在旧纹理
+      this.textures.remove(this.dialogueTextureKey); // 移除旧纹理
+    } // 条件结束
+    const key = renderTextToTexture(this, text, { fontSize: 12, color: '#ffffff', padding: 6, maxWidth: 160, align: 'left' }, 'dialogue'); // 生成纹理
+    this.dialogueTextureKey = key; // 保存键名
+    this.dialogueSprite?.destroy(); // 销毁旧精灵
+    this.dialogueSprite = this.add.image(this.playerContainer.x, this.playerContainer.y - TILE_SIZE, key); // 创建新精灵
+    this.dialogueSprite.setOrigin(0.5, 1); // 设置锚点
+    this.dialogueSprite.setDepth(1300); // 设置深度
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  private advanceDialogue(): void { // 推进对话
+    this.dialogueIndex += 1; // 递增索引
+    this.dialogueElapsed = 0; // 重置时间
+    if (this.dialogueIndex >= this.dialogueLines.length) { // 如果超出脚本
+      this.endDialogue(); // 结束对话
+    } else { // 否则
+      this.showDialogueLine(); // 显示下一句
+    } // 条件结束
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  private endDialogue(): void { // 结束对话
+    this.dialogueActive = false; // 更新状态
+    this.dialogueElapsed = 0; // 重置时间
+    this.dialogueSprite?.destroy(); // 销毁精灵
+    this.dialogueSprite = undefined; // 清空引用
+    if (this.dialogueTextureKey) { // 如果存在纹理
+      this.textures.remove(this.dialogueTextureKey); // 移除纹理
+      this.dialogueTextureKey = undefined; // 清空引用
+    } // 条件结束
+    this.autoController?.disableSkip(); // 对话结束关闭跳过
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  private updateDialogue(delta: number): void { // 更新对话逻辑
+    if (!this.dialogueActive) { // 如果不在对话中
+      return; // 直接返回
+    } // 条件结束
+    this.dialogueElapsed += delta; // 累计时间
+    if (this.autoController && this.dialogueLines[this.dialogueIndex]) { // 如果有控制器与文本
+      if (this.autoController.shouldAdvance(this.dialogueElapsed, this.dialogueLines[this.dialogueIndex])) { // 判断是否推进
+        this.advanceDialogue(); // 推进对话
+      } // 条件结束
+    } // 条件结束
+    if (this.dialogueSprite) { // 如果有精灵
+      this.dialogueSprite.setPosition(this.playerContainer.x, this.playerContainer.y - TILE_SIZE); // 跟随玩家
+    } // 条件结束
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  private openGlossaryScene(): void { // 打开图鉴场景
+    this.scene.pause(); // 暂停世界
+    this.scene.launch('GlossaryScene'); // 启动图鉴
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  private openAchievementScene(): void { // 打开成就场景
+    this.scene.pause(); // 暂停世界
+    this.scene.launch('AchievementScene', { manager: this.achievementManager }); // 启动成就场景
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  private pendingAchievementState?: AchievementSave; // 缓存成就状态
 } // 类结束

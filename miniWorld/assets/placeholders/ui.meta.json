@@ -1,0 +1,11 @@
+{
+  "icons": {
+    "auto": "AUTO",
+    "skip": "SKIP"
+  },
+  "colors": {
+    "background": "#222222",
+    "auto": "#66ccff",
+    "skip": "#ffcc66"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "GRASS": { "color": "#4caf50", "detail": "#81c784" },
+  "ROAD": { "color": "#8d6e63", "detail": "#a1887f" },
+  "TILE_FLOOR": { "color": "#bdbdbd", "detail": "#eeeeee" },
+  "WATER": { "color": "#2196f3", "detail": "#64b5f6" },
+  "LAKE": { "color": "#1565c0", "detail": "#1e88e5" },
+  "WALL": { "color": "#616161", "detail": "#757575" },
+  "TREE": { "color": "#2e7d32", "detail": "#66bb6a" },
+  "HOUSE": { "color": "#f06292", "detail": "#f48fb1" },
+  "ROCK": { "color": "#455a64", "detail": "#607d8b" },
+  "LAVA": { "color": "#f4511e", "detail": "#ff7043" }
+}

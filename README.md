@@ -219,3 +219,32 @@ jobs:
 ## 许可证与致谢
 - 代码：MIT
 - 素材：默认占位；当你引入第三方包，请在此列出 **名称/作者/链接/许可**（如 CC0/CC-BY）。
+
+---
+
+## 像素地图与普通角色（开源库接入）
+基于 Phaser 3 与 Tiled 的轻量原型，帮助验证像素瓦片地图与“普通角色”控制流程：
+- **引擎/渲染**：Phaser 3（浏览器端 2D 游戏框架，支持瓦片地图与 Arcade 物理）。
+- **地图编辑**：Tiled（开源瓦片编辑器，导出 JSON/CSV）。
+- **素材来源**：优先使用 Kenney 与 itch.io 的 CC0 资源；如暂未下载，则自动使用程序化占位瓦片与圆头角色。
+
+### 快速体验
+1. `make assets` —— 初始化 CC0 素材目录（默认仅生成占位提示，可通过 `--dest` 指定实际下载位置）。
+2. `make assets-verify` —— 校验 `assets/mapping/*.json` 与本地素材的对应关系。
+3. `make web-run` —— 启动静态服务器，浏览器打开 [http://localhost:8080/](http://localhost:8080/) 体验 Phaser 原型。
+
+### 素材获取与许可说明
+- `assets/external_catalog.json` 列出推荐的 CC0 源（Kenney、itch.io）。
+- `scripts/fetch_assets.py` 会在本地生成占位目录与 `.placeholder` 提示，真实素材需开发者自行下载放入 `assets/build/`。
+- `assets/licenses/ASSETS_LICENSES.md` 会由脚本更新当前素材许可，初始为“未下载素材”。
+- 若后续选择 CC-BY 或 CC-BY-SA 素材，请在 `ASSETS_LICENSES.md` 中补充署名、链接与共享条款。
+
+### 占位回退机制
+- 前端加载不到 `assets/build/**` 的 PNG 时，会自动绘制纯色瓦片，并创建“圆头+身体”的普通角色占位纹理。
+- 地图数据来自 `frontend/phaser/maps/demo_map.json`，含草地/道路/水面与水域碰撞层。
+- 方向键控制角色移动，Arcade 物理保证水面不可穿越。
+
+### 与 miniWorld 后端的对接计划
+- 当前地图基于本地 `demo_map`，后续可改为从 `/world/chunk` 接口拼装瓦片数据。
+- 瓦片/角色绑定计划通过 `/assets/tilesets` 与 `/assets/personas` 接口动态下发。
+- 角色未来可替换为 AI 生成的多视角像素人或 3D 模型渲染帧，需扩展绑定 JSON 结构与加载逻辑。

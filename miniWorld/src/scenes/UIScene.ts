@@ -1,11 +1,18 @@
 import Phaser from 'phaser'; // 引入Phaser框架
 import { AutoTextController } from '../ui/AutoTextController'; // 引入自动文本控制器
 import { UIVisibilityManager } from '../ui/UIVisibilityManager'; // 引入UI显隐管理器
+import { TimeState } from '../systems/TimeSystem'; // 引入时间状态类型
+import { TimeScaleBoost } from '../systems/TimeScaleBoost'; // 引入快进系统
 // 分隔注释 // 保持行有注释
 export default class UIScene extends Phaser.Scene { // 定义UI场景
   private autoController!: AutoTextController; // 自动文本控制器引用
   private visibility!: UIVisibilityManager; // UI显隐管理器引用
   private root!: Phaser.GameObjects.Container; // UI根容器
+  private timeContainer!: Phaser.GameObjects.Container; // 时间显示容器
+  private timeText!: Phaser.GameObjects.Text; // 时间文本
+  private speedContainer!: Phaser.GameObjects.Container; // 倍速容器
+  private seasonContainer!: Phaser.GameObjects.Container; // 季节容器
+  private seasonText!: Phaser.GameObjects.Text; // 季节文本
   // 分隔注释 // 保持行有注释
   public constructor() { // 构造函数
     super('UIScene'); // 指定场景键名
@@ -16,12 +23,42 @@ export default class UIScene extends Phaser.Scene { // 定义UI场景
     this.root.setScrollFactor(0); // 固定在屏幕
     this.root.setDepth(1500); // 提升深度
     this.root.setPosition(this.scale.width, this.scale.height); // 放置在右下角
+    this.timeContainer = this.add.container(this.scale.width - 12, 12); // 创建时间容器
+    this.timeContainer.setScrollFactor(0); // 固定时间容器
+    this.timeContainer.setDepth(1500); // 提升时间层级
+    this.timeText = this.add.text(0, 0, '06:00', { fontFamily: 'sans-serif', fontSize: '16px', color: '#ffffaa', backgroundColor: 'rgba(0,0,0,0.5)', padding: { x: 4, y: 2 } }); // 创建时间文本
+    this.timeText.setOrigin(1, 0); // 设置时间文本锚点
+    this.timeContainer.add(this.timeText); // 添加时间文本
+    this.speedContainer = this.add.container(0, 24); // 创建倍率容器
+    this.timeContainer.add(this.speedContainer); // 添加倍率容器
+    this.seasonContainer = this.add.container(12, 12); // 创建季节容器
+    this.seasonContainer.setScrollFactor(0); // 固定季节容器
+    this.seasonContainer.setDepth(1500); // 提升季节层级
+    this.seasonText = this.add.text(0, 0, '春季 第1日', { fontFamily: 'sans-serif', fontSize: '14px', color: '#ffffff', backgroundColor: 'rgba(0,0,0,0.5)', padding: { x: 4, y: 2 } }); // 创建季节文本
+    this.seasonText.setOrigin(0, 0); // 设置季节文本锚点
+    this.seasonContainer.add(this.seasonText); // 添加季节文本
     this.autoController = new AutoTextController(this); // 创建自动控制器
     this.autoController.drawSmallIcons(this.root); // 绘制图标
     this.visibility = new UIVisibilityManager(this); // 创建显隐管理器
     this.visibility.setAutoAttach(this.root); // 绑定容器
     this.setupInputs(); // 配置输入
     this.events.emit('ui-ready', this); // 通知外部UI准备完成
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  // 分隔注释 // 保持行有注释
+  public attachTimeScale(boost: TimeScaleBoost): void { // 附加快进倍率图标
+    boost.drawSmallIcon(this.speedContainer); // 调用倍率绘制
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  public updateTimeDisplay(state: TimeState, _scale: number): void { // 更新时间显示
+    const hour = state.hour.toString().padStart(2, '0'); // 计算小时文本
+    const minute = state.minute.toString().padStart(2, '0'); // 计算分钟文本
+    this.timeText.setText(`${hour}:${minute}`); // 更新时间文本
+    const seasonNames: Record<TimeState['season'], string> = { spring: '春季', summer: '夏季', autumn: '秋季', winter: '冬季' }; // 季节名称映射
+    const weekNames = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']; // 星期名称
+    const seasonLabel = seasonNames[state.season]; // 获取季节名称
+    const weekLabel = weekNames[state.weekDay] ?? '周?'; // 获取星期标签
+    this.seasonText.setText(`第${state.year}年 ${seasonLabel} 第${state.day}日 ${weekLabel}`); // 更新季节文本
   } // 方法结束
   // 分隔注释 // 保持行有注释
   private setupInputs(): void { // 配置输入事件

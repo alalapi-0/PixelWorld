@@ -1,0 +1,11 @@
+{
+  "colors": {
+    "day": "#ffe6a3",
+    "dusk": "#ffb066",
+    "night": "#334a80"
+  },
+  "labels": {
+    "time": "TIME",
+    "season": "SEASON"
+  }
+}

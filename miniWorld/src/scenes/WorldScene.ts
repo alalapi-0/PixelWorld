@@ -1,5 +1,5 @@
 import Phaser from 'phaser'; // 引入Phaser框架
-import { KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_INTERACT, KEY_SAVE, KEY_LOAD, KEY_GLOSSARY, KEY_ACHIEVEMENT } from '../config/keys'; // 引入按键常量
+import { KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_INTERACT, KEY_SAVE, KEY_LOAD, KEY_GLOSSARY, KEY_ACHIEVEMENT, KEY_SHOP, KEY_SPEED_TOGGLE } from '../config/keys'; // 引入按键常量
 import { genDemoMap, isWalkable, layerOf } from '../world/TileRules'; // 引入地图工具
 import { TileCell, GridPos } from '../world/Types'; // 引入类型定义
 import { getNodeAt, removeNodeAt } from '../world/Nodes'; // 引入资源节点接口
@@ -8,6 +8,12 @@ import { save, load, buildState, applyState, UISaveSettings, GameSaveState } fro
 import { LabelManager } from '../ui/LabelManager'; // 引入提示管理器
 import { PopupManager } from '../ui/PopupManager'; // 引入飘字管理器
 import { renderTextToTexture } from '../ui/TextTexture'; // 引入文字纹理工具
+import { ShopStore } from '../economy/ShopStore'; // 引入商店仓库
+import { ShopService } from '../economy/ShopService'; // 引入商店服务
+import { ShopUI } from '../ui/ShopUI'; // 引入商店界面
+import { DEFAULT_SHOP_ID } from '../economy/ShopTypes'; // 引入默认商店常量
+import { TimeSystem, TimeState } from '../systems/TimeSystem'; // 引入时间系统
+import { TimeScaleBoost } from '../systems/TimeScaleBoost'; // 引入快进系统
 import UIScene from './UIScene'; // 引入UI场景
 import { AutoTextController } from '../ui/AutoTextController'; // 引入自动文本控制器
 import { UIVisibilityManager } from '../ui/UIVisibilityManager'; // 引入UI显隐管理器
@@ -35,6 +41,20 @@ export default class WorldScene extends Phaser.Scene { // 定义世界场景
   private achievementKey!: Phaser.Input.Keyboard.Key; // 成就按键引用
   private hudSourceText!: Phaser.GameObjects.Text; // 素材来源文本
   private hudControlsText!: Phaser.GameObjects.Text; // 操作提示文本
+  private shopStore: ShopStore; // 商店数据仓库
+  private shopService!: ShopService; // 商店服务
+  private shopUI?: ShopUI; // 商店界面
+  private timeSystem!: TimeSystem; // 时间系统
+  private timeScaleBoost!: TimeScaleBoost; // 快进控制
+  private shopKey!: Phaser.Input.Keyboard.Key; // 商店交互键
+  private speedKey!: Phaser.Input.Keyboard.Key; // 快进切换键
+  private hudScene?: UIScene; // UI场景引用
+  private pendingTimeState?: ReturnType<TimeSystem['serialize']>; // 待恢复时间数据
+  private pendingShopState?: ReturnType<ShopStore['toJSON']>; // 待恢复商店数据
+  private shopNpc?: Phaser.GameObjects.Rectangle; // 商店NPC占位
+  private shopNpcPosition: Phaser.Math.Vector2 = new Phaser.Math.Vector2(5 * TILE_SIZE, 4 * TILE_SIZE); // 商店NPC位置
+  private shiftPressed = false; // 是否按住Shift
+  private shiftSuppressed = false; // Shift是否已作为修饰键使用
   private playerSpeed = 80; // 玩家移动速度
   private dialogueLines: string[] = ['这棵树看起来很结实。', '按 Z 采集木头并体验对话提示。', '按 A 自动播放，按 S 跳过当前段落。']; // 对话脚本
   private dialogueIndex = 0; // 当前对话索引
@@ -46,6 +66,7 @@ export default class WorldScene extends Phaser.Scene { // 定义世界场景
   // 分隔注释 // 保持行有注释
   public constructor() { // 构造函数
     super('WorldScene'); // 调用父类构造并设定场景键名
+    this.shopStore = new ShopStore(); // 创建商店仓库
   } // 构造结束
   // 分隔注释 // 保持行有注释
   public create(): void { // 场景创建时调用
@@ -59,6 +80,7 @@ export default class WorldScene extends Phaser.Scene { // 定义世界场景
     }); // 回调结束
     void this.initAchievements(); // 异步加载成就数据
     this.setupInput(); // 配置输入
+    this.setupEconomyAndTime(); // 初始化经济与时间
     this.launchUIScene(); // 启动UI场景
     this.createHUD(); // 创建界面
   } // 方法结束
@@ -72,12 +94,43 @@ export default class WorldScene extends Phaser.Scene { // 定义世界场景
     } // 条件结束
   } // 方法结束
   // 分隔注释 // 保持行有注释
+  private setupEconomyAndTime(): void { // 初始化经济与时间系统
+    if (this.pendingShopState) { // 如果有待恢复商店数据
+      this.shopStore = ShopStore.fromJSON(this.pendingShopState); // 使用存档恢复商店
+      this.pendingShopState = undefined; // 清除缓存
+    } else { // 否则
+      this.shopStore.initDefaultShops(); // 初始化默认商店
+    } // 条件结束
+    this.shopService = new ShopService(this.shopStore, this.inventory, this.popupManager); // 创建商店服务
+    const defaultShop = this.shopStore.getShop(DEFAULT_SHOP_ID); // 获取默认商店
+    if (defaultShop) { // 如果存在默认商店
+      this.shopUI?.destroy(); // 销毁旧界面
+      this.shopUI = new ShopUI(this, this.shopService, defaultShop); // 创建商店界面
+      this.shopUI.close(); // 关闭界面
+      this.shopUI.refreshData(); // 刷新界面
+    } // 条件结束
+    this.createShopNpc(); // 创建NPC占位
+    this.timeSystem = new TimeSystem(this); // 创建时间系统
+    if (this.pendingTimeState) { // 如果有待恢复时间
+      this.timeSystem.restore(this.pendingTimeState); // 恢复时间状态
+      this.pendingTimeState = undefined; // 清除缓存
+    } // 条件结束
+    this.timeSystem.onNewDay((state) => this.onNewDayArrived(state)); // 注册新日回调
+    this.timeSystem.onNewSeason((state) => this.onNewSeasonArrived(state)); // 注册新季节回调
+    this.timeScaleBoost = new TimeScaleBoost(this); // 创建快进控制
+    this.timeSystem.applyTintTo(this); // 应用初始昼夜色调
+    this.updateHudTime(); // 更新HUD显示
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
   private launchUIScene(): void { // 启动UI场景并绑定
     this.scene.launch('UIScene'); // 启动UI场景
     const uiScene = this.scene.get('UIScene') as UIScene; // 获取UI场景实例
     uiScene.events.once('ui-ready', () => { // 监听UI准备事件
+      this.hudScene = uiScene; // 保存UI场景引用
       this.autoController = uiScene.getAutoCtrl(); // 获取自动控制器
       this.uiVisibility = uiScene.getUIVisibility(); // 获取显隐管理器
+      uiScene.attachTimeScale(this.timeScaleBoost); // 在HUD绘制倍率图标
+      this.updateHudTime(); // 初始化时间显示
       if (this.pendingUISettings) { // 如果存在待应用UI设置
         this.applyUISettings(this.pendingUISettings); // 应用设置
         this.pendingUISettings = undefined; // 清空缓存
@@ -129,27 +182,59 @@ export default class WorldScene extends Phaser.Scene { // 定义世界场景
     this.glossaryKey.on('down', () => { // 绑定图鉴键事件
       this.openGlossaryScene(); // 打开图鉴界面
     }); // 监听结束
+    this.shopKey = this.input.keyboard.addKey(KEY_SHOP); // 创建商店键
+    this.speedKey = this.input.keyboard.addKey(KEY_SPEED_TOGGLE); // 创建倍率键
+    this.speedKey.on('down', () => { // 监听Shift按下
+      this.shiftPressed = true; // 标记按下状态
+      this.shiftSuppressed = false; // 重置修饰标记
+    }); // 监听结束
+    this.speedKey.on('up', () => { // 监听Shift抬起
+      this.shiftPressed = false; // 清除按下状态
+      if (!this.shiftSuppressed) { // 如果未被其他键使用
+        this.toggleSpeedScale(); // 切换倍率
+      } // 条件结束
+    }); // 监听结束
+    this.input.keyboard.on('keydown', (event: KeyboardEvent) => { // 监听任意按键
+      if (this.shiftPressed && event.key !== 'Shift') { // 如果Shift按下且按了其他键
+        this.shiftSuppressed = true; // 标记为修饰键
+      } // 条件结束
+    }); // 监听结束
   } // 方法结束
   // 分隔注释 // 保持行有注释
   private createHUD(): void { // 创建界面元素
     const source = this.registry.get('assetSource') as string | undefined; // 读取素材来源
     this.hudSourceText = this.add.text(8, 8, `素材来源：${source ?? '占位纹理'}`, { fontFamily: 'sans-serif', fontSize: '12px', color: '#ffffff', backgroundColor: 'rgba(0,0,0,0.66)', padding: { x: 4, y: 2 } }); // 创建左上角文本
     this.hudSourceText.setDepth(1200); // 设置渲染深度
-    this.hudControlsText = this.add.text(312, 312, 'Z 采集 / A 自动 / S 保存或跳过 / L 读取 / G 图鉴 / H 成就', { fontFamily: 'sans-serif', fontSize: '12px', color: '#ffffff', backgroundColor: 'rgba(0,0,0,0.66)', padding: { x: 4, y: 2 }, align: 'right' }); // 创建右下角提示
+    this.hudControlsText = this.add.text(312, 312, 'Z 采集 / E 商店 / Shift 倍速 / A 自动 / S 保存或跳过 / L 读取 / G 图鉴 / H 成就', { fontFamily: 'sans-serif', fontSize: '12px', color: '#ffffff', backgroundColor: 'rgba(0,0,0,0.66)', padding: { x: 4, y: 2 }, align: 'right' }); // 创建右下角提示
     this.hudControlsText.setOrigin(1, 1); // 设置锚点
     this.hudControlsText.setDepth(1200); // 设置深度
   } // 方法结束
   // 分隔注释 // 保持行有注释
   public update(_: number, delta: number): void { // 每帧更新
-    this.handleMovement(delta); // 更新移动
-    this.handleInteractionInput(); // 处理采集按键
+    const speedScale = this.timeScaleBoost ? this.timeScaleBoost.getScale() : 1; // 获取当前倍率
+    if (this.timeSystem) { // 如果时间系统存在
+      this.timeSystem.update(delta, speedScale); // 推进时间
+      this.timeSystem.applyTintTo(this); // 更新昼夜色调
+      this.updateHudTime(); // 刷新HUD
+    } // 条件结束
+    const shopOpened = this.shopUI?.isOpen() ?? false; // 判断商店是否打开
+    if (!shopOpened) { // 如果未打开商店
+      this.handleMovement(delta); // 更新移动
+      this.handleInteractionInput(); // 处理采集按键
+      this.updateResourceHint(); // 更新提示
+    } else { // 否则
+      this.labelManager.hideAll(); // 隐藏提示
+    } // 条件结束
+    this.handleShopInteraction(); // 处理商店交互
     this.handleSaveLoadInput(); // 处理存读按键
-    this.updateResourceHint(); // 更新提示
     this.updateDialogue(delta); // 更新对话状态
     this.popupManager.update(delta); // 更新飘字动画
   } // 方法结束
   // 分隔注释 // 保持行有注释
   private handleMovement(delta: number): void { // 处理玩家移动
+    if (this.shopUI?.isOpen()) { // 如果商店打开
+      return; // 直接阻止移动
+    } // 条件结束
     const horizontal = (this.cursors.right.isDown ? 1 : 0) - (this.cursors.left.isDown ? 1 : 0); // 计算水平输入
     const vertical = (this.cursors.down.isDown ? 1 : 0) - (this.cursors.up.isDown ? 1 : 0); // 计算垂直输入
     const direction = new Phaser.Math.Vector2(horizontal, vertical); // 构造方向向量
@@ -218,6 +303,9 @@ export default class WorldScene extends Phaser.Scene { // 定义世界场景
   } // 方法结束
   // 分隔注释 // 保持行有注释
   private handleInteractionInput(): void { // 处理交互输入
+    if (this.shopUI?.isOpen()) { // 如果商店打开
+      return; // 阻止采集
+    } // 条件结束
     if (Phaser.Input.Keyboard.JustDown(this.interactKey)) { // 如果按下交互键
       this.tryCollectNode(); // 执行采集
     } // 条件结束
@@ -251,7 +339,15 @@ export default class WorldScene extends Phaser.Scene { // 定义世界场景
     } // 条件结束
   } // 方法结束
   // 分隔注释 // 保持行有注释
-  private updateResourceHint(): void { // 更新资源提示
+  private updateResourceHint(): void { // 更新交互提示
+    if (this.shopUI?.isOpen()) { // 如果商店打开
+      this.labelManager.hideAll(); // 隐藏提示
+      return; // 直接返回
+    } // 条件结束
+    if (this.isNearShop()) { // 如果靠近商店
+      this.labelManager.showHintAt(this.playerContainer.x, this.playerContainer.y - this.playerSprite.displayHeight, '按 E 打开商店'); // 显示商店提示
+      return; // 结束处理
+    } // 条件结束
     const grid = this.getPlayerGrid(); // 获取玩家位置
     const node = getNodeAt(grid); // 查找节点
     if (node) { // 如果存在
@@ -259,6 +355,63 @@ export default class WorldScene extends Phaser.Scene { // 定义世界场景
     } else { // 否则
       this.labelManager.hideAll(); // 隐藏提示
     } // 条件结束
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  private handleShopInteraction(): void { // 处理商店交互
+    if (!this.shopUI || !this.shopKey) { // 如果商店未初始化
+      return; // 直接返回
+    } // 条件结束
+    if (this.shopUI.isOpen()) { // 如果界面已打开
+      if (Phaser.Input.Keyboard.JustDown(this.shopKey)) { // 如果按下商店键
+        this.shopUI.close(); // 关闭商店
+      } // 条件结束
+      return; // 结束处理
+    } // 条件结束
+    if (!this.isNearShop()) { // 如果不在商店范围内
+      return; // 直接返回
+    } // 条件结束
+    if (Phaser.Input.Keyboard.JustDown(this.shopKey)) { // 如果按键触发
+      this.shopUI.refreshData(); // 刷新显示数据
+      this.shopUI.open(); // 打开界面
+    } // 条件结束
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  private isNearShop(): boolean { // 判断是否靠近商店
+    const distance = Phaser.Math.Distance.Between(this.playerContainer.x, this.playerContainer.y, this.shopNpcPosition.x, this.shopNpcPosition.y); // 计算距离
+    return distance <= TILE_SIZE * 1.5; // 返回是否在范围内
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  private createShopNpc(): void { // 创建商店NPC占位
+    this.shopNpc?.destroy(); // 销毁旧精灵
+    const npc = this.add.rectangle(this.shopNpcPosition.x, this.shopNpcPosition.y, TILE_SIZE, TILE_SIZE * 1.4, 0xffaa55, 0.85); // 创建矩形
+    npc.setOrigin(0.5, 1); // 设置锚点
+    npc.setDepth(450); // 设置渲染深度
+    this.shopNpc = npc; // 保存引用
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  private toggleSpeedScale(): void { // 切换时间倍率
+    this.timeScaleBoost.toggle(); // 切换倍率
+    this.updateHudTime(); // 更新HUD
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  private updateHudTime(): void { // 更新HUD时间显示
+    if (this.hudScene && this.timeSystem) { // 如果HUD和时间存在
+      this.hudScene.updateTimeDisplay(this.timeSystem.getState(), this.timeScaleBoost.getScale()); // 通知UI场景
+    } // 条件结束
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  private onNewDayArrived(state: TimeState): void { // 处理新的一天
+    this.shopStore.restockAll({ day: state.day, weekDay: state.weekDay }); // 执行补货
+    this.shopUI?.refreshData(); // 刷新界面数据
+    this.popupManager.popup(this.playerContainer.x, this.playerContainer.y - TILE_SIZE, '新的一天开始', '#ffffff'); // 显示提示
+    this.updateHudTime(); // 更新HUD
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  private onNewSeasonArrived(state: TimeState): void { // 处理新季节
+    const seasonNames: Record<TimeState['season'], string> = { spring: '春季', summer: '夏季', autumn: '秋季', winter: '冬季' }; // 季节名称映射
+    const name = seasonNames[state.season]; // 读取名称
+    this.popupManager.popup(this.playerContainer.x, this.playerContainer.y - TILE_SIZE * 1.5, `进入${name}`, '#66ccff'); // 显示提示
+    this.updateHudTime(); // 更新HUD
   } // 方法结束
   // 分隔注释 // 保持行有注释
   private handleSaveLoadInput(): void { // 处理存档读取逻辑
@@ -280,7 +433,7 @@ export default class WorldScene extends Phaser.Scene { // 定义世界场景
   } // 方法结束
   // 分隔注释 // 保持行有注释
   private async saveGame(): Promise<void> { // 保存游戏状态
-    const extras = { achievements: this.achievementManager.exportState(), uiSettings: this.collectUISaveSettings() }; // 构建额外数据
+    const extras = { achievements: this.achievementManager.exportState(), uiSettings: this.collectUISaveSettings(), time: this.timeSystem.serialize(), shops: this.shopStore.toJSON() }; // 构建额外数据
     const state = buildState({ map: this.mapData }, { x: this.playerContainer.x, y: this.playerContainer.y }, this.inventory, extras); // 构建状态
     await save('slot', state); // 保存状态
     if (!this.achievementManager.isUnlocked('first_save')) { // 如果成就未解锁
@@ -293,7 +446,7 @@ export default class WorldScene extends Phaser.Scene { // 定义世界场景
     if (!data) { // 如果没有数据
       return; // 直接返回
     } // 条件结束
-    applyState(data, { setMapData: (map) => this.setMapData(map) }, { setPosition: (x, y) => this.setPlayerPosition(x, y) }, this.inventory, { applyAchievements: (payload) => this.applyAchievementState(payload), applyUISettings: (settings) => this.queueUISettings(settings) }); // 应用状态
+    applyState(data, { setMapData: (map) => this.setMapData(map) }, { setPosition: (x, y) => this.setPlayerPosition(x, y) }, this.inventory, { applyAchievements: (payload) => this.applyAchievementState(payload), applyUISettings: (settings) => this.queueUISettings(settings), applyTime: (timeState) => this.queueTimeState(timeState), applyShops: (shops) => this.queueShopState(shops) }); // 应用状态
   } // 方法结束
   // 分隔注释 // 保持行有注释
   private setMapData(map: TileCell[][]): void { // 设置地图数据
@@ -321,6 +474,36 @@ export default class WorldScene extends Phaser.Scene { // 定义世界场景
       this.applyUISettings(settings); // 直接应用
     } else { // 否则
       this.pendingUISettings = settings; // 缓存等待
+    } // 条件结束
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  private queueTimeState(state: ReturnType<TimeSystem['serialize']> | undefined): void { // 缓存或应用时间状态
+    if (!state) { // 如果没有数据
+      return; // 直接返回
+    } // 条件结束
+    if (this.timeSystem) { // 如果时间系统已初始化
+      this.timeSystem.restore(state); // 恢复时间
+      this.updateHudTime(); // 更新HUD
+    } else { // 否则
+      this.pendingTimeState = state; // 缓存等待
+    } // 条件结束
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  private queueShopState(snapshot: ReturnType<ShopStore['toJSON']> | undefined): void { // 缓存或应用商店状态
+    if (!snapshot) { // 如果没有数据
+      return; // 直接返回
+    } // 条件结束
+    this.pendingShopState = snapshot; // 缓存数据
+    if (this.shopService) { // 如果商店系统已初始化
+      this.shopStore = ShopStore.fromJSON(snapshot); // 恢复商店
+      this.shopService = new ShopService(this.shopStore, this.inventory, this.popupManager); // 重建服务
+      const defaultShop = this.shopStore.getShop(DEFAULT_SHOP_ID); // 获取默认商店
+      if (defaultShop) { // 如果存在
+        this.shopUI?.destroy(); // 销毁旧界面
+        this.shopUI = new ShopUI(this, this.shopService, defaultShop); // 创建新界面
+        this.shopUI.close(); // 关闭界面
+        this.shopUI.refreshData(); // 刷新数据
+      } // 条件结束
     } // 条件结束
   } // 方法结束
   // 分隔注释 // 保持行有注释

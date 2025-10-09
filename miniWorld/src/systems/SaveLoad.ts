@@ -3,6 +3,8 @@ import { deflate, inflate } from 'pako'; // 引入pako处理压缩
 import { Inventory } from './Inventory'; // 引入背包类型
 import { TileCell } from '../world/Types'; // 引入地图单元类型
 import { getAllNodes, setAllNodes, ResourceNode } from '../world/Nodes'; // 引入资源节点工具
+import { ShopStore } from '../economy/ShopStore'; // 引入商店数据类型
+import { TimeSystem } from './TimeSystem'; // 引入时间系统类型
 // 分隔注释 // 保持行有注释
 const STORAGE_PREFIX = 'miniworld:'; // 定义存档前缀
 let storage: LocalForage = localforage; // 可替换的存储实例
@@ -75,21 +77,23 @@ export async function load(slot: string): Promise<unknown | null> { // 读取存
 interface BuildWorld { map: TileCell[][]; } // 定义世界数据接口
 interface BuildPlayer { x: number; y: number; } // 定义玩家数据接口
 export interface UISaveSettings { auto: boolean; skip: boolean; hidden: boolean; } // 定义UI设置结构
-export interface GameSaveState { map: TileCell[][]; player: BuildPlayer; bag: ReturnType<Inventory['toJSON']>; nodes: ResourceNode[]; achievements?: unknown; uiSettings?: UISaveSettings; } // 定义完整存档结构
+export interface GameSaveState { map: TileCell[][]; player: BuildPlayer; bag: ReturnType<Inventory['toJSON']>; nodes: ResourceNode[]; achievements?: unknown; uiSettings?: UISaveSettings; time?: ReturnType<TimeSystem['serialize']>; shops?: ReturnType<ShopStore['toJSON']>; } // 定义完整存档结构
 // 分隔注释 // 保持行有注释
-export function buildState(world: BuildWorld, player: BuildPlayer, inventory: Inventory, extras?: { achievements?: unknown; uiSettings?: UISaveSettings }): GameSaveState { // 构建存档状态
+export function buildState(world: BuildWorld, player: BuildPlayer, inventory: Inventory, extras?: { achievements?: unknown; uiSettings?: UISaveSettings; time?: ReturnType<TimeSystem['serialize']>; shops?: ReturnType<ShopStore['toJSON']> }): GameSaveState { // 构建存档状态
   const mapCopy = world.map.map((row) => row.map((cell) => ({ ...cell }))); // 深拷贝地图
   const playerCopy = { x: player.x, y: player.y }; // 拷贝玩家坐标
   const bag = inventory.toJSON(); // 获取背包数据
   const nodes = getAllNodes(); // 获取资源节点
-  return { map: mapCopy, player: playerCopy, bag, nodes, achievements: extras?.achievements, uiSettings: extras?.uiSettings }; // 返回组装好的状态对象
+  return { map: mapCopy, player: playerCopy, bag, nodes, achievements: extras?.achievements, uiSettings: extras?.uiSettings, time: extras?.time, shops: extras?.shops }; // 返回组装好的状态对象
 } // 函数结束
 // 分隔注释 // 保持行有注释
-export function applyState(state: GameSaveState, world: { setMapData: (map: TileCell[][]) => void }, player: { setPosition: (x: number, y: number) => void }, inventory: Inventory, extras?: { applyAchievements?: (data: unknown) => void; applyUISettings?: (data: UISaveSettings | undefined) => void }): void { // 应用存档状态
+export function applyState(state: GameSaveState, world: { setMapData: (map: TileCell[][]) => void }, player: { setPosition: (x: number, y: number) => void }, inventory: Inventory, extras?: { applyAchievements?: (data: unknown) => void; applyUISettings?: (data: UISaveSettings | undefined) => void; applyTime?: (data: ReturnType<TimeSystem['serialize']> | undefined) => void; applyShops?: (data: ReturnType<ShopStore['toJSON']> | undefined) => void }): void { // 应用存档状态
   world.setMapData(state.map.map((row) => row.map((cell) => ({ ...cell })))); // 恢复地图数据
   setAllNodes(state.nodes.map((node) => ({ pos: { ...node.pos }, type: node.type, loot: { ...node.loot } }))); // 恢复资源节点
   inventory.loadFromJSON(state.bag); // 使用存档数据覆盖背包
   player.setPosition(state.player.x, state.player.y); // 恢复玩家位置
   extras?.applyAchievements?.(state.achievements); // 恢复成就状态
   extras?.applyUISettings?.(state.uiSettings ?? { auto: false, skip: false, hidden: false }); // 恢复UI设置
+  extras?.applyTime?.(state.time); // 恢复时间状态
+  extras?.applyShops?.(state.shops); // 恢复商店状态
 } // 函数结束

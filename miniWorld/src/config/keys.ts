@@ -10,3 +10,5 @@ export const KEY_SKIP = 'S'; // 对话跳过键（对话模式下生效）
 export const KEY_HIDE_UI = 'H'; // 隐藏UI键（需配合Shift使用）
 export const KEY_GLOSSARY = 'G'; // 打开图鉴键
 export const KEY_ACHIEVEMENT = 'H'; // 打开成就键
+export const KEY_SHOP = 'E'; // 商店交互键
+export const KEY_SPEED_TOGGLE = 'SHIFT'; // 时间倍率切换键

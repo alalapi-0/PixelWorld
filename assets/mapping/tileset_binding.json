@@ -1,0 +1,9 @@
+{
+  "_comment": "逻辑瓦片类型到素材图集的绑定信息，用于Phaser读取。",
+  "tile_size": 32,
+  "bindings": {
+    "GRASS": { "atlas": "assets/build/kenney/tilesheet.png", "id": 101 },
+    "ROAD": { "atlas": "assets/build/kenney/tilesheet.png", "id": 205 },
+    "WATER": { "atlas": "assets/build/kenney/tilesheet.png", "id": 301 }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "_comment": "Phaser前端配置示例，可复制为config.json并按需修改。",
+  "tileSize": 32,
+  "usePlaceholdersWhenMissing": true,
+  "playerSpeed": 160
+}

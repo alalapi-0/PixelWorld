@@ -1,0 +1,19 @@
+{
+  "_comment": "外部素材来源目录，列出可用于拉取的CC0资源信息。",
+  "sources": [
+    {
+      "name": "Kenney Roguelike/RPG pack",
+      "license": "CC0",
+      "homepage": "https://kenney.nl/assets",
+      "download": null,
+      "notes": "手动下载后，将tilesheet与角色精灵放入assets/build/kenney/目录。"
+    },
+    {
+      "name": "Itch.io CC0 Tilesets",
+      "license": "CC0",
+      "homepage": "https://itch.io/game-assets/assets-cc0/tag-tileset",
+      "download": null,
+      "notes": "任选一个CC0像素瓦片集，解压PNG到assets/build/itch-cc0/目录。"
+    }
+  ]
+}

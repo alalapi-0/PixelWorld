@@ -1,0 +1,4 @@
+{
+  "_comment": "角色标识到精灵资源的绑定，可缺省回退到程序化占位。",
+  "default_player": { "sprite": "assets/build/kenney/characters/player_01.png" }
+}

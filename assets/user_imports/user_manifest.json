@@ -1,0 +1,48 @@
+{
+  "_comment": "用户素材导入配置示例，可根据自身素材调整参数。",
+  "tile_size": 32,
+  "tiles": {
+    "_comment_mode": "mode=atlas 表示使用单张图集；mode=loose 表示散瓦片；mode=auto 自动判断。",
+    "mode": "auto",
+    "atlas": "tilesheet.png",
+    "loose_glob": "*.png",
+    "bindings": {
+      "_comment_GRASS": "草地，建议编号0。",
+      "GRASS": 0,
+      "_comment_ROAD": "道路，建议编号1。",
+      "ROAD": 1,
+      "_comment_TILE_FLOOR": "瓷砖地面。",
+      "TILE_FLOOR": 2,
+      "_comment_WATER": "浅水区域。",
+      "WATER": 3,
+      "_comment_LAKE": "湖泊水面。",
+      "LAKE": 4,
+      "_comment_WALL": "墙体或高不可跨越障碍。",
+      "WALL": 5,
+      "_comment_TREE": "树木。",
+      "TREE": 6,
+      "_comment_HOUSE": "房屋或建筑。",
+      "HOUSE": 7,
+      "_comment_ROCK": "岩石或巨石。",
+      "ROCK": 8,
+      "_comment_LAVA": "岩浆或危险地块。",
+      "LAVA": 9
+    }
+  },
+  "characters": {
+    "player": {
+      "_comment_mode": "mode=atlas 表示使用横向拼接的雪碧图。",
+      "mode": "atlas",
+      "file": "player.png",
+      "frame_width": 32,
+      "frame_height": 32,
+      "frames": 4,
+      "fps": 8
+    }
+  },
+  "maps": {
+    "_comment_use_user_map": "若为 true 则使用用户自定义地图。",
+    "use_user_map": false,
+    "file": "demo_map.json"
+  }
+}

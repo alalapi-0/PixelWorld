@@ -81,6 +81,15 @@ python -m http.server 8000
 - `assets/mapping/tileset_binding.json` 记录了地形名称到索引的映射，可在前端或后端逻辑中复用。
 - 下一步规划：将 `frontend/phaser/maps/demo_map.json` 替换为后端 `/world/chunk` 接口生成的真实数据，并把占位玩家动画替换成更精细的多帧角色图。
 
+### 用户素材导入指南
+
+- 目录结构：在 `assets/user_imports/` 下按 `tiles/`、`characters/`、`maps/` 分类放置素材，清单文件为 `user_manifest.json`（示例已包含中文注释）。
+- 命名与尺寸：默认 `tile_size=32`；图集模式放 `tiles/tilesheet.png`，散瓦片模式放 `tiles/*.png`；玩家雪碧图默认横向 4 帧 `32×32`，可通过 manifest 修改帧数/帧率。
+- 一键导入：运行 `make user-import` 将素材复制/打包到 `assets/build/**` 并更新 `assets/mapping/tileset_binding.json`；`make user-verify` 校验尺寸与文件完整性；`make user-preview` 完成导入、校验并启动 `http://localhost:8080/` 预览。
+- 加载优先级：Phaser 前端与后端接口优先读取 `assets/build/**` 中的用户素材；若目录为空则自动回退到既有生成/占位资源，并在缺失时提示运行导入脚本。
+- 常见问题：若尺寸不整除会被脚本拒绝（或在 `--force` 下警告缩放）；散瓦片模式按文件名字典序拼合；Tiled 地图需保持 `firstgid=1`；透明像素需启用 alpha 通道。
+- 许可证：务必确认导入素材的版权与授权（推荐 CC0/CC-BY/CC-BY-SA/商业许可），并在 `assets/licenses/ASSETS_LICENSES.md` 中登记来源与作者，确保发布时合法。
+
 ---
 
 ## 调试热键（建议实现）

@@ -24,3 +24,11 @@ user-preview:
 	python scripts/import_user_assets.py && \
 	python scripts/verify_user_assets.py && \
 	python -m http.server -d frontend/phaser 8080
+
+# 启动一个静态服务器预览 PIXI 前端骨架（默认端口 8081）
+web-pixi:
+	python -m http.server -d frontend/pixi 8081
+
+# 生成 PIXI 演示地图（供前端回退使用）
+map-demo:
+	python scripts/gen_demo_map.py

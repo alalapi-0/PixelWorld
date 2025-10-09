@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>miniWorld PIXI 骨架</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div id="hud">方向键移动 / Enter 开始 / R 重置</div>
+    <div id="game-root"></div>
+    <script type="module">
+      import * as PIXI from "https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.4.0/pixi.min.mjs";
+      window.PIXI = PIXI;
+    </script>
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

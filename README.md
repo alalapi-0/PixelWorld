@@ -282,3 +282,16 @@ jobs:
 - 当前地图基于本地 `demo_map`，后续可改为从 `/world/chunk` 接口拼装瓦片数据。
 - 瓦片/角色绑定计划通过 `/assets/tilesets` 与 `/assets/personas` 接口动态下发。
 - 角色未来可替换为 AI 生成的多视角像素人或 3D 模型渲染帧，需扩展绑定 JSON 结构与加载逻辑。
+
+## 前端 PIXI 骨架
+
+- 该骨架完全独立于 RPG Maker/Phaser，实现了使用 PIXI v7 的轻量级三场景流程（Boot → Title → Map）。
+- 地图/角色/图块加载优先级：
+  1. `assets/build/tiles/tilesheet.png`、`assets/build/characters/player.png`、`assets/build/characters/player.anim.json` 与 `frontend/pixi/maps/user_map.json`。
+  2. 若缺失则退回到程序化占位素材与 `frontend/pixi/maps/demo_map.json`。
+- 快速体验步骤：
+  1. `make map-demo`（或运行 `make user-import && make user-verify` 将用户素材导入到 `assets/build/**`）。
+  2. `make web-pixi`，浏览器打开 <http://localhost:8081/>。
+  3. 标题页按 Enter 进入地图，方向键移动角色，`R` 键重置出生点。
+- 自定义素材放入 `assets/user_imports/**` 后，运行导入与校验脚本即可自动覆盖前端使用的 `assets/build/**`，前端会优先读取新素材。
+- 后续规划：将地图数据切换为后端 `/world/chunk` 实时加载、扩展 UI（任务/对话/背包）并接入 WebSocket 同步。

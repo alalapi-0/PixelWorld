@@ -58,6 +58,31 @@ python -m http.server 8000
 
 ---
 
+## Phaser 单层地图原型（占位素材自动生成）
+
+- 运行 `make assets`：会调用 `scripts/gen_tiles_and_player.py` 与 `scripts/gen_demo_map.py`，生成真实 PNG 图集与玩家动画到 `assets/build/**`，并输出单层 `frontend/phaser/maps/demo_map.json`。
+- 运行 `make web-run`：启动 `http://localhost:8080/` 的静态服务器，加载 Phaser 3 原型，方向键移动，`R` 键重置出生点。
+- 地形索引表（脚本执行后在终端同样会打印）：
+
+| 索引 | 地形名称 | 可通行 |
+| ---- | -------- | ------ |
+| 0    | GRASS    | ✅ |
+| 1    | ROAD     | ✅ |
+| 2    | TILE_FLOOR | ✅ |
+| 3    | WATER    | ❌ |
+| 4    | LAKE     | ❌ |
+| 5    | WALL     | ❌ |
+| 6    | TREE     | ❌ |
+| 7    | HOUSE    | ❌ |
+| 8    | ROCK     | ❌ |
+| 9    | LAVA     | ❌ |
+
+- 替换素材：生成后的 `assets/build/tiles/tilesheet.png` 与 `assets/build/characters/player.png` 仅在本地存在，Git 已忽略。直接覆盖这两张图即可在 Phaser 原型中看到更新。
+- `assets/mapping/tileset_binding.json` 记录了地形名称到索引的映射，可在前端或后端逻辑中复用。
+- 下一步规划：将 `frontend/phaser/maps/demo_map.json` 替换为后端 `/world/chunk` 接口生成的真实数据，并把占位玩家动画替换成更精细的多帧角色图。
+
+---
+
 ## 调试热键（建议实现）
 - F1：调试叠加层（FPS、内存、世界状态）
 - F2：碰撞体/路径可视化

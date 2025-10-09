@@ -167,3 +167,4 @@ Thumbs.db
 assets/build/**
 frontend/phaser/assets/build/**
 __pycache__/
+.venv/

@@ -1,9 +1,28 @@
 {
-  "_comment": "逻辑瓦片类型到素材图集的绑定信息，用于Phaser读取。",
+  "_comment": "瓦片绑定表记录可通行与不可通行地形的图集索引。",
+  "_comment_tile_size": "tile_size 表示单个瓦片的像素边长。",
   "tile_size": 32,
+  "_comment_bindings": "bindings 将地形名称映射到图集中从0开始的索引。",
   "bindings": {
-    "GRASS": { "atlas": "assets/build/kenney/tilesheet.png", "id": 101 },
-    "ROAD": { "atlas": "assets/build/kenney/tilesheet.png", "id": 205 },
-    "WATER": { "atlas": "assets/build/kenney/tilesheet.png", "id": 301 }
+    "_comment_GRASS": "GRASS 草地，可通行。",
+    "GRASS": 0,
+    "_comment_ROAD": "ROAD 道路，可通行。",
+    "ROAD": 1,
+    "_comment_TILE_FLOOR": "TILE_FLOOR 瓷砖地板，可通行。",
+    "TILE_FLOOR": 2,
+    "_comment_WATER": "WATER 水面，不可通行。",
+    "WATER": 3,
+    "_comment_LAKE": "LAKE 湖面，不可通行。",
+    "LAKE": 4,
+    "_comment_WALL": "WALL 墙体，不可通行。",
+    "WALL": 5,
+    "_comment_TREE": "TREE 树木，不可通行。",
+    "TREE": 6,
+    "_comment_HOUSE": "HOUSE 房屋，不可通行。",
+    "HOUSE": 7,
+    "_comment_ROCK": "ROCK 岩石，不可通行。",
+    "ROCK": 8,
+    "_comment_LAVA": "LAVA 岩浆，不可通行。",
+    "LAVA": 9
   }
 }

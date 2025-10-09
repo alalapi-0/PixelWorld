@@ -1,11 +1,12 @@
-# 初始化或下载CC0素材到本地构建目录
+# 生成真实 PNG 素材（瓦片图集与玩家动画），输出到 assets/build/**
 assets:
-	python scripts/fetch_assets.py --only-cc0
+	python scripts/gen_tiles_and_player.py
+	python scripts/gen_demo_map.py
 
-# 校验瓦片与角色绑定文件是否指向有效资源
-assets-verify:
-	python scripts/verify_bindings.py
+# 仅生成地图（调整尺寸或随机种子时可单独运行）
+map:
+	python scripts/gen_demo_map.py
 
-# 启动简易HTTP服务器预览Phaser像素地图原型
+# 启动静态服务器预览 Phaser 像素地图原型
 web-run:
 	python -m http.server -d frontend/phaser 8080

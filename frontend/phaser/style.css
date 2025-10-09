@@ -3,10 +3,12 @@ body { /* 页面主体样式块开始 */
   color: #ffffff; /* 文本颜色为白色提升对比度 */
   font-family: "JetBrains Mono", "Courier New", monospace; /* 使用等宽字体符合工程风格 */
   margin: 0; /* 移除默认外边距让Canvas铺满 */
-  display: flex; /* 采用弹性布局居中内容 */
+  display: flex; /* 采用弹性布局管理布局 */
+  flex-direction: column; /* 垂直堆叠主区域与脚注 */
   align-items: center; /* 垂直方向居中Canvas */
   justify-content: center; /* 水平方向居中Canvas */
-  height: 100vh; /* 视口高度布满屏幕 */
+  min-height: 100vh; /* 最小高度填满视口 */
+  gap: 12px; /* 在内容之间添加间距 */
 } /* 页面主体样式块结束 */
 
 #app-root { /* 主容器样式块开始 */
@@ -17,3 +19,8 @@ canvas { /* Canvas 样式块开始 */
   border: 4px solid #3f3f5a; /* 添加边框突出画布 */
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); /* 投影增强层次感 */
 } /* Canvas 样式块结束 */
+
+footer { /* 页脚样式块开始 */
+  font-size: 14px; /* 设置提示文字字号 */
+  opacity: 0.8; /* 略微降低不透明度 */
+} /* 页脚样式块结束 */

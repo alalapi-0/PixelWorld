@@ -1,0 +1,34 @@
+{
+  "quests": [
+    {
+      "id": "q_collect_wood_10",
+      "kind": "side",
+      "title": "伐木练习",
+      "desc": "收集一些木头，练练手。",
+      "steps": [
+        { "id": "s1", "type": "collect", "title": "收集木头", "itemId": "wood", "count": 10 }
+      ],
+      "rewards": { "gold": 30, "items": [{ "id": "seed", "name": "树苗", "count": 1 }], "achievement": "gather_wood_10" },
+      "autoStart": true
+    },
+    {
+      "id": "q_meet_shopkeeper",
+      "kind": "main",
+      "title": "初见店主",
+      "desc": "去杂货铺和店主打个招呼。",
+      "steps": [
+        { "id": "meet", "type": "talk", "title": "与店主交谈", "npcId": "shopkeeper" }
+      ],
+      "rewards": { "gold": 10 }
+    },
+    {
+      "id": "q_explore_lake",
+      "kind": "side",
+      "title": "湖岸风光",
+      "desc": "去湖边走走看看。",
+      "steps": [
+        { "id": "reach", "type": "reach", "title": "抵达湖岸", "targetX": 8, "targetY": 3, "radius": 1 }
+      ]
+    }
+  ]
+}

@@ -89,3 +89,34 @@
 
 ### 测试套件
 - 使用 `pnpm test` 可运行包含经济、时间与快进等模块在内的单元测试，确保交易、补货、时间推进与倍率切换行为符合预期。
+
+## 第8轮：任务/目标系统 v1
+
+### 任务结构
+- `QuestDef`：包含 `id`、`kind`（主/支线）、`title`、`desc`、`steps`、`rewards`、`autoStart`、`unlockBy` 等字段，用于定义完整任务流程。
+- `Step`：支持 `collect`、`talk`、`reach`、`equip`、`state` 五种类型，附带物品数量、NPC 标识、目标坐标等参数。
+- `Reward`：可以配置金币、物品与成就 ID，完成任务后自动发放，并通过飘字提示展示。
+- `QuestProgress`：记录 `status`（locked/active/completed）、当前步骤索引、计数器与追踪标记，随存档持久化。
+
+### 触发器对接
+- `QuestTriggers` 提供 `onCollect`、`onTalk`、`onReach`、`onEquip`、`onState` 接口，方便与采集、NPC 交互、移动等系统联动。
+- WorldScene 在采集木头时调用 `onCollect`，打开商店时调用 `onTalk('shopkeeper')`，每次移动后向 `onReach` 通报当前网格坐标。
+- 未来新增的装备或状态变化，只需在对应系统内调用预留的 `onEquip`/`onState` 方法即可完成接入。
+
+### 任务日志与追踪
+- `J` 键打开任务日志，日志界面提供进行中与已完成两个标签，可使用 `↑/↓` 切换任务、`Tab` 切换标签。
+- 在任务详情中按 `T` 或 `Enter` 可追踪/取消追踪任务，追踪状态会在 HUD 和世界内显示方向提示。
+- `QuestTracker` 根据玩家坐标与目标位置计算方向/距离，以文本标签形式引导玩家前往目标或提示收集进度。
+
+### 奖励与成就联动
+- 当 `QuestStore.advanceIfComplete` 推动任务完成时，WorldScene 会自动发放金币与物品奖励，必要时解锁成就。
+- 奖励采用 `Inventory.add` 与 `AchievementManager.unlock` 执行，完成时会弹出“任务完成：xxx”的飘字提示。
+
+### 存档兼容
+- 存档结构新增 `quests` 字段，保存 `QuestStore.toJSON()` 的序列化结果，包括进度、追踪状态与完成列表。
+- 读取旧存档时缺失 `quests` 字段会自动回落到默认状态，仅保留 `autoStart` 任务；任务系统初始化后会重新接管。
+
+### 扩展点
+- `QuestStore` 预留 `equip/state` 字段，可在后续版本接入装备需求或世界状态条件。
+- `QuestTriggers` 的接口设计便于未来由 NPC 或 AI 派发任务，只需在相关事件中调用触发器即可。
+- `QuestJournal` 采用独立容器实现，可扩展排序、筛选或多任务追踪等高级功能。

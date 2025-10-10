@@ -12,3 +12,4 @@ export const KEY_GLOSSARY = 'G'; // 打开图鉴键
 export const KEY_ACHIEVEMENT = 'H'; // 打开成就键
 export const KEY_SHOP = 'E'; // 商店交互键
 export const KEY_SPEED_TOGGLE = 'SHIFT'; // 时间倍率切换键
+export const KEY_JOURNAL = 'J'; // 任务日志键

@@ -1,5 +1,5 @@
 import Phaser from 'phaser'; // 引入Phaser框架
-import { KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_INTERACT, KEY_SAVE, KEY_LOAD, KEY_GLOSSARY, KEY_ACHIEVEMENT, KEY_SHOP, KEY_SPEED_TOGGLE } from '../config/keys'; // 引入按键常量
+import { KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_INTERACT, KEY_SAVE, KEY_LOAD, KEY_GLOSSARY, KEY_ACHIEVEMENT, KEY_SHOP, KEY_SPEED_TOGGLE, KEY_JOURNAL } from '../config/keys'; // 引入按键常量
 import { genDemoMap, isWalkable, layerOf } from '../world/TileRules'; // 引入地图工具
 import { TileCell, GridPos } from '../world/Types'; // 引入类型定义
 import { getNodeAt, removeNodeAt } from '../world/Nodes'; // 引入资源节点接口
@@ -11,13 +11,17 @@ import { renderTextToTexture } from '../ui/TextTexture'; // 引入文字纹理�
 import { ShopStore } from '../economy/ShopStore'; // 引入商店仓库
 import { ShopService } from '../economy/ShopService'; // 引入商店服务
 import { ShopUI } from '../ui/ShopUI'; // 引入商店界面
-import { DEFAULT_SHOP_ID } from '../economy/ShopTypes'; // 引入默认商店常量
+import { DEFAULT_SHOP_ID, GOLD_ITEM_ID, GOLD_ITEM_NAME } from '../economy/ShopTypes'; // 引入商店与金币常量
 import { TimeSystem, TimeState } from '../systems/TimeSystem'; // 引入时间系统
 import { TimeScaleBoost } from '../systems/TimeScaleBoost'; // 引入快进系统
 import UIScene from './UIScene'; // 引入UI场景
 import { AutoTextController } from '../ui/AutoTextController'; // 引入自动文本控制器
 import { UIVisibilityManager } from '../ui/UIVisibilityManager'; // 引入UI显隐管理器
 import { AchievementManager, AchievementSave } from '../ui/achievements/AchievementManager'; // 引入成就管理器
+import { QuestStore } from '../quest/QuestStore'; // 引入任务存储
+import { QuestTriggers } from '../quest/QuestTriggers'; // 引入任务触发器
+import { QuestTracker } from '../quest/QuestTracker'; // 引入任务追踪器
+import { QuestJournal } from '../ui/QuestJournal'; // 引入任务日志界面
 // 分隔注释 // 保持行有注释
 const TILE_SIZE = 32; // 定义瓦片像素大小
 // 分隔注释 // 保持行有注释
@@ -53,6 +57,15 @@ export default class WorldScene extends Phaser.Scene { // 定义世界场景
   private pendingShopState?: ReturnType<ShopStore['toJSON']>; // 待恢复商店数据
   private shopNpc?: Phaser.GameObjects.Rectangle; // 商店NPC占位
   private shopNpcPosition: Phaser.Math.Vector2 = new Phaser.Math.Vector2(5 * TILE_SIZE, 4 * TILE_SIZE); // 商店NPC位置
+  private questStore: QuestStore = new QuestStore(); // 任务存储实例
+  private questTriggers?: QuestTriggers; // 任务触发器引用
+  private questTracker?: QuestTracker; // 任务追踪器引用
+  private questJournal?: QuestJournal; // 任务日志界面引用
+  private journalKey!: Phaser.Input.Keyboard.Key; // 任务日志按键引用
+  private pendingQuestState?: ReturnType<QuestStore['toJSON']>; // 待恢复的任务状态
+  private npcPositions: Record<string, { x: number; y: number }> = {}; // NPC位置映射
+  private rewardedQuests: Set<string> = new Set(); // 已发放奖励的任务集合
+  private questReady = false; // 任务系统是否初始化完成
   private shiftPressed = false; // 是否按住Shift
   private shiftSuppressed = false; // Shift是否已作为修饰键使用
   private playerSpeed = 80; // 玩家移动速度
@@ -83,6 +96,7 @@ export default class WorldScene extends Phaser.Scene { // 定义世界场景
     this.setupEconomyAndTime(); // 初始化经济与时间
     this.launchUIScene(); // 启动UI场景
     this.createHUD(); // 创建界面
+    void this.initQuests(); // 初始化任务系统
   } // 方法结束
   // 分隔注释 // 保持行有注释
   private async initAchievements(): Promise<void> { // 初始化成就数据
@@ -92,6 +106,76 @@ export default class WorldScene extends Phaser.Scene { // 定义世界场景
       this.achievementManager.importState(this.pendingAchievementState); // 应用状态
       this.pendingAchievementState = undefined; // 清除缓存
     } // 条件结束
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  private async initQuests(): Promise<void> { // 初始化任务系统
+    await this.questStore.loadDefs(this); // 加载任务定义
+    if (this.pendingQuestState) { // 如果存在待恢复的进度
+      const defs = this.questStore.listAll(); // 拷贝任务定义
+      this.questStore = QuestStore.fromJSON(this.pendingQuestState, defs); // 使用存档恢复任务状态
+      this.pendingQuestState = undefined; // 清除缓存
+    } // 条件结束
+    this.questStore.startIfNeeded(); // 自动启动需要的任务
+    this.setupQuestRuntime(); // 构建运行时组件
+    this.questReady = true; // 标记任务系统已准备
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  private setupQuestRuntime(): void { // 构建任务运行期组件
+    this.rewardedQuests = new Set(this.questStore.listVisible().filter((entry) => entry.prog.status === 'completed').map((entry) => entry.def.id)); // 记录已完成任务
+    this.questTriggers = new QuestTriggers(this.questStore, (questId, completed) => this.onQuestUpdated(questId, completed)); // 创建触发器
+    this.questTracker?.destroy(); // 销毁旧追踪器
+    this.questTracker = new QuestTracker(this, this.questStore); // 创建新追踪器
+    this.questTracker.setPlayer(() => this.getPlayerGrid()); // 提供玩家位置
+    this.questTracker.setNpcLocator((npcId) => this.npcPositions[npcId]); // 提供NPC位置
+    if (this.questJournal) { // 如果已有日志界面
+      if (this.questJournal.isOpen()) { // 如果界面正在打开
+        this.questJournal.close(); // 先关闭界面
+      } // 条件结束
+      this.questJournal.destroy(); // 销毁旧容器
+    } // 条件结束
+    this.questJournal = new QuestJournal(this, this.questStore); // 创建新的日志界面
+    this.questJournal.setVisible(false); // 默认保持隐藏
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  private onQuestUpdated(questId: string, completed: boolean): void { // 处理任务更新
+    if (completed) { // 如果任务完成
+      if (this.rewardedQuests.has(questId)) { // 如果已经发放奖励
+        this.questJournal?.refresh(); // 刷新界面并返回
+        return; // 避免重复处理
+      } // 条件结束
+      const definition = this.questStore.getDefinition(questId); // 读取任务定义
+      if (!definition) { // 如果定义缺失
+        return; // 无法处理
+      } // 条件结束
+      this.rewardedQuests.add(questId); // 记录已奖励
+      const rewards = definition.rewards; // 读取奖励
+      if (rewards?.gold) { // 如果有金币奖励
+        this.inventory.add(GOLD_ITEM_ID, GOLD_ITEM_NAME, rewards.gold); // 增加金币
+      } // 条件结束
+      rewards?.items?.forEach((item) => { // 遍历物品奖励
+        this.inventory.add(item.id, item.name, item.count); // 添加物品
+      }); // 遍历结束
+      if (rewards?.achievement) { // 如果包含成就
+        this.achievementManager.unlock(rewards.achievement); // 解锁成就
+      } // 条件结束
+      this.popupManager.popup(this.playerContainer.x, this.playerContainer.y - TILE_SIZE, `任务完成：${definition.title}`, '#ffdd66'); // 显示完成提示
+    } // 条件结束
+    this.questJournal?.refresh(); // 刷新任务日志
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  private queueQuestState(state: ReturnType<QuestStore['toJSON']> | undefined): void { // 缓存或应用任务状态
+    if (!state) { // 如果没有状态
+      return; // 直接返回
+    } // 条件结束
+    if (!this.questReady) { // 如果任务系统尚未初始化
+      this.pendingQuestState = state; // 缓存等待
+      return; // 结束处理
+    } // 条件结束
+    const defs = this.questStore.listAll(); // 复制当前任务定义
+    this.questStore = QuestStore.fromJSON(state, defs); // 使用存档恢复
+    this.questStore.startIfNeeded(); // 重新自动接取
+    this.setupQuestRuntime(); // 重建运行期组件
+    this.questReady = true; // 保持就绪标记
   } // 方法结束
   // 分隔注释 // 保持行有注释
   private setupEconomyAndTime(): void { // 初始化经济与时间系统
@@ -194,6 +278,10 @@ export default class WorldScene extends Phaser.Scene { // 定义世界场景
         this.toggleSpeedScale(); // 切换倍率
       } // 条件结束
     }); // 监听结束
+    this.journalKey = this.input.keyboard.addKey(KEY_JOURNAL); // 创建任务日志键
+    this.journalKey.on('down', () => { // 监听日志键按下
+      this.toggleQuestJournal(); // 切换任务日志界面
+    }); // 监听结束
     this.input.keyboard.on('keydown', (event: KeyboardEvent) => { // 监听任意按键
       if (this.shiftPressed && event.key !== 'Shift') { // 如果Shift按下且按了其他键
         this.shiftSuppressed = true; // 标记为修饰键
@@ -205,7 +293,7 @@ export default class WorldScene extends Phaser.Scene { // 定义世界场景
     const source = this.registry.get('assetSource') as string | undefined; // 读取素材来源
     this.hudSourceText = this.add.text(8, 8, `素材来源：${source ?? '占位纹理'}`, { fontFamily: 'sans-serif', fontSize: '12px', color: '#ffffff', backgroundColor: 'rgba(0,0,0,0.66)', padding: { x: 4, y: 2 } }); // 创建左上角文本
     this.hudSourceText.setDepth(1200); // 设置渲染深度
-    this.hudControlsText = this.add.text(312, 312, 'Z 采集 / E 商店 / Shift 倍速 / A 自动 / S 保存或跳过 / L 读取 / G 图鉴 / H 成就', { fontFamily: 'sans-serif', fontSize: '12px', color: '#ffffff', backgroundColor: 'rgba(0,0,0,0.66)', padding: { x: 4, y: 2 }, align: 'right' }); // 创建右下角提示
+    this.hudControlsText = this.add.text(312, 312, 'Z 采集 / E 商店 / J 日志 / Shift 倍速 / A 自动 / S 保存或跳过 / L 读取 / G 图鉴 / H 成就', { fontFamily: 'sans-serif', fontSize: '12px', color: '#ffffff', backgroundColor: 'rgba(0,0,0,0.66)', padding: { x: 4, y: 2 }, align: 'right' }); // 创建右下角提示
     this.hudControlsText.setOrigin(1, 1); // 设置锚点
     this.hudControlsText.setDepth(1200); // 设置深度
   } // 方法结束
@@ -218,17 +306,21 @@ export default class WorldScene extends Phaser.Scene { // 定义世界场景
       this.updateHudTime(); // 刷新HUD
     } // 条件结束
     const shopOpened = this.shopUI?.isOpen() ?? false; // 判断商店是否打开
-    if (!shopOpened) { // 如果未打开商店
+    const journalOpened = this.questJournal?.isOpen() ?? false; // 判断任务日志是否打开
+    if (!shopOpened && !journalOpened) { // 如果商店和日志均未打开
       this.handleMovement(delta); // 更新移动
       this.handleInteractionInput(); // 处理采集按键
       this.updateResourceHint(); // 更新提示
     } else { // 否则
       this.labelManager.hideAll(); // 隐藏提示
     } // 条件结束
-    this.handleShopInteraction(); // 处理商店交互
+    if (!journalOpened) { // 如果任务日志未打开
+      this.handleShopInteraction(); // 处理商店交互
+    } // 条件结束
     this.handleSaveLoadInput(); // 处理存读按键
     this.updateDialogue(delta); // 更新对话状态
     this.popupManager.update(delta); // 更新飘字动画
+    this.questTracker?.update(); // 更新任务追踪提示
   } // 方法结束
   // 分隔注释 // 保持行有注释
   private handleMovement(delta: number): void { // 处理玩家移动
@@ -277,6 +369,8 @@ export default class WorldScene extends Phaser.Scene { // 定义世界场景
     this.playerContainer.x = Phaser.Math.Clamp(newX, minX, maxX); // 应用X位置
     this.playerContainer.y = Phaser.Math.Clamp(newY, minY, maxY); // 应用Y位置
     this.updatePlayerDepth(); // 更新深度
+    const grid = this.getPlayerGrid(); // 读取玩家网格
+    this.questTriggers?.onReach(grid.x, grid.y); // 通知任务触达事件
   } // 方法结束
   // 分隔注释 // 保持行有注释
   private canMoveTo(tileX: number, tileY: number): boolean { // 判断是否可移动到目标网格
@@ -319,6 +413,7 @@ export default class WorldScene extends Phaser.Scene { // 定义世界场景
     } // 条件结束
     this.inventory.add(node.loot.id, node.loot.name, node.loot.count); // 将物品加入背包
     this.achievementManager.onCollect(node.loot.id, node.loot.count); // 通知成就系统
+    this.questTriggers?.onCollect(node.loot.id, node.loot.count); // 通知任务系统采集事件
     removeNodeAt(grid); // 移除节点
     this.mapData[grid.y][grid.x] = { type: 'GRASS', layerTag: 'ground' }; // 将格子恢复为草地
     this.updateTileTexture(grid.x, grid.y); // 更新瓦片显示
@@ -357,6 +452,19 @@ export default class WorldScene extends Phaser.Scene { // 定义世界场景
     } // 条件结束
   } // 方法结束
   // 分隔注释 // 保持行有注释
+  private toggleQuestJournal(): void { // 切换任务日志界面
+    if (!this.questJournal) { // 如果日志尚未准备
+      return; // 不处理
+    } // 条件结束
+    if (this.questJournal.isOpen()) { // 如果界面已打开
+      this.questJournal.close(); // 关闭界面
+    } else { // 否则
+      this.shopUI?.close(); // 关闭商店界面避免冲突
+      this.questJournal.refresh(); // 打开前刷新内容
+      this.questJournal.open(); // 打开任务日志
+    } // 条件结束
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
   private handleShopInteraction(): void { // 处理商店交互
     if (!this.shopUI || !this.shopKey) { // 如果商店未初始化
       return; // 直接返回
@@ -373,6 +481,7 @@ export default class WorldScene extends Phaser.Scene { // 定义世界场景
     if (Phaser.Input.Keyboard.JustDown(this.shopKey)) { // 如果按键触发
       this.shopUI.refreshData(); // 刷新显示数据
       this.shopUI.open(); // 打开界面
+      this.questTriggers?.onTalk('shopkeeper'); // 通知任务系统对话事件
     } // 条件结束
   } // 方法结束
   // 分隔注释 // 保持行有注释
@@ -387,6 +496,8 @@ export default class WorldScene extends Phaser.Scene { // 定义世界场景
     npc.setOrigin(0.5, 1); // 设置锚点
     npc.setDepth(450); // 设置渲染深度
     this.shopNpc = npc; // 保存引用
+    this.npcPositions.shopkeeper = { x: Math.round(this.shopNpcPosition.x / TILE_SIZE), y: Math.round(this.shopNpcPosition.y / TILE_SIZE) }; // 记录商店NPC网格位置
+    this.questTracker?.setNpcLocator((npcId) => this.npcPositions[npcId]); // 更新追踪器NPC定位
   } // 方法结束
   // 分隔注释 // 保持行有注释
   private toggleSpeedScale(): void { // 切换时间倍率
@@ -433,7 +544,8 @@ export default class WorldScene extends Phaser.Scene { // 定义世界场景
   } // 方法结束
   // 分隔注释 // 保持行有注释
   private async saveGame(): Promise<void> { // 保存游戏状态
-    const extras = { achievements: this.achievementManager.exportState(), uiSettings: this.collectUISaveSettings(), time: this.timeSystem.serialize(), shops: this.shopStore.toJSON() }; // 构建额外数据
+    const questSnapshot = this.questReady ? this.questStore.toJSON() : undefined; // 读取任务进度快照
+    const extras = { achievements: this.achievementManager.exportState(), uiSettings: this.collectUISaveSettings(), time: this.timeSystem.serialize(), shops: this.shopStore.toJSON(), quests: questSnapshot }; // 构建额外数据
     const state = buildState({ map: this.mapData }, { x: this.playerContainer.x, y: this.playerContainer.y }, this.inventory, extras); // 构建状态
     await save('slot', state); // 保存状态
     if (!this.achievementManager.isUnlocked('first_save')) { // 如果成就未解锁
@@ -446,7 +558,7 @@ export default class WorldScene extends Phaser.Scene { // 定义世界场景
     if (!data) { // 如果没有数据
       return; // 直接返回
     } // 条件结束
-    applyState(data, { setMapData: (map) => this.setMapData(map) }, { setPosition: (x, y) => this.setPlayerPosition(x, y) }, this.inventory, { applyAchievements: (payload) => this.applyAchievementState(payload), applyUISettings: (settings) => this.queueUISettings(settings), applyTime: (timeState) => this.queueTimeState(timeState), applyShops: (shops) => this.queueShopState(shops) }); // 应用状态
+    applyState(data, { setMapData: (map) => this.setMapData(map) }, { setPosition: (x, y) => this.setPlayerPosition(x, y) }, this.inventory, { applyAchievements: (payload) => this.applyAchievementState(payload), applyUISettings: (settings) => this.queueUISettings(settings), applyTime: (timeState) => this.queueTimeState(timeState), applyShops: (shops) => this.queueShopState(shops), applyQuests: (quests) => this.queueQuestState(quests) }); // 应用状态
   } // 方法结束
   // 分隔注释 // 保持行有注释
   private setMapData(map: TileCell[][]): void { // 设置地图数据

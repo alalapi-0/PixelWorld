@@ -165,7 +165,7 @@ Thumbs.db
 
 # Phaser 原型生成的构建素材
 assets/build/**
-assets/user_imports/**
+
 !assets/user_imports/README.md
 !assets/user_imports/user_manifest.json
 frontend/phaser/assets/build/**

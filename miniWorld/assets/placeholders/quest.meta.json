@@ -1,0 +1,6 @@
+{
+  "panelColor": "#2b2f3a",
+  "headerColor": "#f0c66e",
+  "icon": "★",
+  "description": "默认任务日志配色，放入 assets_external/quests/quest.meta.json 可覆盖。"
+}

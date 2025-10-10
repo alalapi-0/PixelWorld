@@ -13,3 +13,6 @@ export const KEY_ACHIEVEMENT = 'H'; // 打开成就键
 export const KEY_SHOP = 'E'; // 商店交互键
 export const KEY_SPEED_TOGGLE = 'SHIFT'; // 时间倍率切换键
 export const KEY_JOURNAL = 'J'; // 任务日志键
+export const KEY_BUILD_MODE = 'U'; // 建造模式切换键
+export const KEY_BUILD_APPROVE = 'Y'; // 建造审批通过键
+export const KEY_BUILD_REJECT = 'N'; // 建造审批拒绝键

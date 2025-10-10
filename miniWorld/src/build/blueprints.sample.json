@@ -1,0 +1,9 @@
+{
+  "tileSize": 32,
+  "list": [
+    { "id": "road", "name": "道路", "tile": "ROAD", "cost": [ { "id": "stone", "name": "石头", "count": 1 } ] },
+    { "id": "fence", "name": "栅栏", "tile": "WALL", "cost": [ { "id": "wood", "name": "木头", "count": 2 } ] },
+    { "id": "tree", "name": "树苗", "tile": "TREE", "cost": [ { "id": "seed", "name": "树苗", "count": 1 } ] },
+    { "id": "house1", "name": "小屋", "tile": "HOUSE", "cost": [ { "id": "wood", "name": "木头", "count": 5 }, { "id": "stone", "name": "石头", "count": 3 } ] }
+  ]
+}

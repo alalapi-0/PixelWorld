@@ -1,5 +1,5 @@
 import Phaser from 'phaser'; // 引入Phaser框架
-import { KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_INTERACT, KEY_SAVE, KEY_LOAD, KEY_GLOSSARY, KEY_ACHIEVEMENT, KEY_SHOP, KEY_SPEED_TOGGLE, KEY_JOURNAL } from '../config/keys'; // 引入按键常量
+import { KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_INTERACT, KEY_SAVE, KEY_LOAD, KEY_GLOSSARY, KEY_ACHIEVEMENT, KEY_SHOP, KEY_SPEED_TOGGLE, KEY_JOURNAL, KEY_BUILD_MODE, KEY_BUILD_APPROVE, KEY_BUILD_REJECT } from '../config/keys'; // 引入按键常量
 import { genDemoMap, isWalkable, layerOf } from '../world/TileRules'; // 引入地图工具
 import { TileCell, GridPos } from '../world/Types'; // 引入类型定义
 import { getNodeAt, removeNodeAt } from '../world/Nodes'; // 引入资源节点接口
@@ -22,6 +22,14 @@ import { QuestStore } from '../quest/QuestStore'; // 引入任务存储
 import { QuestTriggers } from '../quest/QuestTriggers'; // 引入任务触发器
 import { QuestTracker } from '../quest/QuestTracker'; // 引入任务追踪器
 import { QuestJournal } from '../ui/QuestJournal'; // 引入任务日志界面
+import { Blueprints } from '../build/Blueprints'; // 引入蓝图管理器
+import { BuildMenu } from '../build/BuildMenu'; // 引入建造菜单
+import { Builder } from '../build/Builder'; // 引入建造执行器
+import { UndoStack } from '../build/UndoStack'; // 引入撤销栈
+import { canPlace } from '../build/BuildRules'; // 引入建造规则
+import { Permissions } from '../build/Permissions'; // 引入权限系统
+import { AgentAPI } from '../build/AgentAPI'; // 引入代理申请队列
+import type { BuildSubsystemSave, MapDiffEntry } from '../systems/SaveLoad'; // 引入建造存档结构
 // 分隔注释 // 保持行有注释
 const TILE_SIZE = 32; // 定义瓦片像素大小
 // 分隔注释 // 保持行有注释
@@ -76,6 +84,22 @@ export default class WorldScene extends Phaser.Scene { // 定义世界场景
   private dialogueSprite?: Phaser.GameObjects.Image; // 对话精灵引用
   private dialogueTextureKey?: string; // 对话纹理键
   private dialogueTriggered = false; // 是否已经触发过对话
+  private blueprints: Blueprints = new Blueprints(); // 蓝图管理器实例
+  private buildMenu!: BuildMenu; // 建造菜单引用
+  private undoStack: UndoStack = new UndoStack(); // 撤销栈实例
+  private builder!: Builder; // 建造执行器引用
+  private permissions: Permissions = new Permissions(); // 权限系统实例
+  private agentAPI: AgentAPI = new AgentAPI(); // 代理申请队列实例
+  private buildCursor?: Phaser.GameObjects.Rectangle; // 建造光标高亮
+  private buildHover?: { x: number; y: number }; // 当前悬停格子
+  private buildPointerHandler?: (pointer: Phaser.Input.Pointer) => void; // 建造模式指针按下处理
+  private buildMoveHandler?: (pointer: Phaser.Input.Pointer) => void; // 建造模式指针移动处理
+  private buildToggleKey!: Phaser.Input.Keyboard.Key; // 建造模式切换键
+  private approveKey!: Phaser.Input.Keyboard.Key; // 审批通过键
+  private rejectKey!: Phaser.Input.Keyboard.Key; // 审批拒绝键
+  private agentTimer?: Phaser.Time.TimerEvent; // 代理申请定时器
+  private pendingBuildState?: BuildSubsystemSave; // 待恢复的建造存档
+  private baseMapSnapshot: TileCell[][] = []; // 基准地图快照
   // 分隔注释 // 保持行有注释
   public constructor() { // 构造函数
     super('WorldScene'); // 调用父类构造并设定场景键名
@@ -84,6 +108,10 @@ export default class WorldScene extends Phaser.Scene { // 定义世界场景
   // 分隔注释 // 保持行有注释
   public create(): void { // 场景创建时调用
     this.mapData = genDemoMap(10, 10); // 生成演示地图
+    this.baseMapSnapshot = this.mapData.map((row) => row.map((cell) => ({ ...cell }))); // 保存基准地图
+    if (this.pendingBuildState?.mapDiff) { // 如果存在地图差异
+      this.applyMapDiff(this.pendingBuildState.mapDiff); // 应用差异
+    } // 条件结束
     this.renderMap(); // 渲染瓦片
     this.createPlayer(); // 创建玩家实体
     this.labelManager = new LabelManager(this); // 初始化提示管理器
@@ -92,6 +120,7 @@ export default class WorldScene extends Phaser.Scene { // 定义世界场景
       this.popupManager.popup(this.playerContainer.x, this.playerContainer.y - TILE_SIZE, `达成：${def.name}`, '#ffdd66'); // 弹出提示
     }); // 回调结束
     void this.initAchievements(); // 异步加载成就数据
+    this.setupBuildSystems(); // 初始化建造系统
     this.setupInput(); // 配置输入
     this.setupEconomyAndTime(); // 初始化经济与时间
     this.launchUIScene(); // 启动UI场景
@@ -106,6 +135,66 @@ export default class WorldScene extends Phaser.Scene { // 定义世界场景
       this.achievementManager.importState(this.pendingAchievementState); // 应用状态
       this.pendingAchievementState = undefined; // 清除缓存
     } // 条件结束
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  private setupBuildSystems(): void { // 初始化建造系统
+    this.buildMenu = new BuildMenu(this, this.blueprints, this.inventory); // 创建建造菜单
+    this.buildCursor = this.add.rectangle(0, 0, TILE_SIZE, TILE_SIZE, 0x88ccff, 0.3); // 创建建造高亮
+    this.buildCursor.setOrigin(0, 0); // 设置矩形原点
+    this.buildCursor.setDepth(1100); // 提升高亮深度
+    this.buildCursor.setVisible(false); // 默认隐藏高亮
+    this.rebuildSystemsFromState(this.pendingBuildState); // 根据存档恢复建造系统
+    this.pendingBuildState = undefined; // 清除待恢复数据
+    void this.blueprints.load(this).then(() => { // 异步加载蓝图数据
+      if (this.buildMenu) { // 确认菜单存在
+        this.buildMenu.refresh(); // 刷新显示材料状态
+        this.updateBuildHud(); // 同步HUD显示
+      } // 条件结束
+    }); // Promise结束
+    this.scheduleAgentRequests(); // 启动代理申请定时任务
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  private rebuildSystemsFromState(state: BuildSubsystemSave | undefined): void { // 根据存档重建建造子系统
+    const permissionSave = state?.permissions ?? this.permissions.toJSON(); // 读取权限存档
+    this.permissions = Permissions.fromJSON(permissionSave); // 恢复权限角色
+    const undoSave = state?.undo ?? this.undoStack.toJSON(); // 读取撤销存档
+    this.undoStack = UndoStack.fromJSON(undoSave); // 恢复撤销栈
+    const agentSave = state?.agent ?? this.agentAPI.toJSON(); // 读取代理存档
+    this.agentAPI = AgentAPI.fromJSON(agentSave); // 恢复代理队列
+    this.builder = new Builder(this.mapData, this.inventory, this.undoStack); // 使用当前地图创建建造执行器
+    this.buildMenu?.refresh(); // 刷新菜单材料状态
+    this.updatePermissionHud(); // 更新权限HUD
+    this.updateAgentHud(); // 更新审批HUD
+    this.updateBuildHud(); // 更新建造HUD
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  private applyMapDiff(diff: MapDiffEntry[]): void { // 应用地图差异
+    diff.forEach((entry) => { // 遍历差异
+      if (this.mapData[entry.y]?.[entry.x]) { // 如果坐标有效
+        this.mapData[entry.y][entry.x] = { type: entry.tile, layerTag: entry.layerTag ?? 'ground' }; // 更新单元格
+      } // 条件结束
+    }); // 遍历结束
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  private scheduleAgentRequests(): void { // 安排代理申请生成
+    this.agentTimer?.remove(); // 移除旧定时器
+    this.agentTimer = this.time.addEvent({ delay: 30000, loop: true, callback: () => this.spawnAgentRequest() }); // 创建新定时器
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  private spawnAgentRequest(): void { // 生成模拟的代理申请
+    const width = this.mapData[0]?.length ?? 0; // 读取地图宽度
+    const height = this.mapData.length; // 读取地图高度
+    if (width === 0 || height === 0) { // 如果地图无效
+      return; // 直接返回
+    } // 条件结束
+    const x = Phaser.Math.Between(0, Math.max(0, width - 1)); // 随机选择列
+    const baseRow = Phaser.Math.Clamp(5 + Phaser.Math.Between(-1, 1), 0, height - 1); // 在道路附近选择行
+    this.agentAPI.submit({ x, y: baseRow, blueprintId: 'tree', reason: '道路绿化建议' }); // 创建树木种植申请
+    this.updateAgentHud(); // 更新HUD待审批数量
+    if (this.buildMenu?.isActive()) { // 如果处于建造模式
+      this.buildMenu.setStatus('收到新的建造申请'); // 在菜单提示
+    } // 条件结束
+    this.popupManager.popup(this.playerContainer.x, this.playerContainer.y - TILE_SIZE, '收到建造申请', '#66ccff'); // 显示通知
   } // 方法结束
   // 分隔注释 // 保持行有注释
   private async initQuests(): Promise<void> { // 初始化任务系统
@@ -215,6 +304,9 @@ export default class WorldScene extends Phaser.Scene { // 定义世界场景
       this.uiVisibility = uiScene.getUIVisibility(); // 获取显隐管理器
       uiScene.attachTimeScale(this.timeScaleBoost); // 在HUD绘制倍率图标
       this.updateHudTime(); // 初始化时间显示
+      this.updateBuildHud(); // 初始化建造HUD
+      this.updatePermissionHud(); // 初始化权限HUD
+      this.updateAgentHud(); // 初始化审批HUD
       if (this.pendingUISettings) { // 如果存在待应用UI设置
         this.applyUISettings(this.pendingUISettings); // 应用设置
         this.pendingUISettings = undefined; // 清空缓存
@@ -282,9 +374,33 @@ export default class WorldScene extends Phaser.Scene { // 定义世界场景
     this.journalKey.on('down', () => { // 监听日志键按下
       this.toggleQuestJournal(); // 切换任务日志界面
     }); // 监听结束
+    this.buildToggleKey = this.input.keyboard.addKey(KEY_BUILD_MODE); // 创建建造模式键
+    this.buildToggleKey.on('down', () => { // 监听建造模式键按下
+      this.toggleBuildMode(); // 切换建造模式
+    }); // 监听结束
+    this.approveKey = this.input.keyboard.addKey(KEY_BUILD_APPROVE); // 创建审批通过键
+    this.approveKey.on('down', () => { // 监听通过键
+      this.handleAgentDecision(true); // 执行通过处理
+    }); // 监听结束
+    this.rejectKey = this.input.keyboard.addKey(KEY_BUILD_REJECT); // 创建审批拒绝键
+    this.rejectKey.on('down', () => { // 监听拒绝键
+      this.handleAgentDecision(false); // 执行拒绝处理
+    }); // 监听结束
     this.input.keyboard.on('keydown', (event: KeyboardEvent) => { // 监听任意按键
       if (this.shiftPressed && event.key !== 'Shift') { // 如果Shift按下且按了其他键
         this.shiftSuppressed = true; // 标记为修饰键
+      } // 条件结束
+    }); // 监听结束
+    this.input.keyboard.on('keydown-Z', (event: KeyboardEvent) => { // 监听撤销组合键
+      if (event.ctrlKey) { // 如果按下Ctrl
+        event.preventDefault(); // 阻止浏览器默认行为
+        this.performUndo(); // 执行撤销
+      } // 条件结束
+    }); // 监听结束
+    this.input.keyboard.on('keydown-Y', (event: KeyboardEvent) => { // 监听重做组合键
+      if (event.ctrlKey) { // 如果按下Ctrl
+        event.preventDefault(); // 阻止默认行为
+        this.performRedo(); // 执行重做
       } // 条件结束
     }); // 监听结束
   } // 方法结束
@@ -293,7 +409,7 @@ export default class WorldScene extends Phaser.Scene { // 定义世界场景
     const source = this.registry.get('assetSource') as string | undefined; // 读取素材来源
     this.hudSourceText = this.add.text(8, 8, `素材来源：${source ?? '占位纹理'}`, { fontFamily: 'sans-serif', fontSize: '12px', color: '#ffffff', backgroundColor: 'rgba(0,0,0,0.66)', padding: { x: 4, y: 2 } }); // 创建左上角文本
     this.hudSourceText.setDepth(1200); // 设置渲染深度
-    this.hudControlsText = this.add.text(312, 312, 'Z 采集 / E 商店 / J 日志 / Shift 倍速 / A 自动 / S 保存或跳过 / L 读取 / G 图鉴 / H 成就', { fontFamily: 'sans-serif', fontSize: '12px', color: '#ffffff', backgroundColor: 'rgba(0,0,0,0.66)', padding: { x: 4, y: 2 }, align: 'right' }); // 创建右下角提示
+    this.hudControlsText = this.add.text(312, 312, 'Z 采集 / U 建造 / Ctrl+Z 撤销 / Ctrl+Y 重做 / Y 审批 / N 拒绝 / E 商店 / J 日志 / Shift 倍速 / A 自动 / S 保存或跳过 / L 读取 / G 图鉴 / H 成就', { fontFamily: 'sans-serif', fontSize: '12px', color: '#ffffff', backgroundColor: 'rgba(0,0,0,0.66)', padding: { x: 4, y: 2 }, align: 'right' }); // 创建右下角提示
     this.hudControlsText.setOrigin(1, 1); // 设置锚点
     this.hudControlsText.setDepth(1200); // 设置深度
   } // 方法结束
@@ -307,14 +423,23 @@ export default class WorldScene extends Phaser.Scene { // 定义世界场景
     } // 条件结束
     const shopOpened = this.shopUI?.isOpen() ?? false; // 判断商店是否打开
     const journalOpened = this.questJournal?.isOpen() ?? false; // 判断任务日志是否打开
-    if (!shopOpened && !journalOpened) { // 如果商店和日志均未打开
+    const buildActive = this.buildMenu?.isActive() ?? false; // 判断是否处于建造模式
+    if (buildActive) { // 如果正在建造
+      this.updateBuildPreview(); // 更新建造高亮
+      if (Phaser.Input.Keyboard.JustDown(this.interactKey) && this.buildHover) { // 检查确认建造键
+        this.tryPlaceAt(this.buildHover.x, this.buildHover.y); // 执行键盘放置
+      } // 条件结束
+    } // 条件结束
+    if (!shopOpened && !journalOpened && !buildActive) { // 如果无界面干扰且不在建造模式
       this.handleMovement(delta); // 更新移动
       this.handleInteractionInput(); // 处理采集按键
       this.updateResourceHint(); // 更新提示
-    } else { // 否则
+    } else if (!buildActive) { // 如果非建造但界面占用
       this.labelManager.hideAll(); // 隐藏提示
+    } else { // 当建造模式激活
+      this.labelManager.hideAll(); // 隐藏其它提示
     } // 条件结束
-    if (!journalOpened) { // 如果任务日志未打开
+    if (!journalOpened && !buildActive) { // 如果任务日志未打开且非建造
       this.handleShopInteraction(); // 处理商店交互
     } // 条件结束
     this.handleSaveLoadInput(); // 处理存读按键
@@ -324,6 +449,9 @@ export default class WorldScene extends Phaser.Scene { // 定义世界场景
   } // 方法结束
   // 分隔注释 // 保持行有注释
   private handleMovement(delta: number): void { // 处理玩家移动
+    if (this.buildMenu?.isActive()) { // 如果处于建造模式
+      return; // 阻止移动
+    } // 条件结束
     if (this.shopUI?.isOpen()) { // 如果商店打开
       return; // 直接阻止移动
     } // 条件结束
@@ -397,6 +525,9 @@ export default class WorldScene extends Phaser.Scene { // 定义世界场景
   } // 方法结束
   // 分隔注释 // 保持行有注释
   private handleInteractionInput(): void { // 处理交互输入
+    if (this.buildMenu?.isActive()) { // 如果在建造模式
+      return; // 禁止采集操作
+    } // 条件结束
     if (this.shopUI?.isOpen()) { // 如果商店打开
       return; // 阻止采集
     } // 条件结束
@@ -435,6 +566,10 @@ export default class WorldScene extends Phaser.Scene { // 定义世界场景
   } // 方法结束
   // 分隔注释 // 保持行有注释
   private updateResourceHint(): void { // 更新交互提示
+    if (this.buildMenu?.isActive()) { // 如果正在建造
+      this.labelManager.hideAll(); // 隐藏提示
+      return; // 直接返回
+    } // 条件结束
     if (this.shopUI?.isOpen()) { // 如果商店打开
       this.labelManager.hideAll(); // 隐藏提示
       return; // 直接返回
@@ -466,6 +601,9 @@ export default class WorldScene extends Phaser.Scene { // 定义世界场景
   } // 方法结束
   // 分隔注释 // 保持行有注释
   private handleShopInteraction(): void { // 处理商店交互
+    if (this.buildMenu?.isActive()) { // 如果处于建造模式
+      return; // 暂停商店交互
+    } // 条件结束
     if (!this.shopUI || !this.shopKey) { // 如果商店未初始化
       return; // 直接返回
     } // 条件结束
@@ -545,7 +683,8 @@ export default class WorldScene extends Phaser.Scene { // 定义世界场景
   // 分隔注释 // 保持行有注释
   private async saveGame(): Promise<void> { // 保存游戏状态
     const questSnapshot = this.questReady ? this.questStore.toJSON() : undefined; // 读取任务进度快照
-    const extras = { achievements: this.achievementManager.exportState(), uiSettings: this.collectUISaveSettings(), time: this.timeSystem.serialize(), shops: this.shopStore.toJSON(), quests: questSnapshot }; // 构建额外数据
+    const buildExtras = { permissions: this.permissions.toJSON(), mapDiff: this.computeMapDiff(), undo: this.undoStack.toJSON(), agent: this.agentAPI.toJSON() }; // 构建建造额外数据
+    const extras = { achievements: this.achievementManager.exportState(), uiSettings: this.collectUISaveSettings(), time: this.timeSystem.serialize(), shops: this.shopStore.toJSON(), quests: questSnapshot, build: buildExtras }; // 构建额外数据
     const state = buildState({ map: this.mapData }, { x: this.playerContainer.x, y: this.playerContainer.y }, this.inventory, extras); // 构建状态
     await save('slot', state); // 保存状态
     if (!this.achievementManager.isUnlocked('first_save')) { // 如果成就未解锁
@@ -558,12 +697,25 @@ export default class WorldScene extends Phaser.Scene { // 定义世界场景
     if (!data) { // 如果没有数据
       return; // 直接返回
     } // 条件结束
-    applyState(data, { setMapData: (map) => this.setMapData(map) }, { setPosition: (x, y) => this.setPlayerPosition(x, y) }, this.inventory, { applyAchievements: (payload) => this.applyAchievementState(payload), applyUISettings: (settings) => this.queueUISettings(settings), applyTime: (timeState) => this.queueTimeState(timeState), applyShops: (shops) => this.queueShopState(shops), applyQuests: (quests) => this.queueQuestState(quests) }); // 应用状态
+    applyState(data, { setMapData: (map) => this.setMapData(map) }, { setPosition: (x, y) => this.setPlayerPosition(x, y) }, this.inventory, { applyAchievements: (payload) => this.applyAchievementState(payload), applyUISettings: (settings) => this.queueUISettings(settings), applyTime: (timeState) => this.queueTimeState(timeState), applyShops: (shops) => this.queueShopState(shops), applyQuests: (quests) => this.queueQuestState(quests), applyBuild: (buildState) => this.queueBuildState(buildState) }); // 应用状态
   } // 方法结束
   // 分隔注释 // 保持行有注释
   private setMapData(map: TileCell[][]): void { // 设置地图数据
-    this.mapData = map.map((row) => row.map((cell) => ({ ...cell }))); // 拷贝地图
+    if (this.pendingBuildState?.mapDiff) { // 如果存档包含差异
+      const width = map[0]?.length ?? 0; // 读取宽度
+      const height = map.length; // 读取高度
+      const base = genDemoMap(width, height); // 生成基准地图
+      this.baseMapSnapshot = base.map((row) => row.map((cell) => ({ ...cell }))); // 保存基准快照
+      this.mapData = base.map((row) => row.map((cell) => ({ ...cell }))); // 克隆基准地图
+      this.applyMapDiff(this.pendingBuildState.mapDiff); // 应用差异
+    } else { // 否则直接使用存档地图
+      this.mapData = map.map((row) => row.map((cell) => ({ ...cell }))); // 拷贝地图
+      this.baseMapSnapshot = this.mapData.map((row) => row.map((cell) => ({ ...cell }))); // 同步基准快照
+    } // 条件结束
     this.renderMap(); // 重新渲染
+    this.rebuildSystemsFromState(this.pendingBuildState); // 根据最新数据重建系统
+    this.pendingBuildState = undefined; // 清除待恢复状态
+    this.scheduleAgentRequests(); // 重启代理计时器
   } // 方法结束
   // 分隔注释 // 保持行有注释
   private setPlayerPosition(x: number, y: number): void { // 设置玩家位置
@@ -617,6 +769,302 @@ export default class WorldScene extends Phaser.Scene { // 定义世界场景
         this.shopUI.refreshData(); // 刷新数据
       } // 条件结束
     } // 条件结束
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  private queueBuildState(state: BuildSubsystemSave | undefined): void { // 缓存或应用建造状态
+    if (this.buildMenu?.isActive()) { // 如果当前在建造模式
+      this.exitBuildMode(); // 先退出建造模式
+    } // 条件结束
+    this.pendingBuildState = state ?? undefined; // 记录待恢复的建造存档
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  private toggleBuildMode(): void { // 切换建造模式
+    if (!this.buildMenu) { // 如果菜单尚未准备
+      return; // 直接返回
+    } // 条件结束
+    if (this.buildMenu.isActive()) { // 如果已经在建造模式
+      this.exitBuildMode(); // 退出模式
+      return; // 结束处理
+    } // 条件结束
+    if (!this.permissions.canBuild()) { // 如果没有建造权限
+      this.popupManager.popup(this.playerContainer.x, this.playerContainer.y - TILE_SIZE, '无权建造', '#ff6666'); // 弹出提示
+      return; // 阻止进入
+    } // 条件结束
+    if (this.blueprints.all().length === 0) { // 如果没有蓝图
+      this.popupManager.popup(this.playerContainer.x, this.playerContainer.y - TILE_SIZE, '蓝图数据缺失', '#ff6666'); // 提示缺失
+      return; // 阻止进入
+    } // 条件结束
+    this.enterBuildMode(); // 进入建造模式
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  private enterBuildMode(): void { // 进入建造模式
+    this.buildMenu.enter(); // 打开建造菜单
+    this.updateBuildHud(); // 更新HUD
+    this.buildCursor?.setVisible(false); // 隐藏高亮等待移动
+    this.buildPointerHandler = (pointer) => this.onBuildPointerDown(pointer); // 定义指针按下处理
+    this.input.on('pointerdown', this.buildPointerHandler); // 注册按下事件
+    this.buildMoveHandler = (pointer) => { this.buildHover = this.pointerToGrid(pointer) ?? undefined; }; // 定义指针移动处理
+    this.input.on('pointermove', this.buildMoveHandler); // 注册移动事件
+    this.labelManager.hideAll(); // 隐藏其他提示
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  private exitBuildMode(): void { // 退出建造模式
+    this.buildMenu.exit(); // 关闭建造菜单
+    this.buildHover = undefined; // 清空悬停格
+    if (this.buildCursor) { // 如果有高亮
+      this.buildCursor.setVisible(false); // 隐藏高亮
+    } // 条件结束
+    if (this.buildPointerHandler) { // 如果存在按下处理器
+      this.input.off('pointerdown', this.buildPointerHandler); // 移除监听
+      this.buildPointerHandler = undefined; // 清空引用
+    } // 条件结束
+    if (this.buildMoveHandler) { // 如果存在移动处理器
+      this.input.off('pointermove', this.buildMoveHandler); // 移除监听
+      this.buildMoveHandler = undefined; // 清空引用
+    } // 条件结束
+    this.buildMenu.setStatus(''); // 清空状态提示
+    this.updateBuildHud(); // 更新HUD
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  private onBuildPointerDown(pointer: Phaser.Input.Pointer): void { // 处理建造模式下的指针按下
+    if (!this.buildMenu.isActive()) { // 如果菜单未激活
+      return; // 直接返回
+    } // 条件结束
+    const grid = this.pointerToGrid(pointer); // 计算网格坐标
+    if (!grid) { // 如果不在地图范围
+      return; // 直接返回
+    } // 条件结束
+    if (pointer.rightButtonDown()) { // 如果按下右键
+      this.tryRemoveAt(grid.x, grid.y); // 执行拆除
+    } else { // 否则视为放置
+      this.tryPlaceAt(grid.x, grid.y); // 执行放置
+    } // 分支结束
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  private pointerToGrid(pointer: Phaser.Input.Pointer): { x: number; y: number } | null { // 将指针转换为网格
+    const x = Math.floor(pointer.worldX / TILE_SIZE); // 计算列索引
+    const y = Math.floor(pointer.worldY / TILE_SIZE); // 计算行索引
+    return this.isInsideMap(x, y) ? { x, y } : null; // 返回坐标或空
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  private isInsideMap(x: number, y: number): boolean { // 判断坐标是否在地图内
+    return y >= 0 && y < this.mapData.length && x >= 0 && x < (this.mapData[0]?.length ?? 0); // 返回范围判断
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  private updateBuildPreview(): void { // 更新建造高亮
+    if (!this.buildMenu?.isActive() || !this.buildCursor) { // 如果不在建造模式或缺少高亮
+      return; // 直接返回
+    } // 条件结束
+    const pointer = this.input.activePointer; // 获取当前指针
+    const grid = this.pointerToGrid(pointer); // 计算网格
+    if (!grid) { // 如果指针不在地图上
+      this.buildCursor.setVisible(false); // 隐藏高亮
+      this.buildHover = undefined; // 清空悬停
+      return; // 结束处理
+    } // 条件结束
+    this.buildHover = grid; // 记录悬停格
+    this.buildCursor.setVisible(true); // 显示高亮
+    this.buildCursor.setPosition(grid.x * TILE_SIZE, grid.y * TILE_SIZE); // 设置位置
+    const cell = this.mapData[grid.y][grid.x]; // 读取当前单元
+    const neighbors = this.collectNeighbors(grid.x, grid.y); // 计算邻居
+    const blueprint = this.buildMenu.currentBlueprint(); // 当前蓝图
+    const rulePass = canPlace(blueprint, cell, neighbors); // 判断规则
+    const costEnough = blueprint.cost.every((item) => this.inventory.has(item.id, item.count)); // 判断材料
+    const color = rulePass ? (costEnough ? 0x55ff55 : 0xffaa33) : 0xff5555; // 根据状态选择颜色
+    this.buildCursor.setFillStyle(color, 0.3); // 应用颜色
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  private collectNeighbors(x: number, y: number): TileCell[] { // 收集四向邻居
+    const fallback: TileCell = { type: 'GRASS', layerTag: 'ground' }; // 默认邻居
+    const up = this.mapData[y - 1]?.[x] ?? fallback; // 上方单元
+    const right = this.mapData[y]?.[x + 1] ?? fallback; // 右方单元
+    const down = this.mapData[y + 1]?.[x] ?? fallback; // 下方单元
+    const left = this.mapData[y]?.[x - 1] ?? fallback; // 左方单元
+    return [up, right, down, left]; // 返回数组
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  private tryPlaceAt(x: number, y: number): void { // 尝试放置建造
+    const cell = this.mapData[y]?.[x]; // 读取目标格
+    if (!cell) { // 如果格子不存在
+      if (this.buildMenu.isActive()) { // 如果在建造模式
+        this.buildMenu.setStatus('目标超出范围'); // 提示越界
+      } // 条件结束
+      return; // 结束处理
+    } // 条件结束
+    const blueprint = this.buildMenu.currentBlueprint(); // 获取当前蓝图
+    const neighbors = this.collectNeighbors(x, y); // 计算邻居
+    if (!canPlace(blueprint, cell, neighbors)) { // 如果规则不允许
+      this.buildMenu.setStatus('该位置禁止放置'); // 显示提示
+      return; // 阻止放置
+    } // 条件结束
+    if (!blueprint.cost.every((item) => this.inventory.has(item.id, item.count))) { // 如果材料不足
+      this.buildMenu.setStatus('材料不足'); // 提示材料不足
+      return; // 阻止放置
+    } // 条件结束
+    const success = this.builder.place(x, y, blueprint, neighbors); // 执行放置
+    if (!success) { // 如果放置失败
+      this.buildMenu.setStatus('放置失败'); // 显示失败提示
+      return; // 结束处理
+    } // 条件结束
+    this.updateTileTexture(x, y); // 更新瓦片显示
+    this.buildMenu.refresh(); // 刷新菜单
+    this.updateBuildHud(); // 更新HUD
+    this.popupManager.popup(x * TILE_SIZE + TILE_SIZE / 2, y * TILE_SIZE + TILE_SIZE / 2, `建造：${blueprint.name}`, '#66ff99'); // 显示提示
+    this.buildMenu.setStatus(''); // 清空状态
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  private tryRemoveAt(x: number, y: number): void { // 尝试拆除结构
+    const success = this.builder.remove(x, y); // 执行拆除
+    if (!success) { // 如果拆除失败
+      if (this.buildMenu.isActive()) { // 如果在建造模式
+        this.buildMenu.setStatus('该格无法拆除'); // 显示提示
+      } // 条件结束
+      return; // 结束处理
+    } // 条件结束
+    this.updateTileTexture(x, y); // 更新瓦片显示
+    this.buildMenu.refresh(); // 刷新菜单
+    this.updateBuildHud(); // 更新HUD
+    this.popupManager.popup(x * TILE_SIZE + TILE_SIZE / 2, y * TILE_SIZE + TILE_SIZE / 2, '已拆除', '#ffaa66'); // 显示提示
+    this.buildMenu.setStatus(''); // 清空状态
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  private performUndo(): void { // 执行撤销操作
+    const op = this.undoStack.undo(); // 从撤销栈取出操作
+    if (!op) { // 如果没有操作
+      if (this.buildMenu?.isActive()) { // 如果处于建造模式
+        this.buildMenu.setStatus('没有可撤销操作'); // 提示无操作
+      } // 条件结束
+      return; // 结束处理
+    } // 条件结束
+    this.builder.applyUndo(op); // 让建造执行器还原状态
+    this.updateTileTexture(op.x, op.y); // 更新瓦片显示
+    this.buildMenu?.refresh(); // 刷新菜单
+    this.updateBuildHud(); // 更新HUD
+    if (this.buildMenu?.isActive()) { // 如果处于建造模式
+      this.buildMenu.setStatus(''); // 清空提示
+    } // 条件结束
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  private performRedo(): void { // 执行重做操作
+    const op = this.undoStack.redo(); // 从重做栈取出操作
+    if (!op) { // 如果没有操作
+      if (this.buildMenu?.isActive()) { // 如果处于建造模式
+        this.buildMenu.setStatus('没有可重做操作'); // 提示无操作
+      } // 条件结束
+      return; // 结束处理
+    } // 条件结束
+    if (op.kind === 'place' && !op.cost.every((item) => this.inventory.has(item.id, item.count))) { // 如果材料不足以重做
+      void this.undoStack.undo(); // 将操作放回重做栈
+      if (this.buildMenu?.isActive()) { // 如果处于建造模式
+        this.buildMenu.setStatus('材料不足，无法重做'); // 显示提示
+      } // 条件结束
+      return; // 结束处理
+    } // 条件结束
+    this.builder.applyRedo(op); // 执行重做
+    this.updateTileTexture(op.x, op.y); // 更新瓦片显示
+    this.buildMenu?.refresh(); // 刷新菜单
+    this.updateBuildHud(); // 更新HUD
+    if (this.buildMenu?.isActive()) { // 如果处于建造模式
+      this.buildMenu.setStatus(''); // 清空提示
+    } // 条件结束
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  private handleAgentDecision(approve: boolean): void { // 处理代理审批
+    if (!this.permissions.canApprove()) { // 如果没有审批权限
+      this.popupManager.popup(this.playerContainer.x, this.playerContainer.y - TILE_SIZE, '无权审批', '#ff6666'); // 显示提示
+      return; // 阻止处理
+    } // 条件结束
+    const pending = this.agentAPI.nextPending(); // 读取待审批申请
+    if (!pending) { // 如果没有待审批
+      this.popupManager.popup(this.playerContainer.x, this.playerContainer.y - TILE_SIZE, '暂无申请', '#ccccff'); // 显示提示
+      return; // 结束处理
+    } // 条件结束
+    if (!approve) { // 如果选择拒绝
+      this.agentAPI.reject(pending.id); // 标记拒绝
+      this.updateAgentHud(); // 更新HUD
+      this.popupManager.popup(this.playerContainer.x, this.playerContainer.y - TILE_SIZE, '已拒绝申请', '#ff9966'); // 显示提示
+      return; // 结束处理
+    } // 条件结束
+    const blueprint = this.blueprints.get(pending.blueprintId); // 获取蓝图
+    if (!blueprint) { // 如果蓝图缺失
+      this.agentAPI.reject(pending.id); // 标记拒绝
+      this.updateAgentHud(); // 更新HUD
+      this.popupManager.popup(this.playerContainer.x, this.playerContainer.y - TILE_SIZE, '蓝图不存在', '#ff6666'); // 提示错误
+      return; // 结束处理
+    } // 条件结束
+    const cell = this.mapData[pending.y]?.[pending.x]; // 读取目标格
+    if (!cell) { // 如果超出范围
+      this.agentAPI.reject(pending.id); // 标记拒绝
+      this.updateAgentHud(); // 更新HUD
+      this.popupManager.popup(this.playerContainer.x, this.playerContainer.y - TILE_SIZE, '目标超出范围', '#ff6666'); // 提示错误
+      return; // 结束处理
+    } // 条件结束
+    const neighbors = this.collectNeighbors(pending.x, pending.y); // 计算邻居
+    if (!canPlace(blueprint, cell, neighbors)) { // 如果规则不通过
+      this.agentAPI.reject(pending.id); // 标记拒绝
+      this.updateAgentHud(); // 更新HUD
+      this.popupManager.popup(this.playerContainer.x, this.playerContainer.y - TILE_SIZE, '地点不符合要求', '#ff6666'); // 提示错误
+      return; // 结束处理
+    } // 条件结束
+    if (!blueprint.cost.every((item) => this.inventory.has(item.id, item.count))) { // 如果材料不足
+      this.agentAPI.reject(pending.id); // 标记拒绝
+      this.updateAgentHud(); // 更新HUD
+      this.popupManager.popup(this.playerContainer.x, this.playerContainer.y - TILE_SIZE, '材料不足，审批失败', '#ff6666'); // 提示错误
+      return; // 结束处理
+    } // 条件结束
+    this.agentAPI.approve(pending.id); // 标记通过
+    const success = this.builder.place(pending.x, pending.y, blueprint, neighbors); // 执行建造
+    if (success) { // 如果成功
+      this.agentAPI.markExecuted(pending.id); // 标记已执行
+      this.updateTileTexture(pending.x, pending.y); // 更新瓦片
+      this.buildMenu?.refresh(); // 刷新菜单
+      this.updateBuildHud(); // 更新HUD
+      this.popupManager.popup(pending.x * TILE_SIZE + TILE_SIZE / 2, pending.y * TILE_SIZE + TILE_SIZE / 2, `已建造：${blueprint.name}`, '#66ff99'); // 提示完成
+    } else { // 如果建造失败
+      this.agentAPI.reject(pending.id); // 将状态改为拒绝
+      this.popupManager.popup(this.playerContainer.x, this.playerContainer.y - TILE_SIZE, '执行失败', '#ff6666'); // 提示失败
+    } // 分支结束
+    this.updateAgentHud(); // 更新审批HUD
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  private updateBuildHud(): void { // 更新建造HUD信息
+    if (!this.hudScene) { // 如果HUD未初始化
+      return; // 直接返回
+    } // 条件结束
+    const active = this.buildMenu?.isActive() ?? false; // 当前建造状态
+    let name = '无蓝图'; // 默认蓝图名称
+    const list = this.blueprints.all(); // 获取蓝图列表
+    if (list.length > 0) { // 如果存在蓝图
+      try { // 捕获可能的异常
+        name = this.buildMenu.currentBlueprint().name; // 读取当前蓝图名称
+      } catch { // 捕获异常
+        name = list[0].name; // 回退到第一条蓝图
+      } // 条件结束
+    } // 条件结束
+    this.hudScene.updateBuildStatus(active, name); // 更新HUD显示
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  private updatePermissionHud(): void { // 更新权限显示
+    this.hudScene?.updatePermissionRole(this.permissions.getRole()); // 将角色写入HUD
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  private updateAgentHud(): void { // 更新审批队列HUD
+    const pending = this.agentAPI.list().filter((req) => req.state === 'pending').length; // 统计待审批数量
+    this.hudScene?.updateAgentQueue(pending); // 更新HUD
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  private computeMapDiff(): MapDiffEntry[] { // 计算地图差异
+    const diff: MapDiffEntry[] = []; // 初始化差异数组
+    for (let y = 0; y < this.mapData.length; y += 1) { // 遍历行
+      for (let x = 0; x < (this.mapData[y]?.length ?? 0); x += 1) { // 遍历列
+        const current = this.mapData[y][x]; // 当前单元
+        const base = this.baseMapSnapshot[y]?.[x]; // 基准单元
+        if (!base || base.type !== current.type || base.layerTag !== current.layerTag) { // 如果不同
+          diff.push({ x, y, tile: current.type, layerTag: current.layerTag }); // 记录差异
+        } // 条件结束
+      } // 列遍历结束
+    } // 行遍历结束
+    return diff; // 返回差异数组
   } // 方法结束
   // 分隔注释 // 保持行有注释
   private applyUISettings(settings: UISaveSettings): void { // 实际应用UI设置

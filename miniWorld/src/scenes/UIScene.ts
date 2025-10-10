@@ -3,6 +3,7 @@ import { AutoTextController } from '../ui/AutoTextController'; // 引入自动�
 import { UIVisibilityManager } from '../ui/UIVisibilityManager'; // 引入UI显隐管理器
 import { TimeState } from '../systems/TimeSystem'; // 引入时间状态类型
 import { TimeScaleBoost } from '../systems/TimeScaleBoost'; // 引入快进系统
+import type { Role } from '../build/Permissions'; // 引入角色类型
 // 分隔注释 // 保持行有注释
 export default class UIScene extends Phaser.Scene { // 定义UI场景
   private autoController!: AutoTextController; // 自动文本控制器引用
@@ -13,6 +14,9 @@ export default class UIScene extends Phaser.Scene { // 定义UI场景
   private speedContainer!: Phaser.GameObjects.Container; // 倍速容器
   private seasonContainer!: Phaser.GameObjects.Container; // 季节容器
   private seasonText!: Phaser.GameObjects.Text; // 季节文本
+  private buildInfoText!: Phaser.GameObjects.Text; // 建造状态文本
+  private permissionText!: Phaser.GameObjects.Text; // 权限文本
+  private agentInfoText!: Phaser.GameObjects.Text; // 审批队列文本
   // 分隔注释 // 保持行有注释
   public constructor() { // 构造函数
     super('UIScene'); // 指定场景键名
@@ -37,6 +41,15 @@ export default class UIScene extends Phaser.Scene { // 定义UI场景
     this.seasonText = this.add.text(0, 0, '春季 第1日', { fontFamily: 'sans-serif', fontSize: '14px', color: '#ffffff', backgroundColor: 'rgba(0,0,0,0.5)', padding: { x: 4, y: 2 } }); // 创建季节文本
     this.seasonText.setOrigin(0, 0); // 设置季节文本锚点
     this.seasonContainer.add(this.seasonText); // 添加季节文本
+    this.buildInfoText = this.add.text(8, 48, '建造：未激活', { fontFamily: 'sans-serif', fontSize: '12px', color: '#ffffff', backgroundColor: 'rgba(0,0,0,0.5)', padding: { x: 4, y: 2 } }); // 创建建造信息文本
+    this.buildInfoText.setScrollFactor(0); // 固定建造文本位置
+    this.buildInfoText.setDepth(1500); // 设置建造文本深度
+    this.permissionText = this.add.text(8, 66, '角色：Visitor', { fontFamily: 'sans-serif', fontSize: '12px', color: '#ffffff', backgroundColor: 'rgba(0,0,0,0.5)', padding: { x: 4, y: 2 } }); // 创建权限文本
+    this.permissionText.setScrollFactor(0); // 固定权限文本
+    this.permissionText.setDepth(1500); // 设置权限文本深度
+    this.agentInfoText = this.add.text(8, 84, '待审批：0', { fontFamily: 'sans-serif', fontSize: '12px', color: '#ffffff', backgroundColor: 'rgba(0,0,0,0.5)', padding: { x: 4, y: 2 } }); // 创建审批文本
+    this.agentInfoText.setScrollFactor(0); // 固定审批文本
+    this.agentInfoText.setDepth(1500); // 设置审批文本深度
     this.autoController = new AutoTextController(this); // 创建自动控制器
     this.autoController.drawSmallIcons(this.root); // 绘制图标
     this.visibility = new UIVisibilityManager(this); // 创建显隐管理器
@@ -59,6 +72,18 @@ export default class UIScene extends Phaser.Scene { // 定义UI场景
     const seasonLabel = seasonNames[state.season]; // 获取季节名称
     const weekLabel = weekNames[state.weekDay] ?? '周?'; // 获取星期标签
     this.seasonText.setText(`第${state.year}年 ${seasonLabel} 第${state.day}日 ${weekLabel}`); // 更新季节文本
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  public updateBuildStatus(active: boolean, blueprintName: string): void { // 更新建造状态显示
+    this.buildInfoText.setText(active ? `建造：${blueprintName}` : '建造：未激活'); // 更新建造文本
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  public updatePermissionRole(role: Role): void { // 更新权限显示
+    this.permissionText.setText(`角色：${role}`); // 更新权限文本
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  public updateAgentQueue(count: number): void { // 更新审批队列显示
+    this.agentInfoText.setText(`待审批：${count}`); // 更新审批文本
   } // 方法结束
   // 分隔注释 // 保持行有注释
   private setupInputs(): void { // 配置输入事件

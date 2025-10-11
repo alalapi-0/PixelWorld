@@ -1,9 +1,9 @@
-import { Command } from '../agents/CommandTypes'; // 引入命令类型供注释使用
+import { Command, Deadline, TimeWindow } from '../agents/CommandTypes'; // 引入命令类型供注释使用
 // 空行用于分隔
 export type AgentTask = // 定义任务联合类型
-  | { type: 'build'; x: number; y: number; blueprintId: string; cost?: { id: string; count: number }[] } // 建造任务
-  | { type: 'collect'; itemId: string; count: number; from: { x: number; y: number } | 'STOCKPILE'; to: { x: number; y: number } | 'STOCKPILE' } // 采集任务
-  | { type: 'haul'; itemId: string; count: number; from: { x: number; y: number } | 'STOCKPILE'; to: { x: number; y: number } | 'STOCKPILE' }; // 搬运任务
+  | { type: 'build'; x: number; y: number; blueprintId: string; cost?: { id: string; count: number }[]; timeWindow?: TimeWindow; deadline?: Deadline; silent?: boolean } // 建造任务
+  | { type: 'collect'; itemId: string; count: number; from: { x: number; y: number } | 'STOCKPILE'; to: { x: number; y: number } | 'STOCKPILE'; timeWindow?: TimeWindow; deadline?: Deadline; silent?: boolean } // 采集任务
+  | { type: 'haul'; itemId: string; count: number; from: { x: number; y: number } | 'STOCKPILE'; to: { x: number; y: number } | 'STOCKPILE'; timeWindow?: TimeWindow; deadline?: Deadline; silent?: boolean }; // 搬运任务
 // 空行用于分隔
 export type AgentTaskState = 'pending' | 'approved' | 'rejected' | 'executing' | 'executed'; // 定义任务状态枚举
 // 空行用于分隔

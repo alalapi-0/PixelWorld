@@ -1,0 +1,10 @@
+{
+  "achievements": [
+    {"id": "build_road_10", "match": {"type": "build", "blueprintId": "road"}, "threshold": 10, "title": "道路工匠"},
+    {"id": "on_time_20", "match": {"perf": "on_time"}, "threshold": 20, "title": "守时达人"},
+    {"id": "night_ops_1", "match": {"perf": "night_shift"}, "threshold": 1, "title": "夜猫子工程"}
+  ],
+  "questMappings": [
+    {"event": "build", "mapTo": {"type": "collect", "itemId": "wood", "count": 1}, "when": {"blueprintId": "house"}}
+  ]
+}

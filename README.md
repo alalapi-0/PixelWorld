@@ -403,3 +403,14 @@ jobs:
   3. 标题页按 Enter 进入地图，方向键移动角色，`R` 键重置出生点。
 - 自定义素材放入 `assets/user_imports/**` 后，运行导入与校验脚本即可自动覆盖前端使用的 `assets/build/**`，前端会优先读取新素材。
 - 后续规划：将地图数据切换为后端 `/world/chunk` 实时加载、扩展 UI（任务/对话/背包）并接入 WebSocket 同步。
+
+### 批令 × 任务 / 成就 / 时间联动
+
+- **批令 DSL**：新增 `in 08:00-18:00`、`before 21:00`、`due 2d` 语法，所有时间均解析为纯文本字段，保持“只读二进制”承诺。
+- **策略文件**：`assets/agents/policies.json` 描述工作时段、宵禁、静音任务与节假日；修改后仅触发文本热重载。
+- **Quest & 成就映射**：`assets/agents/kpi_rules.json` 同时提供 `questMappings` 与 `achievements` 阈值，`QuestBridge` 与 `AchievementRules` 会根据代理事件推进 `QuestStoreRuntime` 并调用 `AchievementManager.unlock()`。
+- **时间管控**：`WorkCalendar` 统一处理时间窗、宵禁与截止；`WorkerAgent` 在执行前会复核时间策略，不合规任务将改期并写入 `AgentLog`。
+- **绩效与面板**：`ScheduleBoard` 汇总今日批令排程，`PerformancePanel` 展示按时 / 超时 / 夜间 / 静音统计与成就进度，命令 `make schedule`、`make perf` 可直接进入场景。
+- **报告导出**：执行 `make kpi-report` 或 `python3 scripts/export_kpi_report.py`，生成纯文本 KPI 汇总，便于审计时间策略与成就阈值。
+
+上述所有流程仅读写 TypeScript / JSON / Markdown / Makefile / Python 文本，严格避免生成或修改任何二进制文件。

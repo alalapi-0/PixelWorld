@@ -5,6 +5,7 @@ import UIScene from './scenes/UIScene'; // 引入UI场景
 import GlossaryScene from './ui/glossary/GlossaryScene'; // 引入图鉴场景
 import AchievementScene from './ui/achievements/AchievementScene'; // 引入成就场景
 import ResourceBrowserScene from './ui/ResourceBrowserScene'; // 引入资源浏览器场景
+import ResourceManagerScene from './ui/ResourceManagerScene'; // 引入素材管理器场景
 import { PIXEL_CONFIG } from './config/pixel'; // 引入像素渲染配置
 // 分隔注释 // 保持行有注释
 export function createMiniWorldGame(): Phaser.Game { // 导出创建游戏实例的函数
@@ -14,7 +15,7 @@ export function createMiniWorldGame(): Phaser.Game { // 导出创建游戏实例
     height: 320, // 设置游戏高度
     parent: 'app', // 挂载到页面上的节点
     backgroundColor: '#1d1f21', // 设置背景颜色
-    scene: [BootScene, WorldScene, UIScene, GlossaryScene, AchievementScene, ResourceBrowserScene], // 注册场景顺序
+    scene: [BootScene, WorldScene, UIScene, GlossaryScene, AchievementScene, ResourceBrowserScene, ResourceManagerScene], // 注册场景顺序
     scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH, zoom: 2 }, // 缩放与居中设置
     dom: { createContainer: true }, // 启用DOM容器以嵌入音频控件
     render: {

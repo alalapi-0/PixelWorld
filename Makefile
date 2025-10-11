@@ -1,4 +1,4 @@
-.PHONY: miniworld-dev miniworld-build miniworld-test user-import user-import-move user-import-rules user-preview build-all miniworld-preview
+.PHONY: miniworld-dev miniworld-build miniworld-test user-import user-import-move user-import-rules user-preview build-all miniworld-preview miniworld-manager # 声明新增命令
 
 miniworld-dev:
 	pnpm --filter miniworld dev
@@ -10,7 +10,10 @@ miniworld-test:
 	pnpm --filter miniworld test
 
 miniworld-preview:
-	pnpm --filter miniworld dev -- --scene=ResourceBrowser
+        pnpm --filter miniworld dev -- --scene=ResourceBrowser
+
+miniworld-manager: # 启动素材管理器场景
+        pnpm --filter miniworld dev -- --scene=ResourceManager # 通过命令行参数进入管理器
 
 user-import:
 	python3 scripts/import_user_assets.py

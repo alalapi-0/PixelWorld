@@ -104,6 +104,14 @@ python -m http.server 8000
 - `make user-import`：调用 Python 脚本将 `assets/user_imports/` 复制到 `assets/build/`，生成 `index.json`，并保持所有操作为纯文本。
 - `make user-preview`：快速重建 `assets/preview_index.json`，并在 `logs/user_imports.log` 中写入明细，便于 Phaser 端调试。
 
+### 素材管理器（只读二进制）
+
+- 入口：在游戏内按下 `M`，或执行 `make miniworld-manager` 直接打开 `ResourceManagerScene`。
+- 功能：基于 `assets/preview_index.json` 构建资源列表，支持搜索、类型与标签筛选、批量添加标签/集合，并可编辑描述。
+- 数据存储：所有修改写入 `assets/metadata/tags.json`、`assets/metadata/descriptions.json`、`assets/metadata/collections.json`，均为纯文本 JSON，不生成任何二进制文件。
+- AI 建议：调用前端 `AiDescribeStub` 依据文件名与类别生成“离线规则”描述，需手动点击保存后才会写入 JSON。
+- 安全性：只读取 `assets/build/**` 现有文件，不生成缩略图、不对音频执行转码，控制台会输出 `✅ ResourceManager initialized (text-only)`、`✅ Metadata loaded/saved via JSON`、`✅ No binary generated` 以便审计。
+
 加载顺序：
 
 1. `@sharedAssets` → 指向仓库根的 `assets/user_imports/`

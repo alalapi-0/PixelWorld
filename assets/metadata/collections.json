@@ -1,0 +1,7 @@
+{
+  "starter-pack": [
+    "images:ui/IconSet.png",
+    "images:characters/animals.png",
+    "audio:audio/bgm/bgm_battle.ogg"
+  ]
+}

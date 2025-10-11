@@ -1,0 +1,5 @@
+{
+  "images:characters/Actor1.png": ["npc", "human", "pack:actor"],
+  "images:effects/Fire3.png": ["effect", "fire"],
+  "audio:audio/se/sfx_attack.ogg": ["sfx", "combat"]
+}

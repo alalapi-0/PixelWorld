@@ -1,4 +1,4 @@
-.PHONY: miniworld-dev miniworld-build miniworld-test user-import user-import-move user-import-rules user-preview build-all
+.PHONY: miniworld-dev miniworld-build miniworld-test user-import user-import-move user-import-rules user-preview build-all miniworld-preview
 
 miniworld-dev:
 	pnpm --filter miniworld dev
@@ -8,6 +8,9 @@ miniworld-build:
 
 miniworld-test:
 	pnpm --filter miniworld test
+
+miniworld-preview:
+	pnpm --filter miniworld dev -- --scene=ResourceBrowser
 
 user-import:
 	python3 scripts/import_user_assets.py

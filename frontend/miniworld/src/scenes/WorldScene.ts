@@ -1,5 +1,5 @@
 import Phaser from 'phaser'; // 引入Phaser框架
-import { KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_INTERACT, KEY_SAVE, KEY_LOAD, KEY_GLOSSARY, KEY_ACHIEVEMENT, KEY_SHOP, KEY_SPEED_TOGGLE, KEY_JOURNAL, KEY_BUILD_MODE, KEY_BUILD_APPROVE, KEY_BUILD_REJECT } from '../config/keys'; // 引入按键常量
+import { KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_INTERACT, KEY_SAVE, KEY_LOAD, KEY_GLOSSARY, KEY_ACHIEVEMENT, KEY_SHOP, KEY_SPEED_TOGGLE, KEY_JOURNAL, KEY_BUILD_MODE, KEY_BUILD_APPROVE, KEY_BUILD_REJECT, KEY_RESOURCE_BROWSER } from '../config/keys'; // 引入按键常量
 import { genDemoMap, isWalkable, layerOf } from '../world/TileRules'; // 引入地图工具
 import { TileCell, GridPos } from '../world/Types'; // 引入类型定义
 import { getNodeAt, removeNodeAt } from '../world/Nodes'; // 引入资源节点接口
@@ -60,6 +60,7 @@ export default class WorldScene extends Phaser.Scene { // 定义世界场景
   private timeScaleBoost!: TimeScaleBoost; // 快进控制
   private shopKey!: Phaser.Input.Keyboard.Key; // 商店交互键
   private speedKey!: Phaser.Input.Keyboard.Key; // 快进切换键
+  private resourceBrowserKey!: Phaser.Input.Keyboard.Key; // 资源浏览器快捷键
   private hudScene?: UIScene; // UI场景引用
   private pendingTimeState?: ReturnType<TimeSystem['serialize']>; // 待恢复时间数据
   private pendingShopState?: ReturnType<ShopStore['toJSON']>; // 待恢复商店数据
@@ -374,6 +375,10 @@ export default class WorldScene extends Phaser.Scene { // 定义世界场景
     this.journalKey.on('down', () => { // 监听日志键按下
       this.toggleQuestJournal(); // 切换任务日志界面
     }); // 监听结束
+    this.resourceBrowserKey = this.input.keyboard.addKey(KEY_RESOURCE_BROWSER); // 创建资源浏览器键
+    this.resourceBrowserKey.on('down', () => { // 监听资源浏览器键按下
+      this.openResourceBrowser(); // 打开资源浏览器
+    }); // 监听结束
     this.buildToggleKey = this.input.keyboard.addKey(KEY_BUILD_MODE); // 创建建造模式键
     this.buildToggleKey.on('down', () => { // 监听建造模式键按下
       this.toggleBuildMode(); // 切换建造模式
@@ -409,7 +414,7 @@ export default class WorldScene extends Phaser.Scene { // 定义世界场景
     const source = this.registry.get('assetSource') as string | undefined; // 读取素材来源
     this.hudSourceText = this.add.text(8, 8, `素材来源：${source ?? '占位纹理'}`, { fontFamily: 'sans-serif', fontSize: '12px', color: '#ffffff', backgroundColor: 'rgba(0,0,0,0.66)', padding: { x: 4, y: 2 } }); // 创建左上角文本
     this.hudSourceText.setDepth(1200); // 设置渲染深度
-    this.hudControlsText = this.add.text(312, 312, 'Z 采集 / U 建造 / Ctrl+Z 撤销 / Ctrl+Y 重做 / Y 审批 / N 拒绝 / E 商店 / J 日志 / Shift 倍速 / A 自动 / S 保存或跳过 / L 读取 / G 图鉴 / H 成就', { fontFamily: 'sans-serif', fontSize: '12px', color: '#ffffff', backgroundColor: 'rgba(0,0,0,0.66)', padding: { x: 4, y: 2 }, align: 'right' }); // 创建右下角提示
+    this.hudControlsText = this.add.text(312, 312, 'Z 采集 / U 建造 / Ctrl+Z 撤销 / Ctrl+Y 重做 / Y 审批 / N 拒绝 / E 商店 / J 日志 / Shift 倍速 / A 自动 / S 保存或跳过 / L 读取 / G 图鉴 / H 成就 / R 资源浏览器', { fontFamily: 'sans-serif', fontSize: '12px', color: '#ffffff', backgroundColor: 'rgba(0,0,0,0.66)', padding: { x: 4, y: 2 }, align: 'right' }); // 创建右下角提示
     this.hudControlsText.setOrigin(1, 1); // 设置锚点
     this.hudControlsText.setDepth(1200); // 设置深度
   } // 方法结束
@@ -1164,6 +1169,11 @@ export default class WorldScene extends Phaser.Scene { // 定义世界场景
   private openGlossaryScene(): void { // 打开图鉴场景
     this.scene.pause(); // 暂停世界
     this.scene.launch('GlossaryScene'); // 启动图鉴
+  } // 方法结束
+  // 分隔注释 // 保持行有注释
+  private openResourceBrowser(): void { // 打开资源浏览器
+    this.scene.pause(); // 暂停世界
+    this.scene.launch('ResourceBrowserScene'); // 启动资源浏览器
   } // 方法结束
   // 分隔注释 // 保持行有注释
   private openAchievementScene(): void { // 打开成就场景

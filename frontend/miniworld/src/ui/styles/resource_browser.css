@@ -1,0 +1,18 @@
+/* 资源浏览器专用样式：仅影响音频控件的外观 */
+.resource-browser-audio {
+  width: 180px;
+  max-width: 220px;
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 6px;
+  padding: 4px;
+}
+
+.resource-browser-audio::-webkit-media-controls-panel {
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.resource-browser-audio::-webkit-media-controls-play-button,
+.resource-browser-audio::-webkit-media-controls-pause-button {
+  color: #ffffff;
+}
+

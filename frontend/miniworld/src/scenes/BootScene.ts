@@ -18,6 +18,12 @@ export default class BootScene extends Phaser.Scene { // 定义启动场景
     if (this.loadingLabel) { // 如果存在文本
       this.loadingLabel.setText('加载完成'); // 更新文案
     } // 条件结束
-    this.scene.start('WorldScene'); // 切换到世界场景
+    const requested = (window as typeof window & { __MINIWORLD_START_SCENE__?: string }).__MINIWORLD_START_SCENE__;
+    const normalized = requested?.toLowerCase() ?? '';
+    let target: string = 'WorldScene';
+    if (normalized === 'resourcebrowser' || normalized === 'resourcebrowserscene') {
+      target = 'ResourceBrowserScene';
+    }
+    this.scene.start(target); // 根据参数切换到目标场景
   } // 方法结束
 } // 类结束

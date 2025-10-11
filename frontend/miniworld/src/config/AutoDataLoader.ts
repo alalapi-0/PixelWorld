@@ -51,6 +51,17 @@ const manualShopModules = import.meta.glob('../../../../assets/shops/*.json', { 
 // 收集潜在人工任务文件
 const manualQuestModules = import.meta.glob('../../../../assets/quests/*.json', { eager: true }) as Record<string, unknown>; // 收集quests目录JSON
 
+// 定义需要监控哈希的文件白名单
+const AUTO_HASH_PATHS = [ // 维护需要计算哈希的文本路径
+  'assets/auto/blueprints_auto.json', // 蓝图自动文件路径
+  'assets/auto/shops_auto.json', // 商店自动文件路径
+  'assets/auto/quests_auto.json', // 任务自动文件路径
+  'scripts/rules_mapping.json', // 规则映射文件路径
+]; // 数组结束
+
+// 定义Vite文件哈希端点路径前缀
+const FILE_HASH_ENDPOINT = '/__fileHash?path='; // 热重载哈希查询端点
+
 // 帮助函数：从glob结果中提取真正的数据对象
 function extractModule<T>(modules: Record<string, unknown>, key: string): T | null { // 根据键名提取模块
   const module = modules[key]; // 获取模块对象
@@ -170,4 +181,41 @@ export function getAutoShops(): AutoShop[] { // 提供获取自动商店的方�
 // 对外导出任务数据访问函数
 export function getAutoQuests(): AutoQuest[] { // 提供获取自动任务的方法
   return filteredAutoQuests.slice(); // 返回浅拷贝
+} // 函数结束
+
+// 内部工具：从开发端点获取单个文件的哈希信息
+async function fetchHash(path: string): Promise<{ mtime?: string; sha1?: string }> { // 定义哈希获取函数
+  if (typeof fetch === 'undefined') { // 若运行在无fetch环境
+    return {}; // 返回空结果
+  } // 分支结束
+  const response = await fetch(`${FILE_HASH_ENDPOINT}${encodeURIComponent(path)}`); // 请求哈希端点
+  if (!response.ok) { // 若响应异常
+    throw new Error(`Failed to fetch hash for ${path}`); // 抛出错误供上层捕获
+  } // 分支结束
+  return (await response.json()) as { mtime?: string; sha1?: string }; // 返回解析后的JSON
+} // 函数结束
+
+// 对外导出：批量获取所有自动文件哈希
+export async function fetchAutoHashes(): Promise<Record<string, { mtime?: string; sha1?: string }>> { // 定义批量哈希函数
+  const entries = await Promise.all( // 并行请求所有路径
+    AUTO_HASH_PATHS.map(async (path) => { // 遍历路径数组
+      try { // 捕获单个请求的异常
+        const info = await fetchHash(path); // 获取哈希信息
+        return [path, info] as const; // 返回键值对
+      } catch (error) { // 捕获错误
+        console.warn('[AutoDataLoader] hash fetch failed', path, error); // 输出警告
+        return [path, {}] as const; // 返回空结果保持键存在
+      } // 分支结束
+    }), // 遍历结束
+  ); // Promise结束
+  return Object.fromEntries(entries); // 将键值对转换为对象
+} // 函数结束
+
+// 对外导出：一次性读取全部自动定义
+export async function fetchAllAuto(): Promise<{ blueprints: Blueprint[]; shops: Shop[]; quests: QuestDef[] }> { // 定义批量读取函数
+  return { // 返回包含全部自动数据的对象
+    blueprints: getAutoBlueprints(), // 返回蓝图列表
+    shops: getAutoShops(), // 返回商店列表
+    quests: getAutoQuests(), // 返回任务列表
+  }; // 对象结束
 } // 函数结束

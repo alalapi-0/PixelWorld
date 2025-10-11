@@ -1,0 +1,393 @@
+{
+  "items": [
+    {
+      "src": "assets/user_imports/user_manifest.json",
+      "issue": "unsupported-extension",
+      "reasons": [
+        "ext:.json"
+      ]
+    },
+    {
+      "src": "assets/user_imports/README.md",
+      "issue": "unsupported-extension",
+      "reasons": [
+        "ext:.md"
+      ]
+    },
+    {
+      "src": "assets/user_imports/characters/faces/Actor3.png",
+      "issue": "duplicate-target",
+      "existing": "assets/user_imports/characters/main/Actor3.png",
+      "target": "assets/build/images/characters/char-actor-set-3.png"
+    },
+    {
+      "src": "assets/user_imports/characters/faces/Actor2.png",
+      "issue": "duplicate-target",
+      "existing": "assets/user_imports/characters/main/Actor2.png",
+      "target": "assets/build/images/characters/char-actor-set-2.png"
+    },
+    {
+      "src": "assets/user_imports/characters/faces/Actor5.png",
+      "issue": "duplicate-target",
+      "existing": "assets/user_imports/characters/main/Actor5.png",
+      "target": "assets/build/images/characters/char-actor-set-5.png"
+    },
+    {
+      "src": "assets/user_imports/characters/faces/Actor1.png",
+      "issue": "duplicate-target",
+      "existing": "assets/user_imports/characters/main/Actor1.png",
+      "target": "assets/build/images/characters/char-actor-set-1.png"
+    },
+    {
+      "src": "assets/user_imports/characters/faces/People4.png",
+      "issue": "duplicate-target",
+      "existing": "assets/user_imports/characters/main/People4.png",
+      "target": "assets/build/images/characters/char-people-set-4.png"
+    },
+    {
+      "src": "assets/user_imports/characters/faces/Evil.png",
+      "issue": "duplicate-target",
+      "existing": "assets/user_imports/characters/main/Evil.png",
+      "target": "assets/build/images/characters/char-evil.png"
+    },
+    {
+      "src": "assets/user_imports/characters/faces/People2.png",
+      "issue": "duplicate-target",
+      "existing": "assets/user_imports/characters/main/People2.png",
+      "target": "assets/build/images/characters/char-people-set-2.png"
+    },
+    {
+      "src": "assets/user_imports/characters/faces/Actor4.png",
+      "issue": "duplicate-target",
+      "existing": "assets/user_imports/characters/main/Actor4.png",
+      "target": "assets/build/images/characters/char-actor-set-4.png"
+    },
+    {
+      "src": "assets/user_imports/characters/faces/Spiritual.png",
+      "issue": "duplicate-target",
+      "existing": "assets/user_imports/characters/main/Spiritual.png",
+      "target": "assets/build/images/characters/char-spiritual.png"
+    },
+    {
+      "src": "assets/user_imports/characters/faces/People3.png",
+      "issue": "duplicate-target",
+      "existing": "assets/user_imports/characters/main/People3.png",
+      "target": "assets/build/images/characters/char-people-set-3.png"
+    },
+    {
+      "src": "assets/user_imports/characters/faces/People1.png",
+      "issue": "duplicate-target",
+      "existing": "assets/user_imports/characters/main/People1.png",
+      "target": "assets/build/images/characters/char-people-set-1.png"
+    },
+    {
+      "src": "assets/user_imports/characters/faces/Monster1.png",
+      "issue": "duplicate-target",
+      "existing": "assets/user_imports/characters/main/Monster1.png",
+      "target": "assets/build/images/characters/char-monster-set-1.png"
+    },
+    {
+      "src": "assets/user_imports/audio/se/宝箱.ogg",
+      "issue": "duplicate-target",
+      "existing": "assets/user_imports/audio/se/ミッションクリア.ogg",
+      "target": "assets/build/audio/se/se-clip.ogg"
+    },
+    {
+      "src": "assets/user_imports/tiles/tilesets/Inside_B.txt",
+      "issue": "unsupported-extension",
+      "reasons": [
+        "ext:.txt",
+        "parent:assets/user_imports/tiles/tilesets"
+      ]
+    },
+    {
+      "src": "assets/user_imports/tiles/tilesets/World_A2.txt",
+      "issue": "unsupported-extension",
+      "reasons": [
+        "ext:.txt",
+        "parent:assets/user_imports/tiles/tilesets"
+      ]
+    },
+    {
+      "src": "assets/user_imports/tiles/tilesets/Dungeon_A4.txt",
+      "issue": "unsupported-extension",
+      "reasons": [
+        "ext:.txt",
+        "parent:assets/user_imports/tiles/tilesets"
+      ]
+    },
+    {
+      "src": "assets/user_imports/tiles/tilesets/Outside_A4.txt",
+      "issue": "unsupported-extension",
+      "reasons": [
+        "ext:.txt",
+        "parent:assets/user_imports/tiles/tilesets"
+      ]
+    },
+    {
+      "src": "assets/user_imports/tiles/tilesets/Inside_C.txt",
+      "issue": "unsupported-extension",
+      "reasons": [
+        "ext:.txt",
+        "parent:assets/user_imports/tiles/tilesets"
+      ]
+    },
+    {
+      "src": "assets/user_imports/tiles/tilesets/Dungeon_A5.txt",
+      "issue": "unsupported-extension",
+      "reasons": [
+        "ext:.txt",
+        "parent:assets/user_imports/tiles/tilesets"
+      ]
+    },
+    {
+      "src": "assets/user_imports/tiles/tilesets/Dungeon_A1.txt",
+      "issue": "unsupported-extension",
+      "reasons": [
+        "ext:.txt",
+        "parent:assets/user_imports/tiles/tilesets"
+      ]
+    },
+    {
+      "src": "assets/user_imports/tiles/tilesets/Outside_A1.txt",
+      "issue": "unsupported-extension",
+      "reasons": [
+        "ext:.txt",
+        "parent:assets/user_imports/tiles/tilesets"
+      ]
+    },
+    {
+      "src": "assets/user_imports/tiles/tilesets/World_A1.txt",
+      "issue": "unsupported-extension",
+      "reasons": [
+        "ext:.txt",
+        "parent:assets/user_imports/tiles/tilesets"
+      ]
+    },
+    {
+      "src": "assets/user_imports/tiles/tilesets/Outside_B.txt",
+      "issue": "unsupported-extension",
+      "reasons": [
+        "ext:.txt",
+        "parent:assets/user_imports/tiles/tilesets"
+      ]
+    },
+    {
+      "src": "assets/user_imports/tiles/tilesets/Inside_A4.txt",
+      "issue": "unsupported-extension",
+      "reasons": [
+        "ext:.txt",
+        "parent:assets/user_imports/tiles/tilesets"
+      ]
+    },
+    {
+      "src": "assets/user_imports/tiles/tilesets/Outside_A2.txt",
+      "issue": "unsupported-extension",
+      "reasons": [
+        "ext:.txt",
+        "parent:assets/user_imports/tiles/tilesets"
+      ]
+    },
+    {
+      "src": "assets/user_imports/tiles/tilesets/Inside_A5.txt",
+      "issue": "unsupported-extension",
+      "reasons": [
+        "ext:.txt",
+        "parent:assets/user_imports/tiles/tilesets"
+      ]
+    },
+    {
+      "src": "assets/user_imports/tiles/tilesets/World_B.txt",
+      "issue": "unsupported-extension",
+      "reasons": [
+        "ext:.txt",
+        "parent:assets/user_imports/tiles/tilesets"
+      ]
+    },
+    {
+      "src": "assets/user_imports/tiles/tilesets/Dungeon_A2.txt",
+      "issue": "unsupported-extension",
+      "reasons": [
+        "ext:.txt",
+        "parent:assets/user_imports/tiles/tilesets"
+      ]
+    },
+    {
+      "src": "assets/user_imports/tiles/tilesets/Outside_A5.txt",
+      "issue": "unsupported-extension",
+      "reasons": [
+        "ext:.txt",
+        "parent:assets/user_imports/tiles/tilesets"
+      ]
+    },
+    {
+      "src": "assets/user_imports/tiles/tilesets/Outside_A3.txt",
+      "issue": "unsupported-extension",
+      "reasons": [
+        "ext:.txt",
+        "parent:assets/user_imports/tiles/tilesets"
+      ]
+    },
+    {
+      "src": "assets/user_imports/tiles/tilesets/Inside_A1.txt",
+      "issue": "unsupported-extension",
+      "reasons": [
+        "ext:.txt",
+        "parent:assets/user_imports/tiles/tilesets"
+      ]
+    },
+    {
+      "src": "assets/user_imports/tiles/tilesets/Dungeon_B.txt",
+      "issue": "unsupported-extension",
+      "reasons": [
+        "ext:.txt",
+        "parent:assets/user_imports/tiles/tilesets"
+      ]
+    },
+    {
+      "src": "assets/user_imports/tiles/tilesets/Inside_A2.txt",
+      "issue": "unsupported-extension",
+      "reasons": [
+        "ext:.txt",
+        "parent:assets/user_imports/tiles/tilesets"
+      ]
+    },
+    {
+      "src": "assets/user_imports/tiles/tilesets/Dungeon_C.txt",
+      "issue": "unsupported-extension",
+      "reasons": [
+        "ext:.txt",
+        "parent:assets/user_imports/tiles/tilesets"
+      ]
+    },
+    {
+      "src": "assets/user_imports/tiles/tilesets/Outside_C.txt",
+      "issue": "unsupported-extension",
+      "reasons": [
+        "ext:.txt",
+        "parent:assets/user_imports/tiles/tilesets"
+      ]
+    },
+    {
+      "src": "assets/user_imports/tiles/battlebacks1/GrassMaze.png",
+      "issue": "duplicate-target",
+      "existing": "assets/user_imports/tiles/battlebacks2/GrassMaze.png",
+      "target": "assets/build/images/tiles/tile-grassmaze.png"
+    },
+    {
+      "src": "assets/user_imports/tiles/battlebacks1/Ship.png",
+      "issue": "duplicate-target",
+      "existing": "assets/user_imports/tiles/battlebacks2/Ship.png",
+      "target": "assets/build/images/tiles/tile-ship.png"
+    },
+    {
+      "src": "assets/user_imports/tiles/battlebacks1/PoisonSwamp.png",
+      "issue": "duplicate-target",
+      "existing": "assets/user_imports/tiles/battlebacks2/PoisonSwamp.png",
+      "target": "assets/build/images/tiles/tile-poisonswamp.png"
+    },
+    {
+      "src": "assets/user_imports/tiles/battlebacks1/Wasteland.png",
+      "issue": "duplicate-target",
+      "existing": "assets/user_imports/tiles/battlebacks2/Wasteland.png",
+      "target": "assets/build/images/tiles/tile-wasteland.png"
+    },
+    {
+      "src": "assets/user_imports/tiles/battlebacks1/LavaCave.png",
+      "issue": "duplicate-target",
+      "existing": "assets/user_imports/tiles/battlebacks2/LavaCave.png",
+      "target": "assets/build/images/tiles/tile-lavacave.png"
+    },
+    {
+      "src": "assets/user_imports/tiles/battlebacks1/DarkSpace.png",
+      "issue": "duplicate-target",
+      "existing": "assets/user_imports/tiles/battlebacks2/DarkSpace.png",
+      "target": "assets/build/images/tiles/tile-darkspace.png"
+    },
+    {
+      "src": "assets/user_imports/tiles/battlebacks1/Snowfield.png",
+      "issue": "duplicate-target",
+      "existing": "assets/user_imports/tiles/battlebacks2/Snowfield.png",
+      "target": "assets/build/images/tiles/tile-snowfield.png"
+    },
+    {
+      "src": "assets/user_imports/tiles/battlebacks1/Tent.png",
+      "issue": "duplicate-target",
+      "existing": "assets/user_imports/tiles/battlebacks2/Tent.png",
+      "target": "assets/build/images/tiles/tile-tent.png"
+    },
+    {
+      "src": "assets/user_imports/tiles/battlebacks1/InBody.png",
+      "issue": "duplicate-target",
+      "existing": "assets/user_imports/tiles/battlebacks2/InBody.png",
+      "target": "assets/build/images/tiles/tile-inbody.png"
+    },
+    {
+      "src": "assets/user_imports/tiles/battlebacks1/Stone3.png",
+      "issue": "duplicate-target",
+      "existing": "assets/user_imports/tiles/battlebacks2/Stone3.png",
+      "target": "assets/build/images/tiles/tile-stone-set-3.png"
+    },
+    {
+      "src": "assets/user_imports/tiles/battlebacks1/IceMaze.png",
+      "issue": "duplicate-target",
+      "existing": "assets/user_imports/tiles/battlebacks2/IceMaze.png",
+      "target": "assets/build/images/tiles/tile-icemaze.png"
+    },
+    {
+      "src": "assets/user_imports/tiles/battlebacks1/Clouds.png",
+      "issue": "duplicate-target",
+      "existing": "assets/user_imports/tiles/battlebacks2/Clouds.png",
+      "target": "assets/build/images/tiles/tile-clouds.png"
+    },
+    {
+      "src": "assets/user_imports/tiles/battlebacks1/Stone2.png",
+      "issue": "duplicate-target",
+      "existing": "assets/user_imports/tiles/battlebacks2/Stone2.png",
+      "target": "assets/build/images/tiles/tile-stone-set-2.png"
+    },
+    {
+      "src": "assets/user_imports/tiles/battlebacks1/Grassland.png",
+      "issue": "duplicate-target",
+      "existing": "assets/user_imports/tiles/battlebacks2/Grassland.png",
+      "target": "assets/build/images/tiles/tile-grassland.png"
+    },
+    {
+      "src": "assets/user_imports/tiles/battlebacks1/Sky.png",
+      "issue": "duplicate-target",
+      "existing": "assets/user_imports/tiles/battlebacks2/Sky.png",
+      "target": "assets/build/images/tiles/tile-sky.png"
+    },
+    {
+      "src": "assets/user_imports/tiles/battlebacks1/Stone1.png",
+      "issue": "duplicate-target",
+      "existing": "assets/user_imports/tiles/battlebacks2/Stone1.png",
+      "target": "assets/build/images/tiles/tile-stone-set-1.png"
+    },
+    {
+      "src": "assets/user_imports/tiles/battlebacks1/Desert.png",
+      "issue": "duplicate-target",
+      "existing": "assets/user_imports/tiles/battlebacks2/Desert.png",
+      "target": "assets/build/images/tiles/tile-desert.png"
+    },
+    {
+      "src": "assets/user_imports/tiles/battlebacks1/IceCave.png",
+      "issue": "duplicate-target",
+      "existing": "assets/user_imports/tiles/battlebacks2/IceCave.png",
+      "target": "assets/build/images/tiles/tile-icecave.png"
+    },
+    {
+      "src": "assets/user_imports/tiles/battlebacks1/DirtCave.png",
+      "issue": "duplicate-target",
+      "existing": "assets/user_imports/tiles/battlebacks2/DirtCave.png",
+      "target": "assets/build/images/tiles/tile-dirtcave.png"
+    },
+    {
+      "src": "assets/build/.gitkeep",
+      "issue": "unsupported-extension",
+      "reasons": [
+        "ext:"
+      ]
+    }
+  ]
+}

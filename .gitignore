@@ -167,6 +167,11 @@ Thumbs.db
 assets/build/**
 !assets/build/.gitkeep
 !assets/build/asset_index.json
+!assets/build/audio/
+!assets/build/audio/**
+!assets/build/images/
+!assets/build/images/**
+!assets/build/tiles/**
 
 !assets/user_imports/README.md
 !assets/user_imports/user_manifest.json

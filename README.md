@@ -143,6 +143,33 @@ python -m http.server 8000
    - `make user-import-move`：以移动模式整理素材，适合迁移后清理源目录。
    - `make user-import-rules`：强制使用 `assets/mapping/import_rules.json` 覆盖默认映射。
    - `make user-preview`：基于最新的 `index.json` 重建 `preview_index.json`，同时在终端输出统计。
+
+## 素材自动识别与安全改名
+
+- **原则**：严格遵守“只读头部、仅移动文件”的策略，任何脚本都不会重新编码 PNG/OGG 等二进制内容。
+- **命名规范**：统一采用 `kebab-case` 并附加分类前缀，例如：
+  - `images/characters/char-actor-set-1.png`
+  - `images/tiles/tile-gate-2--large--single.png`（`!` → `--large`，`$` → `--single`）
+  - `images/effects/fx-fire-3.png`
+  - `images/ui/ui-iconset.png`
+  - `audio/bgm/bgm-battle-3.ogg`
+  - `audio/se/se-attack-2.ogg`
+  - `audio/voice/voice-female-1.ogg`
+- **脚本说明**：
+  - `scripts/analyze_assets.py`：只读扫描 `assets/user_imports/` 与 `assets/build/`，解析 PNG 宽高、音频容器后生成改名方案（`assets/rename/rename_plan.json`）与冲突列表（`assets/rename/conflicts.json`）。
+  - `scripts/apply_renames.py`：根据改名方案执行干跑或真实改名，自动更新 `assets/build/index.json`、`assets/preview_index.json` 及 `assets/metadata/*.json` 的路径引用，并输出回滚日志 `assets/rename/revert_log.json`。
+  - `scripts/utils_png_probe.py` / `scripts/utils_audio_probe.py`：只读解析 PNG 与 OGG/MP3/WAV 头部信息，帮助判断分类与尺寸。
+- **前端兼容**：`frontend/miniworld/src/core/AssetPathResolver.ts` 读取最新的 `index.json` 与构建映射，为 Phaser Loader 提供统一 URL，旧引用也能通过索引匹配到新路径。
+- **执行流程**：
+  1. `make assets-analyze` —— 生成改名计划与冲突提示。
+  2. `make assets-rename-dry` —— 干跑模式确认将要移动的文件。
+  3. `make assets-rename-apply` —— 实际改名并同步索引/元数据。
+  4. `make assets-rename-revert` —— 若需回滚，按日志恢复原始路径。
+- **常见问题**：
+  - *命名冲突*：`assets/rename/conflicts.json` 会记录目标已存在或计划重复，可手工调整计划后再执行。
+  - *权限不足*：确保仓库目录可写，或使用管理员权限运行命令。
+  - *路径过长*：可在改名前修改命名模板，避免超过系统限制。
+
 4. **MiniWorld 前端读取方式**：
    - `frontend/miniworld/src/core/Loader.ts` 会尝试获取 `assets/preview_index.json`，逐条向 Phaser Loader 注册音频与图像资源。
    - 如果索引中的路径在构建资源映射中缺失，Loader 会自动回退到项目内置的占位纹理或音频标识，避免引发加载崩溃。

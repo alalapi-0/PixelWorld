@@ -144,4 +144,20 @@ export class WorkCalendar { // 定义工作日历类
     } // 条件结束
     return { allowed: true, enforcedSilent: requireSilent, deadlineAt: this.resolveDeadline(now, options.deadline) }; // 允许执行
   } // 方法结束
+
+  public alignToNextSlot(target: Date): Date { // 将时间对齐到下一个工作时段
+    const aligned = new Date(target.getTime()); // 复制目标时间以便修改
+    const minutes = aligned.getMinutes(); // 读取分钟数
+    const remainder = minutes % 30; // 计算与半小时的余数
+    if (remainder !== 0) { // 如果不是整半小时
+      aligned.setMinutes(minutes + (30 - remainder), 0, 0); // 向上取整到最近的半小时并清理秒
+    } else { // 否则已经对齐
+      aligned.setSeconds(0, 0); // 将秒和毫秒清零
+    } // 条件结束
+    if (!this.isWithinWorkHours(aligned) || this.isCurfew(aligned)) { // 如果仍不满足工作条件
+      const fallback = this.nextSlot(undefined, TimeSystem.addMinutes(aligned, 15), true); // 查找下一个可执行时间
+      return fallback ?? aligned; // 如果找到则返回，否则保持对齐时间
+    } // 条件结束
+    return aligned; // 返回对齐后的时间
+  } // 方法结束
 } // 类结束

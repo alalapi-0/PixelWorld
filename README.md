@@ -118,6 +118,14 @@ python -m http.server 8000
 - `assets/auto/*.json` 或 `scripts/rules_mapping.json` 变更后，`AutoDataWatcher` 会通过 `/__fileHash` 端点检测 SHA1 摘要差异，然后调用 `HotReloadBus` 广播无刷新热重载事件。
 - 三大运行时仓库 `BlueprintStoreRuntime`、`ShopStoreRuntime` 与 `QuestStoreRuntime` 会在事件驱动下替换定义表，同时保留玩家核心状态（建造进度、库存与任务完成度）。
 - `make auto-snapshot`：调用 `scripts/snapshot_auto.py`，将当前自动 JSON 文本复制到 `assets/auto/.snapshots/`，文件名携带 UTC 时间戳，方便审计与回滚。
+
+### 可视化排程器（甘特）
+
+- `make scheduler`：启动新的 `Gantt` 场景，加载 `assets/scheduler/scheduler.json` 渲染甘特视图，支持滚动、缩放与依赖箭头。
+- 工具栏：`Ctrl+S` 保存（调用 `SchedulerIO.save` 写回 JSON 并执行 `snapshot_scheduler.py`）、`scheduler-snapshot`/`scheduler-rollback`/`scheduler-validate` 分别对应快照、回滚与校验命令，全部仅操作文本。
+- 交互：拖拽任务条左右移动会对齐到下一个工作时段（半小时粒度）；拖拽右侧边缘可调整持续时间；圆点拖动到其他任务可创建依赖，重复连接会移除。
+- 状态联动：`GanttDataBridge` 会把 `status=planned` 且依赖满足的任务推送到 `AgentAPI` 审批队列，`WorkerAgent` 在执行与完成时通过事件回写进度；`HotReloadBus` 的 `rulesChanged` 与 `schedulerChanged` 事件用于提示策略或排程文件更新。
+- 安全性：所有读写仅限 `assets/scheduler/` 下的 JSON 文本，不生成任何二进制文件；校验脚本会检测依赖环、策略冲突（宵禁/假日/时间窗）与同一 `rowId` 的资源冲突，失败时返回非零退出码。
 - `make auto-rollback`：调用 `scripts/rollback_auto.py --latest`，从最近快照恢复 `assets/auto/*.json`，仅进行文本复制，不触碰任何二进制。
 - `make auto-snapshots`：调用 `scripts/list_auto_snapshots.py`，按时间倒序列出可用快照，便于挑选特定时间戳执行回滚。
 - 开发者热栏提供“⟳ 热重载”“⏪ 回滚”按钮，内部同样通过文本端点触发加载或提醒，始终遵守纯文本写入的安全准则。

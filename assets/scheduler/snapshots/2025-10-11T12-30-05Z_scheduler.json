@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "timeScale": "minutes",
+  "startAt": "2025-10-11T08:00:00Z",
+  "rows": [
+    { "id": "worker-1", "label": "工人#1" },
+    { "id": "worker-2", "label": "工人#2" }
+  ],
+  "tasks": []
+}

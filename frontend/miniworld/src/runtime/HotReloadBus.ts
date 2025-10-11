@@ -9,10 +9,17 @@ export interface RulesChangedPayload { // 声明规则数据变更事件的接�
   timestamp: number; // 记录规则变更的时间戳
 } // 接口结束
 
+// 扩展调度器变更事件负载
+export interface SchedulerChangedPayload { // 声明排程文件变更事件接口
+  path: string; // 触发变更的文件路径
+  timestamp: number; // 事件时间戳
+} // 接口结束
+
 // 声明允许订阅的事件名称常量集合
 export type HotReloadEventMap = { // 定义事件名称到负载的映射类型
   autoChanged: AutoChangedPayload; // 自动数据变更事件映射
   rulesChanged: RulesChangedPayload; // 规则数据变更事件映射
+  schedulerChanged: SchedulerChangedPayload; // 排程文件变更事件映射
 }; // 类型结束
 
 // 定义事件监听器函数类型
@@ -68,4 +75,9 @@ export function emitAutoChanged(diff: AutoChangedPayload): void { // 定义触�
 // 便捷导出以便触发规则变更事件
 export function emitRulesChanged(payload: RulesChangedPayload): void { // 定义触发规则事件的工具函数
   HotReloadBus.emit('rulesChanged', payload); // 调用总线触发规则事件
+} // 函数结束
+
+// 新增方法用于触发排程文件更新事件
+export function emitSchedulerChanged(payload: SchedulerChangedPayload): void { // 定义触发排程事件的工具函数
+  HotReloadBus.emit('schedulerChanged', payload); // 调用总线触发排程事件
 } // 函数结束

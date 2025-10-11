@@ -13,6 +13,7 @@ export interface WorkerAgentOptions { startPosition?: PathPoint; buildExecutor?:
 interface ExecutionContext { record: AgentTaskRecord; plan: ReturnType<WorkerPlanner['plan']>; decision: TaskTimeDecision; startedAt: Date; expectedMinutes: number; } // 定义执行上下文
 // 空行用于分隔
 interface WaitingInfo { record: AgentTaskRecord; resumeAt?: Date; reason: string; } // 定义等待信息
+interface ExternalPlan { resumeAt?: Date; dependsOn?: string[]; } // 定义外部计划信息
 // 空行用于分隔
 export class WorkerAgent { // 定义工人代理
   private api: AgentAPI; // 任务队列引用
@@ -26,6 +27,8 @@ export class WorkerAgent { // 定义工人代理
   private current: ExecutionContext | null = null; // 当前任务上下文
   private waiting: Map<string, WaitingInfo> = new Map(); // 等待队列
   private performance: Record<string, number> = {}; // 绩效统计
+  private statusListeners = new Set<(event: { taskId: string; status: string; progress?: number }) => void>(); // 状态监听集合
+  private externalPlans: Map<string, ExternalPlan> = new Map(); // 保存外部计划约束
   public constructor(api: AgentAPI, inventory: Inventory, planner: WorkerPlanner, log: AgentLog, options?: WorkerAgentOptions) { // 构造函数
     this.api = api; // 保存任务队列
     this.inventory = inventory; // 保存仓储
@@ -38,6 +41,12 @@ export class WorkerAgent { // 定义工人代理
   } // 构造结束
   public setBuildExecutor(handler: BuildExecutor): void { // 允许外部替换建造执行函数
     this.buildExecutor = handler; // 更新执行函数
+  } // 方法结束
+  public onStatus(listener: (event: { taskId: string; status: string; progress?: number }) => void): void { // 注册状态事件
+    this.statusListeners.add(listener); // 将监听器加入集合
+  } // 方法结束
+  public setExternalPlan(taskId: string, plan: ExternalPlan): void { // 设置外部计划约束
+    this.externalPlans.set(taskId, plan); // 存储约束
   } // 方法结束
   public tick(): void { // 周期性更新
     if (!this.current) { // 如果当前无任务
@@ -59,6 +68,16 @@ export class WorkerAgent { // 定义工人代理
       if (wait && wait.resumeAt && wait.resumeAt > now) { // 如果仍需等待
         continue; // 跳过
       } // 条件结束
+      const external = this.externalPlans.get(record.id); // 查询外部约束
+      if (external?.dependsOn && external.dependsOn.length > 0) { // 如果存在依赖列表
+        const unfinished = external.dependsOn.some((dep) => {
+          const task = this.api.get(dep); // 查询依赖任务
+          return !task || (task.state !== 'executed' && task.state !== 'executing'); // 判断是否已完成或正在执行
+        }); // 结束判断
+        if (unfinished) { // 如果依赖未满足
+          continue; // 跳过该任务
+        } // 条件结束
+      } // 条件结束
       const decision = this.calendar.evaluate({ timeWindow: record.task.timeWindow, deadline: record.task.deadline, blueprintId: (record.task as any).blueprintId, silent: record.task.silent, now }); // 调用策略评估
       if (!decision.allowed) { // 如果当前不允许执行
         this.waiting.set(record.id, { record, resumeAt: decision.nextTime, reason: decision.reason ?? 'window' }); // 写入等待
@@ -73,6 +92,7 @@ export class WorkerAgent { // 定义工人代理
       this.api.markExecuting(record.id); // 标记任务执行中
       this.current = { record, plan, decision, startedAt: now, expectedMinutes }; // 保存上下文
       this.log.info('worker', `开始任务：${record.summary}`, record.id, { cost: plan.totalCost, expectedMinutes, enforcedSilent: decision.enforcedSilent }, { timeWindow: record.task.timeWindow, deadline: record.task.deadline }); // 记录日志
+      this.emitStatus({ taskId: record.id, status: 'executing', progress: 0 }); // 广播状态变更
       return; // 只处理一个任务
     } // 循环结束
   } // 方法结束
@@ -93,6 +113,7 @@ export class WorkerAgent { // 定义工人代理
       this.api.updateReason(this.current.record.id, '执行失败'); // 写入失败原因
       this.api.resetToPending(this.current.record.id); // 将任务退回队列
       this.log.error('worker', `任务失败：${this.current.record.summary}`, this.current.record.id, undefined, { timeWindow: this.current.record.task.timeWindow, deadline: this.current.record.task.deadline }); // 记录错误
+      this.emitStatus({ taskId: this.current.record.id, status: 'error', progress: 0 }); // 广播失败
     } // 分支结束
     this.current = null; // 清空上下文
   } // 方法结束
@@ -121,6 +142,10 @@ export class WorkerAgent { // 定义工人代理
     this.api.markExecuted(this.current.record.id); // 标记完成
     this.api.updateReason(this.current.record.id, `perf:${perfTag}`); // 写入绩效
     this.log.info('worker', `完成任务：${this.current.record.summary}`, this.current.record.id, { position: this.position, perfTag, finishedAt: finishAt.toISOString() }, { timeWindow: this.current.record.task.timeWindow, perfTag, deadline: this.current.record.task.deadline }); // 记录日志
+    this.emitStatus({ taskId: this.current.record.id, status: 'done', progress: 100 }); // 广播完成
+  } // 方法结束
+  private emitStatus(event: { taskId: string; status: string; progress?: number }): void { // 内部方法：广播状态
+    this.statusListeners.forEach((listener) => listener(event)); // 遍历执行监听器
   } // 方法结束
   private incrementPerformance(tag: string): void { // 自增绩效计数
     this.performance[tag] = (this.performance[tag] ?? 0) + 1; // 更新计数

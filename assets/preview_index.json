@@ -1,1 +1,3278 @@
-{}
+{
+  "audio": [
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/Battle9.ogg"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/bgm11戦闘プレジデント・宝条.mp3"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/Field4.ogg"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/bgm15Hお使い.mp3"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/Scene4.ogg"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/Town1.ogg"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/bgm13H客.mp3"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/Theme2.ogg"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/bgm09戦闘雑魚.mp3"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/bgm17Hクラウド.mp3"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/Battle2.ogg"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/Battle3.ogg"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/Battle7.ogg"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/Battle6.ogg"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/Town3.ogg"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/Scene2.ogg"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/bgm02ステージ七番街スラム.mp3"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/Battle5.ogg"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/Dungeon1.ogg"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/Dungeon8.ogg"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/Dungeon3.ogg"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/bgm05ステージ神羅飛空艇.mp3"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/Field1.ogg"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/bgm07ステージ神羅ビル.mp3"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/Scene6.ogg"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/Dungeon7.ogg"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/bgm12戦闘セフィロス.mp3"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/Dungeon4.ogg"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/Dungeon6.ogg"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/Battle1.ogg"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/Theme4.ogg"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/bgm03ステージウォールマーケット.mp3"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/bgm06ステージコレルプリズン.mp3"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/bgm08ステージ神羅屋敷.mp3"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/Theme1.ogg"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/Town2.ogg"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/Ship.ogg"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/bgm16H敗北.mp3"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/Battle8.ogg"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/bgm04ステージ弐番魔晄炉.mp3"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/Dungeon5.ogg"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/Field3.ogg"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/Town5.ogg"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/Town4.ogg"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/Field2.ogg"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/Scene1.ogg"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/Town6.ogg"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/bgm14H仲間.mp3"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/bgm10戦闘中ボス.mp3"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/Dungeon2.ogg"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/Town7.ogg"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/Battle4.ogg"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/Theme5.ogg"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/bgm01ステージセブンスヘブン.mp3"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/Airship.ogg"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/Theme3.ogg"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/Scene3.ogg"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/Dungeon9.ogg"
+    },
+    {
+      "type": "bgm",
+      "path": "assets/build/audio/bgm/Scene5.ogg"
+    },
+    {
+      "type": "bgs",
+      "path": "assets/build/audio/bgs/Quake.ogg"
+    },
+    {
+      "type": "bgs",
+      "path": "assets/build/audio/bgs/Sea.ogg"
+    },
+    {
+      "type": "bgs",
+      "path": "assets/build/audio/bgs/Rain.ogg"
+    },
+    {
+      "type": "bgs",
+      "path": "assets/build/audio/bgs/Darkness.ogg"
+    },
+    {
+      "type": "bgs",
+      "path": "assets/build/audio/bgs/Drips.ogg"
+    },
+    {
+      "type": "bgs",
+      "path": "assets/build/audio/bgs/Storm.ogg"
+    },
+    {
+      "type": "bgs",
+      "path": "assets/build/audio/bgs/Fire.ogg"
+    },
+    {
+      "type": "bgs",
+      "path": "assets/build/audio/bgs/Wind.ogg"
+    },
+    {
+      "type": "bgs",
+      "path": "assets/build/audio/bgs/River.ogg"
+    },
+    {
+      "type": "bgs",
+      "path": "assets/build/audio/bgs/Clock.ogg"
+    },
+    {
+      "type": "me",
+      "path": "assets/build/audio/me/Gameover1.ogg"
+    },
+    {
+      "type": "me",
+      "path": "assets/build/audio/me/Item.ogg"
+    },
+    {
+      "type": "me",
+      "path": "assets/build/audio/me/Organ.ogg"
+    },
+    {
+      "type": "me",
+      "path": "assets/build/audio/me/Gameover2.ogg"
+    },
+    {
+      "type": "me",
+      "path": "assets/build/audio/me/Fanfare3.ogg"
+    },
+    {
+      "type": "me",
+      "path": "assets/build/audio/me/Mystery.ogg"
+    },
+    {
+      "type": "me",
+      "path": "assets/build/audio/me/Victory2.ogg"
+    },
+    {
+      "type": "me",
+      "path": "assets/build/audio/me/Inn.ogg"
+    },
+    {
+      "type": "me",
+      "path": "assets/build/audio/me/Fanfare1.ogg"
+    },
+    {
+      "type": "me",
+      "path": "assets/build/audio/me/Shock.ogg"
+    },
+    {
+      "type": "me",
+      "path": "assets/build/audio/me/Fanfare2.ogg"
+    },
+    {
+      "type": "me",
+      "path": "assets/build/audio/me/Victory1.ogg"
+    },
+    {
+      "type": "me",
+      "path": "assets/build/audio/me/Gag.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv31.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Dog.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Earth3.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv58.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv19.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Sword5.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Barrier.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Explosion5.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Blow8.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Shot2.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Thunder7.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Skill3.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Thunder5.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv57.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Cow.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Water1.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Raise3.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Scream.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Saint7.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Raise1.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv47.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Switch3.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Blow6.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Chest.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Crow.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Ice4.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv35.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Explosion2.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Ice6.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/ミッションクリア.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv59.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Absorb1.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv03.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Blow2.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv05.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Buzzer1.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Powerup.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Bow3.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Save.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Decision1.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Attack3.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Applause2.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Monster6.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv21.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv07.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Buzzer2.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Explosion4.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Battle2.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Ice9.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Damage1.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Sound1.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv13.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Battle3.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Heal6.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Close1.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Item2.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Sword1.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv44.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Slash5.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Fire1.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Damage5.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Paralyze3.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Earth7.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Saint9.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Open2.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Earth2.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Explosion1.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Collapse4.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Darkness3.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Water6.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Sleep.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Monster1.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Saint4.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Thunder8.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv01.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Collapse1.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Wind11.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/宝箱.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Wind10.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Slash2.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Decision3.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv42.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Down1.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv18.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Attack1.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv38.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Saint1.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv50.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Magic5.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Thunder9.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv48.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Sound2.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Fire5.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Up2.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Book2.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Poison.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Earth8.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Open5.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Shop.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Teleport.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv54.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Ice2.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Darkness5.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Fall.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Disappointment.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Dive.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Crash.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Heal1.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv64.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv52.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Bell1.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Slash10.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Phone.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Darkness4.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Ice10.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv10.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Jump2.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Chime1.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Sheep.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Shot1.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Noise.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv56.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Bell2.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Attack2.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Explosion6.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Thunder11.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Slash11.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv45.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Blow4.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Paralyze2.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Slash7.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Magic4.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Close3.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Book1.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Switch1.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Switch2.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Close2.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Earth9.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Saint6.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Ice8.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Slash3.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Saint5.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Break.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Thunder2.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Down3.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Up3.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Water4.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Machine.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Fire6.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Shot3.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Flash3.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Water3.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Thunder3.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Fire3.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv60.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Jump1.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv37.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Earth4.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Fire7.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Saint8.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Starlight.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Fire8.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Thunder10.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Hammer.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Magic1.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Sand.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv20.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Autodoor.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Stare.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Magic6.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Equip1.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Knock.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Saint2.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Explosion7.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Darkness1.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Run.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv51.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Fire4.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv24.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Up4.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Blow5.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Darkness8.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Wind4.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv33.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Blow7.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Darkness6.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Water5.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Darkness2.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Chime2.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Devil2.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Gun2.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Reflection.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Battle1.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv30.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Confuse.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv29.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Slash1.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Wind6.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Sound3.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Thunder12.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Bell3.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Damage4.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv43.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv25.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Parry.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Monster7.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Ice5.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Slash9.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Paralyze1.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Sword2.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Sword3.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Chicken.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv34.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Slash12.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Devil1.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Resonance.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Damage3.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv40.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Decision2.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Push.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv08.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Wind7.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Heal2.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Equip2.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Earth5.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Cry1.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Ice3.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Item1.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Bow1.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Evasion2.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Thunder1.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Wind2.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv32.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Gun1.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Skill1.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Open3.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Down2.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Fire9.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Breath.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv28.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Darkness7.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Heal7.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Wind3.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Sword4.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Up1.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Bite.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Pollen.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Blind.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Cancel1.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Earth1.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv55.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv46.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Cry2.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv09.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv16.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv41.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Thunder4.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Wind8.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Devil3.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv49.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv15.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Thunder6.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Skill2.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv26.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv27.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv22.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Down4.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Laser.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Evasion1.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Saint3.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Heal3.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Fog1.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Load.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Raise2.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Ice7.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv36.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Bow2.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Wind5.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Magic2.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Cancel2.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Move.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Silence.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Key.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Coin.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Earth6.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Crossbow.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Fire2.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Wind1.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Collapse3.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Ice11.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Blow3.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Magic3.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Wind9.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Cursor2.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv04.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv23.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Cat.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Heal5.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Slash4.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Miss.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv11.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Horse.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Flash1.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Open1.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Explosion3.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Magic7.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Blow1.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Item3.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Cursor1.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv14.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Flash2.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Monster5.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Collapse2.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv39.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv17.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Absorb2.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Slash6.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Monster2.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Fog2.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Applause1.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv53.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Damage2.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Ice1.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Open4.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv12.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv06.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Equip3.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Monster4.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Recovery.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Bow4.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Slash8.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Heal4.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Monster3.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Water2.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/cv02.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Twine.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Frog.ogg"
+    },
+    {
+      "type": "se",
+      "path": "assets/build/audio/se/Wolf.ogg"
+    }
+  ],
+  "images": [
+    {
+      "type": "characters",
+      "path": "assets/build/characters/!$Gate2.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Animal.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/People1.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/!Switch1.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Vehicle.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Monster1.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/$BigMonster2.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/People3.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/$BigMonster1.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Actor3.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Actor4.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/People4.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/!Other2.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Evil.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/People5.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Monster2.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Actor5.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/People8.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Behavior3.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Actor1.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Riding.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Damage3.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/People2.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/!Door3.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/!Switch2.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/$Coffin.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Spiritual.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/!Door2.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Damage1.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/!Door1.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/!Crystal.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Insane2.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Insane1.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Damage4.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Behavior1.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/People7.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Monster3.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Behavior4.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Actor2.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/!Flame.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/People6.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Behavior2.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/!Other3.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/!Hexagram.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/!Chest.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/!Other1.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/!$Gate1.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Damage2.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Assassin.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Evilgod.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Grappler_m.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Spider.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Asura.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Warrior_f.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Soldier.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Dragon.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Sahagin.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Wizard_m.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Gargoyle.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Snake.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Willowisp.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Angel.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Imp.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Mimic.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Plant.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Chimera.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Windspirit.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Swordman.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Thief_f.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Thief_m.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Kerberos.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Mage.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Garuda.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Bandit.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Behemoth.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Gayzer.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Werewolf.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Evilking.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Wizard_f.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Death.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Ogre.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Vampire.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Hornet.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Grappler_f.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Ifrit.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Lamia.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Ghost.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Rat.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Fanatic.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Cleric_f.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Firespirit.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Puppet.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Slime.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Fairy.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Zombie.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Hero_m.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/General.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Captain.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Goddess.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Earthspirit.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Icelady.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/God.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Paladin_f.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Warrior_m.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Hero_f.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Succubus.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Delf_f.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Delf_m.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Orc.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Darklord.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Cockatrice.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Minotaur.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Rogue.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Cleric_m.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Waterspirit.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Bat.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Skeleton.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Priest.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Scorpion.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Jellyfish.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Paladin_m.png"
+    },
+    {
+      "type": "characters",
+      "path": "assets/build/characters/Demon.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Mountains4.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/CloudySky1.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Mountains2.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Ocean2.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Mountains5.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/BlueSky.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Mountains3.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/DarkSpace2.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/CloudySky2.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Mountains1.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Ocean1.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Sunset.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/SeaofClouds.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/DarkSpace1.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/StarlitSky.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Dungeon_A1.txt"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Inside_A4.txt"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Inside_C.txt"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Outside_A3.txt"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Dungeon_C.txt"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Dungeon_B.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Outside_A2.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Outside_B.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Dungeon_B.txt"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Outside_A2.txt"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/World_A2.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Dungeon_A5.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Inside_A1.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Outside_A5.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Inside_A2.txt"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Dungeon_A4.txt"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/World_A2.txt"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Dungeon_C.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Outside_A4.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/World_B.txt"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Inside_A5.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Outside_A3.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Dungeon_A2.txt"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Inside_A2.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Dungeon_A4.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Inside_B.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Dungeon_A1.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Inside_C.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/World_A1.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Outside_A1.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Outside_A1.txt"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Dungeon_A2.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Outside_B.txt"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Outside_C.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/World_B.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Inside_A1.txt"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/World_A1.txt"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Dungeon_A5.txt"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Outside_A5.txt"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Inside_A5.txt"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Outside_C.txt"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Inside_A4.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Inside_B.txt"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Outside_A4.txt"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Ruins1.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/RockCave2.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/DirtField.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Paved.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Road1.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/PoisonSwamp.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/DemonicWorld1.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/DemonicWorld2.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Stone1.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/RockCave1.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Stone3.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Factory1.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/DirtCave.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Lava2.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Stone2.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Clouds.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/DarkSpace.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Cobblestones4.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Castle.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Translucent.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Snowfield.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Ship.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Road2.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Wasteland.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Factory2.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Sky.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/DecorativeTile.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Dirt1.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Crystal2.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Meadow.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Cobblestones1.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Dirt2.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Road3.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Crystal1.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/IceMaze.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/IceCave.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Ruins2.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Fort.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/WireMesh.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Sand.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/DemonCastle.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Tent.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Cobblestones2.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Grassland.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/LavaCave.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Ruins3.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Wood2.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/GrassMaze.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Snow.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Lava1.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/InBody.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Desert.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Cobblestones3.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Wood1.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/DemonCastle2.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Castle1.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Forest1.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Crystal.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/RockCave.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Fort2.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Fort1.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Room2.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Stone5.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Tower.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/DemonicWorld.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Port.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Castle2.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Town4.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Sea.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Factory.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Brick.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Mine.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Town5.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Castle3.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Town2.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Town3.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Forest2.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Ruins.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Lava.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Town1.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Temple.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Stone4.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Room4.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Room1.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/DemonCastle3.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Room3.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Bridge.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/DemonCastle1.png"
+    },
+    {
+      "type": "tiles",
+      "path": "assets/build/tiles/Cliff.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Water1.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Light3.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Ice5.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Special4.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Death1.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Gun2.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Light6.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Darkness2.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Special1.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Wind1.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Fire3.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Blow1.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Heal3.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Special15.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Water2.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Heal1.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Thunder4.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/State4.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Sword3.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Attack10.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Sword5.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Special6.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Light2.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Attack7.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Thunder2.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Heal5.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Sword1.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Spear3.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Attack1.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Fire1.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/State5.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/State3.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Attack2.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Thunder3.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Special3.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Attack4.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Sword2.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Attack8.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Ice4.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/State6.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Special10.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Fire2.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Attack6.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Attack11.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Special2.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Spear2.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Gun1.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Fire4.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Earth1.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Blow2.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Attack5.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/State2.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Attack9.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Heal6.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Light4.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Heal2.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/State1.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Attack12.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Earth2.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Light1.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Special16.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Special13.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Sword6.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Heal4.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Special14.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Spear1.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Ice3.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Wind3.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Special8.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Water3.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Meteor.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Attack3.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Special9.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Special12.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Earth3.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Sword10.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Light7.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Ice1.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Special17.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Wind2.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Special11.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Darkness1.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Sword7.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Sword8.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Special7.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Darkness3.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Thunder1.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Sword4.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Blow3.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Light5.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Sword9.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Ice2.png"
+    },
+    {
+      "type": "effects",
+      "path": "assets/build/effects/Special5.png"
+    },
+    {
+      "type": "ui",
+      "path": "assets/build/ui/Shadow.png"
+    },
+    {
+      "type": "ui",
+      "path": "assets/build/ui/IconSet.png"
+    },
+    {
+      "type": "ui",
+      "path": "assets/build/ui/BattleStart.png"
+    },
+    {
+      "type": "ui",
+      "path": "assets/build/ui/Window.png"
+    },
+    {
+      "type": "ui",
+      "path": "assets/build/ui/Balloon.png"
+    },
+    {
+      "type": "ui",
+      "path": "assets/build/ui/GameOver.png"
+    },
+    {
+      "type": "ui",
+      "path": "assets/build/ui/Tower2.png"
+    },
+    {
+      "type": "ui",
+      "path": "assets/build/ui/Universe.png"
+    },
+    {
+      "type": "ui",
+      "path": "assets/build/ui/Dragon.png"
+    },
+    {
+      "type": "ui",
+      "path": "assets/build/ui/Crystal.png"
+    },
+    {
+      "type": "ui",
+      "path": "assets/build/ui/Island.png"
+    },
+    {
+      "type": "ui",
+      "path": "assets/build/ui/Devil.png"
+    },
+    {
+      "type": "ui",
+      "path": "assets/build/ui/Tower1.png"
+    },
+    {
+      "type": "ui",
+      "path": "assets/build/ui/CrossedSwords.png"
+    },
+    {
+      "type": "ui",
+      "path": "assets/build/ui/Gates.png"
+    },
+    {
+      "type": "ui",
+      "path": "assets/build/ui/Castle.png"
+    },
+    {
+      "type": "ui",
+      "path": "assets/build/ui/Night.png"
+    },
+    {
+      "type": "ui",
+      "path": "assets/build/ui/Sword.png"
+    },
+    {
+      "type": "ui",
+      "path": "assets/build/ui/Hexagram.png"
+    },
+    {
+      "type": "ui",
+      "path": "assets/build/ui/Book.png"
+    },
+    {
+      "type": "ui",
+      "path": "assets/build/ui/Volcano.png"
+    },
+    {
+      "type": "ui",
+      "path": "assets/build/ui/Fountain.png"
+    },
+    {
+      "type": "ui",
+      "path": "assets/build/ui/Plain.png"
+    },
+    {
+      "type": "ui",
+      "path": "assets/build/ui/DemonCastle.png"
+    },
+    {
+      "type": "ui",
+      "path": "assets/build/ui/World.png"
+    },
+    {
+      "type": "ui",
+      "path": "assets/build/ui/WorldMap.png"
+    },
+    {
+      "type": "ui",
+      "path": "assets/build/ui/Dragons.png"
+    },
+    {
+      "type": "ui",
+      "path": "assets/build/ui/Fire.png"
+    },
+    {
+      "type": "ui",
+      "path": "assets/build/ui/Heroes.png"
+    },
+    {
+      "type": "ui",
+      "path": "assets/build/ui/Mountains.png"
+    },
+    {
+      "type": "ui",
+      "path": "assets/build/ui/Gargoyles.png"
+    },
+    {
+      "type": "ui",
+      "path": "assets/build/ui/Forest.png"
+    },
+    {
+      "type": "ui",
+      "path": "assets/build/ui/Mist.png"
+    },
+    {
+      "type": "ui",
+      "path": "assets/build/ui/Metal.png"
+    },
+    {
+      "type": "ui",
+      "path": "assets/build/ui/Leaves.png"
+    }
+  ]
+}

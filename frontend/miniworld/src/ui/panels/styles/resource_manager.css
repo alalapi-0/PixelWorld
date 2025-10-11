@@ -1,0 +1,39 @@
+/* 资源管理器过滤面板整体容器 */
+.resource-manager-filter { /* 定义过滤面板容器 */
+  display: flex; /* 使用弹性布局 */
+  flex-direction: column; /* 垂直排列子元素 */
+  gap: 8px; /* 控件之间的间距 */
+  padding: 12px; /* 内边距 */
+  background: #1e1e2f; /* 背景色 */
+  border: 1px solid #2c2c44; /* 边框颜色 */
+  border-radius: 8px; /* 圆角 */
+  color: #f0f0ff; /* 文本颜色 */
+  min-width: 220px; /* 最小宽度 */
+} /* 规则结束 */
+
+.resource-manager-filter h3 { /* 标题样式 */
+  margin: 0; /* 清除外边距 */
+  font-size: 16px; /* 字体大小 */
+  font-weight: 600; /* 字重 */
+} /* 规则结束 */
+
+.resource-manager-filter input[type='search'] { /* 搜索输入框样式 */
+  padding: 6px 8px; /* 内边距 */
+  border: 1px solid #2c2c44; /* 边框颜色 */
+  border-radius: 4px; /* 圆角 */
+  background: #131326; /* 背景色 */
+  color: inherit; /* 继承文本色 */
+} /* 规则结束 */
+
+.resource-manager-filter select { /* 下拉选择框样式 */
+  padding: 6px 8px; /* 内边距 */
+  border: 1px solid #2c2c44; /* 边框颜色 */
+  border-radius: 4px; /* 圆角 */
+  background: #131326; /* 背景色 */
+  color: inherit; /* 继承文本色 */
+} /* 规则结束 */
+
+.resource-manager-filter label { /* 标签标题样式 */
+  font-size: 13px; /* 字体大小 */
+  color: #c8c8f4; /* 文本颜色 */
+} /* 规则结束 */

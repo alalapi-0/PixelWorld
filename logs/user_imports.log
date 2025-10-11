@@ -1,0 +1,4 @@
+[2025-10-11 10:53:55,225] INFO metadata written to /workspace/PixelWorld/assets/build/metadata.json
+[2025-10-11 10:53:55,225] INFO import completed | audio=420, characters=134, effects=93, readme.md=1, tiles=167, ui=35, user_manifest.json=1
+[2025-10-11 10:54:00,577] INFO preview start | build=/workspace/PixelWorld/assets/build
+[2025-10-11 10:54:00,647] INFO preview completed | /workspace/PixelWorld/assets/build/preview_index.json generated (853 files)

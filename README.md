@@ -1,5 +1,14 @@
 # PixelWorld — 2D Rules-First Sandbox (Java 17 + LibGDX 1.13, LWJGL3 + HTML)
 
+> ⚙️ **PixelWorld 统一说明**：
+> 本仓库整合原 MiniWorld 与 PixelWorld 工程。
+>
+> * 后端（Java / LibGDX）位于 `core/`
+> * 前端（Phaser / TypeScript）位于 `frontend/miniworld/`
+> * 全局素材路径为 `assets/user_imports/`
+>
+> 执行 `make build-all` 以构建所有模块。
+
 一个像素风 2D 沙盒/生活模拟原型，设计理念是 **“世界规则优先”**：时间、季节、天气、植物、动物、怪物、BOSS、建造、掉落与 NPC（含性格/关系网）在没有玩家的情况下也能自洽运转。
 项目由 **gdx-liftoff** 生成，多模块结构：**core**（跨端逻辑）、**lwjgl3**（桌面端）、**html**（网页端，GWT）。所有素材默认放在**仓库根目录的 `assets/`**。
 
@@ -9,25 +18,47 @@
 
 ```
 project-root/
-├─ assets/                 # 统一资源目录（图片/音频/JSON 等）
-│  ├─ data/                # 规则数据（weather/crops/loot/npcs/...）
-│  ├─ ui/  sprites/  tilesets/  sfx/  music/  ...
-│  └─ sources.txt          # （可选）素材直链 .zip 列表，供自动下载任务使用
+├─ assets/
+│  ├─ data/
+│  ├─ mapping/
+│  ├─ user_imports/
+│  │  ├─ audio/
+│  │  ├─ characters/
+│  │  ├─ effects/
+│  │  ├─ tiles/
+│  │  └─ ui/
+│  ├─ build/
+│  └─ licenses/
+├─ frontend/
+│  ├─ miniworld/
+│  └─ legacy/
 ├─ core/
-│  └─ src/main/java/...    # 平台无关的游戏逻辑（系统/实体/数据）
-├─ lwjgl3/
-│  └─ src/main/java/...    # 桌面入口（Lwjgl3Launcher）
 ├─ html/
-│  ├─ src/main/java/...    # HTML5 启动器（GWT）
-│  └─ webapp/              # index.html 等网页壳
-├─ build.gradle            # 根构建脚本（含素材下载任务）
-├─ settings.gradle
-├─ gradle.properties
-├─ gradlew / gradlew.bat
-└─ .github/workflows/pages.yml   # GitHub Pages 自动部署（可选）
+├─ lwjgl3/
+├─ scripts/
+├─ tests/
+├─ package.json
+├─ pnpm-workspace.yaml
+├─ Makefile
+├─ build.gradle
+└─ settings.gradle
 ```
 
 > Liftoff 默认把资源挂在根 `assets/`；桌面与 HTML 构建都会捆绑该目录。
+
+---
+
+## 整合说明
+
+| 文件 / 目录 | 说明 |
+| ----------- | ---- |
+| `frontend/miniworld/` | Phaser + TypeScript 沙盒子模块，已配置 `@sharedAssets` 别名，共享根目录素材。 |
+| `frontend/legacy/` | 保存历史 Phaser/Pixi 原型，避免影响现行模块。 |
+| `pnpm-workspace.yaml` | pnpm 工作区定义，收敛前端子项目管理。 |
+| `package.json` | 工作区根 package，集中记录开发依赖。 |
+| `scripts/import_user_assets.py` | 复制并格式化 `assets/user_imports/` → `assets/build/`，生成 `metadata.json`。 |
+| `scripts/preview_user_assets.py` | 扫描 `assets/build/` 并写出 `preview_index.json`，供前端快速索引。 |
+| `tests/test_minibuild.py` | 集成测试：校验前端 dist、素材同步与索引可解析性。 |
 
 ---
 
@@ -58,36 +89,30 @@ python -m http.server 8000
 
 ---
 
-## Phaser 单层地图原型（占位素材自动生成）
+## MiniWorld 前端沙盒（Phaser + Vite）
 
-- 运行 `make assets`：会调用 `scripts/gen_tiles_and_player.py` 与 `scripts/gen_demo_map.py`，生成真实 PNG 图集与玩家动画到 `assets/build/**`，并输出单层 `frontend/phaser/maps/demo_map.json`。
-- 运行 `make web-run`：启动 `http://localhost:8080/` 的静态服务器，加载 Phaser 3 原型，方向键移动，`R` 键重置出生点。
-- 地形索引表（脚本执行后在终端同样会打印）：
+- `make miniworld-dev`：基于 pnpm 工作区启动 Vite 开发服务器（默认 `http://localhost:5173/`），实时读取共享素材。
+- `make miniworld-build`：执行 `pnpm --filter miniworld build`，产物输出至 `frontend/miniworld/dist/`。
+- `make miniworld-test`：运行 Vitest 用例，保证核心加载逻辑可用。
+- `make user-import`：调用 Python 脚本将 `assets/user_imports/` 复制到 `assets/build/`，生成 `metadata.json` 与 `preview_index.json`。
+- `make user-preview`：快速重建索引，并在 `logs/user_imports.log` 中写入明细，便于 Phaser 端调试。
 
-| 索引 | 地形名称 | 可通行 |
-| ---- | -------- | ------ |
-| 0    | GRASS    | ✅ |
-| 1    | ROAD     | ✅ |
-| 2    | TILE_FLOOR | ✅ |
-| 3    | WATER    | ❌ |
-| 4    | LAKE     | ❌ |
-| 5    | WALL     | ❌ |
-| 6    | TREE     | ❌ |
-| 7    | HOUSE    | ❌ |
-| 8    | ROCK     | ❌ |
-| 9    | LAVA     | ❌ |
+加载顺序：
 
-- 替换素材：生成后的 `assets/build/tiles/tilesheet.png` 与 `assets/build/characters/player.png` 仅在本地存在，Git 已忽略。直接覆盖这两张图即可在 Phaser 原型中看到更新。
-- `assets/mapping/tileset_binding.json` 记录了地形名称到索引的映射，可在前端或后端逻辑中复用。
-- 下一步规划：将 `frontend/phaser/maps/demo_map.json` 替换为后端 `/world/chunk` 接口生成的真实数据，并把占位玩家动画替换成更精细的多帧角色图。
+1. `@sharedAssets` → 指向仓库根的 `assets/user_imports/`
+2. `frontend/miniworld/assets_external/` → 适合临时放置构建产物或下载素材
+3. `frontend/miniworld/assets/` → MiniWorld 自带的像素占位纹理与 HUD 元数据
+
+若前两级素材缺失，MiniWorld 会自动生成程序化占位纹理并在 HUD 中显示“占位纹理”提示。
 
 ### 用户素材导入指南
 
-- 目录结构：在 `assets/user_imports/` 下按 `tiles/`、`characters/`、`maps/` 分类放置素材，清单文件为 `user_manifest.json`（示例已包含中文注释）。
-- 命名与尺寸：默认 `tile_size=32`；图集模式放 `tiles/tilesheet.png`，散瓦片模式放 `tiles/*.png`；玩家雪碧图默认横向 4 帧 `32×32`，可通过 manifest 修改帧数/帧率。
-- 一键导入：运行 `make user-import` 将素材复制/打包到 `assets/build/**` 并更新 `assets/mapping/tileset_binding.json`；`make user-verify` 校验尺寸与文件完整性；`make user-preview` 完成导入、校验并启动 `http://localhost:8080/` 预览。
-- 加载优先级：Phaser 前端与后端接口优先读取 `assets/build/**` 中的用户素材；若目录为空则自动回退到既有生成/占位资源，并在缺失时提示运行导入脚本。
-- 常见问题：若尺寸不整除会被脚本拒绝（或在 `--force` 下警告缩放）；散瓦片模式按文件名字典序拼合；Tiled 地图需保持 `firstgid=1`；透明像素需启用 alpha 通道。
+- 目录结构：在 `assets/user_imports/` 下按照 `audio/`、`characters/`、`effects/`、`tiles/`、`ui/` 分类放置素材，根目录附带 `user_manifest.json` 示例文件。
+- 尺寸约定：`user_manifest.json` 中的 `tile_size`、`characters.player.frame_width/frame_height/fps` 会被导入脚本读取，并写入 `assets/build/metadata.json`。
+- 导入命令：`make user-import` 会清理 `assets/build/`，复制素材并统一文件名（小写 + 下划线），生成 `metadata.json` 与 `preview_index.json`。
+- 预览索引：`make user-preview` 专注于刷新 `preview_index.json`，终端与 `logs/user_imports.log` 会显示各分类文件数量，方便 Phaser 前端热重载。
+- 加载顺序：MiniWorld 先查找 `@sharedAssets`（即 `assets/user_imports/`），再尝试 `frontend/miniworld/assets_external/`，最后使用内置占位资源。
+- 常见问题：若素材缺失或命名不符合规范，可通过 `logs/user_imports.log` 查看同步详情；音频与图像均需启用透明通道/合理的采样率。
 - 许可证：务必确认导入素材的版权与授权（推荐 CC0/CC-BY/CC-BY-SA/商业许可），并在 `assets/licenses/ASSETS_LICENSES.md` 中登记来源与作者，确保发布时合法。
 
 ---

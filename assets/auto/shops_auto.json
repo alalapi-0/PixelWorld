@@ -1,0 +1,46 @@
+{
+  "meta": {
+    "generatedAt": "2025-10-11T08:18:12.038268Z",
+    "rulesVersion": 1
+  },
+  "shops": [
+    {
+      "goods": [
+        {
+          "basePrice": 5,
+          "buyable": true,
+          "id": "wood",
+          "kind": "material",
+          "maxStock": 99,
+          "name": "木头",
+          "sellable": true,
+          "source_asset": "rule:0"
+        },
+        {
+          "basePrice": 8,
+          "buyable": true,
+          "id": "stone",
+          "kind": "material",
+          "maxStock": 99,
+          "name": "石头",
+          "sellable": true,
+          "source_asset": "rule:1"
+        },
+        {
+          "basePrice": 15,
+          "buyable": true,
+          "id": "seed",
+          "kind": "material",
+          "maxStock": 50,
+          "name": "树苗",
+          "sellable": false,
+          "source_asset": "rule:2"
+        }
+      ],
+      "id": "general_store_auto",
+      "name": "自动杂货铺",
+      "priceMultiplier": 1.0,
+      "type": "buySell"
+    }
+  ]
+}

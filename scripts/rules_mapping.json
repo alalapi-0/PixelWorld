@@ -1,0 +1,126 @@
+{
+  "version": 1,
+  "tags_to_blueprints": [
+    {
+      "match_any": ["tile", "road"],
+      "blueprint": {
+        "id_prefix": "road",
+        "tile": "ROAD",
+        "name": "默认道路",
+        "cost_defaults": [
+          { "id": "stone", "name": "石头", "count": 1 }
+        ]
+      }
+    },
+    {
+      "match_any": ["tile", "wall", "fence"],
+      "blueprint": {
+        "id_prefix": "fence",
+        "tile": "WALL",
+        "name": "默认栅栏",
+        "cost_defaults": [
+          { "id": "wood", "name": "木头", "count": 2 }
+        ]
+      }
+    },
+    {
+      "match_any": ["tile", "house", "building"],
+      "blueprint": {
+        "id_prefix": "house",
+        "tile": "HOUSE",
+        "name": "默认房屋",
+        "cost_defaults": [
+          { "id": "wood", "name": "木头", "count": 5 },
+          { "id": "stone", "name": "石头", "count": 3 }
+        ]
+      }
+    },
+    {
+      "match_any": ["tile", "tree", "sapling"],
+      "blueprint": {
+        "id_prefix": "tree",
+        "tile": "TREE",
+        "name": "默认树木",
+        "cost_defaults": [
+          { "id": "seed", "name": "树苗", "count": 1 }
+        ]
+      }
+    }
+  ],
+  "tags_to_shop": [
+    {
+      "match_any": ["shop", "material:wood"],
+      "goods": {
+        "id": "wood",
+        "name": "木头",
+        "kind": "material",
+        "basePrice": 5,
+        "maxStock": 99,
+        "buyable": true,
+        "sellable": true
+      }
+    },
+    {
+      "match_any": ["shop", "material:stone"],
+      "goods": {
+        "id": "stone",
+        "name": "石头",
+        "kind": "material",
+        "basePrice": 8,
+        "maxStock": 99,
+        "buyable": true,
+        "sellable": true
+      }
+    },
+    {
+      "match_any": ["shop", "seed"],
+      "goods": {
+        "id": "seed",
+        "name": "树苗",
+        "kind": "material",
+        "basePrice": 15,
+        "maxStock": 50,
+        "buyable": true,
+        "sellable": false
+      }
+    }
+  ],
+  "tags_to_quests": [
+    {
+      "match_any": ["quest", "collect:wood"],
+      "quest": {
+        "kind": "side",
+        "title": "收集木头",
+        "type": "collect",
+        "targetId": "wood",
+        "count": 10,
+        "reward": { "gold": 30 }
+      }
+    },
+    {
+      "match_any": ["quest", "reach:lake"],
+      "quest": {
+        "kind": "side",
+        "title": "前往湖岸",
+        "type": "reach",
+        "target": "lake",
+        "radius": 1,
+        "reward": {}
+      }
+    },
+    {
+      "match_any": ["quest", "talk:shopkeeper"],
+      "quest": {
+        "kind": "main",
+        "title": "拜访店主",
+        "type": "talk",
+        "npc": "shopkeeper",
+        "reward": { "gold": 10 }
+      }
+    }
+  ],
+  "id_normalize": {
+    "strip_prefix": ["images:", "audio:"],
+    "replace": [["/", "_"], [".", "_"], ["-", "_"]]
+  }
+}

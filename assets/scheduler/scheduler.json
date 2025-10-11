@@ -1,0 +1,46 @@
+{
+  "version": 1,
+  "timeScale": "minutes",
+  "startAt": "2025-10-11T08:00:00Z",
+  "rows": [
+    { "id": "worker-1", "label": "工人#1" },
+    { "id": "worker-2", "label": "工人#2" }
+  ],
+  "tasks": [
+    {
+      "id": "task-000",
+      "type": "build",
+      "title": "建造：hut@(5,3)",
+      "rowId": "worker-1",
+      "start": "2025-10-11T08:30:00Z",
+      "durationMin": 60,
+      "deadline": "2025-10-11T12:00:00Z",
+      "payload": {
+        "type": "build",
+        "x": 5,
+        "y": 3,
+        "blueprintId": "hut"
+      },
+      "flags": ["priority_high"],
+      "status": "approved"
+    },
+    {
+      "id": "task-001",
+      "type": "build",
+      "title": "建造：tree@(10,5)",
+      "rowId": "worker-1",
+      "start": "2025-10-11T09:45:00Z",
+      "durationMin": 30,
+      "deadline": "2025-10-11T18:00:00Z",
+      "dependsOn": ["task-000"],
+      "payload": {
+        "type": "build",
+        "x": 10,
+        "y": 5,
+        "blueprintId": "tree"
+      },
+      "flags": ["quiet"],
+      "status": "planned"
+    }
+  ]
+}

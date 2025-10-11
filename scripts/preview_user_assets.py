@@ -1,9 +1,19 @@
 #!/usr/bin/env python3
-"""为 Phaser 前端生成快速素材索引的辅助脚本。
+"""Generate a lightweight preview index for user-imported assets.
 
-脚本遍历 `assets/build`，汇总每个分类的文件路径、大小与扩展名，
-将结果写入 `assets/build/preview_index.json`，同时把摘要日志写入
-`logs/user_imports.log`，方便排查遗漏或命名冲突。
+The preview index is a pure-text JSON file that summarises the contents of
+``assets/build``.  It enables tooling and front-end code to quickly enumerate
+available assets without touching binary payloads.  The script performs three
+steps:
+
+1. Walk ``assets/build`` and catalogue each file by its relative path.
+2. Group the results by their first directory component so the UI can display
+   categories such as ``audio`` or ``characters``.
+3. Write the resulting data to ``assets/preview_index.json`` and record the
+   activity in ``logs/user_imports.log``.
+
+Only the Python standard library is used, ensuring compatibility with minimal
+CI images.
 """
 
 from __future__ import annotations
@@ -14,18 +24,18 @@ import logging
 from pathlib import Path
 from typing import Dict, List
 
-IGNORED_FILES = {'.DS_Store'}
+LOG_FORMAT = '[%(asctime)s] %(levelname)s %(message)s'
 
 
 def configure_logger(log_path: Path) -> logging.Logger:
-    """配置日志输出到文件与控制台。"""
+    """Configure a shared logger for preview generation."""
 
     log_path.parent.mkdir(parents=True, exist_ok=True)
     logger = logging.getLogger('user-preview')
     logger.setLevel(logging.INFO)
     logger.handlers.clear()
 
-    formatter = logging.Formatter('[%(asctime)s] %(levelname)s %(message)s')
+    formatter = logging.Formatter(LOG_FORMAT)
 
     file_handler = logging.FileHandler(log_path, encoding='utf-8')
     file_handler.setFormatter(formatter)
@@ -39,48 +49,55 @@ def configure_logger(log_path: Path) -> logging.Logger:
 
 
 def parse_arguments() -> argparse.Namespace:
-    """解析命令行参数。"""
+    """Parse CLI arguments."""
 
-    parser = argparse.ArgumentParser(description='Generate lightweight asset index for MiniWorld preview.')
-    parser.add_argument('--root', type=Path, default=Path(__file__).resolve().parent.parent, help='仓库根目录。')
+    parser = argparse.ArgumentParser(description='Create a text-only preview index for imported assets.')
+    parser.add_argument(
+        '--root',
+        type=Path,
+        default=Path(__file__).resolve().parent.parent,
+        help='Repository root directory. Defaults to the project root detected from this script.',
+    )
     return parser.parse_args()
 
 
 def scan_build_directory(build_root: Path) -> Dict[str, List[Dict[str, object]]]:
-    """遍历构建目录并按照一级目录分组。"""
+    """Enumerate files inside ``build_root`` grouped by category."""
 
     if not build_root.exists():
         raise FileNotFoundError(f'build directory does not exist: {build_root}')
+
     grouped: Dict[str, List[Dict[str, object]]] = {}
-    for file_path in sorted(build_root.rglob('*')):
-        if not file_path.is_file():
+
+    for path in sorted(build_root.rglob('*')):
+        if not path.is_file():
             continue
-        if file_path.name in IGNORED_FILES:
-            continue
-        relative = file_path.relative_to(build_root)
+        relative = path.relative_to(build_root)
         category = relative.parts[0] if relative.parts else 'root'
         grouped.setdefault(category, []).append(
             {
                 'path': str(relative).replace('\\', '/'),
-                'size': file_path.stat().st_size,
-                'type': (file_path.suffix.lower().lstrip('.') or 'unknown'),
+                'size': path.stat().st_size,
+                'type': path.suffix.lstrip('.').lower() or 'unknown',
             }
         )
-    for values in grouped.values():
-        values.sort(key=lambda item: item['path'])
+
+    for entries in grouped.values():
+        entries.sort(key=lambda item: item['path'])
+
     return grouped
 
 
-def write_preview(build_root: Path, index: Dict[str, List[Dict[str, object]]]) -> Path:
-    """写出索引文件并返回路径。"""
+def write_preview(root: Path, index: Dict[str, List[Dict[str, object]]]) -> Path:
+    """Write the preview index next to the shared assets directory."""
 
-    target = build_root / 'preview_index.json'
+    target = root / 'assets/preview_index.json'
     target.write_text(json.dumps(index, ensure_ascii=False, indent=2), encoding='utf-8')
     return target
 
 
 def main() -> None:
-    """执行入口。"""
+    """Entry point for preview generation."""
 
     args = parse_arguments()
     root = args.root.resolve()
@@ -88,13 +105,15 @@ def main() -> None:
     log_path = root / 'logs/user_imports.log'
 
     logger = configure_logger(log_path)
-    logger.info('preview start | build=%s', build_root)
+    logger.info('user-preview start | build=%s', build_root)
 
     index = scan_build_directory(build_root)
-    target = write_preview(build_root, index)
+    target = write_preview(root, index)
 
-    total_files = sum(len(files) for files in index.values())
-    logger.info('preview completed | %s generated (%d files)', target, total_files)
+    total_files = sum(len(items) for items in index.values())
+    logger.info('user-preview completed | %d files indexed | output=%s', total_files, target)
+
+    print('✅ Assets preview index refreshed')
 
 
 if __name__ == '__main__':

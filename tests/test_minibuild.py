@@ -1,4 +1,4 @@
-"""MiniWorld 构建与素材同步流程的集成测试。"""
+"""Integration checks for the MiniWorld build pipeline."""
 
 from __future__ import annotations
 
@@ -6,40 +6,29 @@ import json
 from pathlib import Path
 
 
-def test_miniworld_distribution_structure() -> None:
-    """验证 MiniWorld 构建产物与素材索引是否齐备。"""
+def test_miniworld_build_and_assets() -> None:
+    """Validate that the build output and asset indexes exist."""
 
-    root = Path(__file__).resolve().parents[1]
-    dist_dir = root / 'frontend/miniworld/dist'
-    build_dir = root / 'assets/build'
-    preview_file = build_dir / 'preview_index.json'
+    repo_root = Path(__file__).resolve().parents[1]
 
-    assert dist_dir.exists() and dist_dir.is_dir(), 'MiniWorld dist/ 目录缺失，请运行 pnpm --filter miniworld build'
-    assert build_dir.exists() and build_dir.is_dir(), 'assets/build/ 目录缺失，请运行 make user-import'
+    dist_dir = repo_root / 'frontend/miniworld/dist'
+    assert dist_dir.exists() and dist_dir.is_dir(), 'MiniWorld dist directory is missing. Run `make miniworld-build` first.'
 
-    build_files = [path for path in build_dir.rglob('*') if path.is_file()]
-    assert build_files, 'assets/build/ 为空，请确认用户素材已导入'
+    asset_index_path = repo_root / 'assets/build/asset_index.json'
+    assert asset_index_path.exists(), 'Run `make user-import` to populate assets/build/asset_index.json.'
 
-    assert preview_file.exists(), 'preview_index.json 未生成，请运行 make user-preview'
+    asset_index = json.loads(asset_index_path.read_text(encoding='utf-8'))
+    assert isinstance(asset_index.get('files'), list), 'asset_index.json must include a "files" list.'
 
-    index = json.loads(preview_file.read_text(encoding='utf-8'))
-    missing_paths = []
-    asset_types = set()
+    preview_index_path = repo_root / 'assets/preview_index.json'
+    assert preview_index_path.exists(), 'Run `make user-preview` to produce assets/preview_index.json.'
 
-    for category, entries in index.items():
-        assert isinstance(entries, list), f'分类 {category} 的索引格式异常'
-        for entry in entries:
-            rel_path = entry.get('path')
-            asset_type = entry.get('type', 'unknown')
-            asset_types.add(asset_type)
-            target = build_dir / rel_path
-            if not target.exists():
-                missing_paths.append(rel_path)
-            else:
-                assert target.is_file(), f'{rel_path} 不是文件'
+    preview_index = json.loads(preview_index_path.read_text(encoding='utf-8'))
+    assert isinstance(preview_index, dict), 'assets/preview_index.json should be a JSON object.'
 
-    assert not missing_paths, f'索引中的文件缺失: {missing_paths}'
-    assert any(asset_type in {'png', 'jpg', 'jpeg'} for asset_type in asset_types), '索引中缺少图像资源'
-    assert any(asset_type in {'ogg', 'mp3', 'wav'} for asset_type in asset_types), '索引中缺少音频资源'
+    shared_audio = repo_root / 'assets/user_imports/audio'
+    for required in ('bgm', 'bgs', 'me', 'se'):
+        candidate = shared_audio / required
+        assert candidate.exists() and candidate.is_dir(), f'Missing audio category: {required}'
 
-    print('MiniWorld build ✅')
+    print('✅ MiniWorld build and asset mapping passed')

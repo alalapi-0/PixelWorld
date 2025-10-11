@@ -23,6 +23,10 @@ project-root/
 │  ├─ mapping/
 │  ├─ user_imports/
 │  │  ├─ audio/
+│  │  │  ├─ bgm/
+│  │  │  ├─ bgs/
+│  │  │  ├─ me/
+│  │  │  └─ se/
 │  │  ├─ characters/
 │  │  ├─ effects/
 │  │  ├─ tiles/
@@ -56,8 +60,8 @@ project-root/
 | `frontend/legacy/` | 保存历史 Phaser/Pixi 原型，避免影响现行模块。 |
 | `pnpm-workspace.yaml` | pnpm 工作区定义，收敛前端子项目管理。 |
 | `package.json` | 工作区根 package，集中记录开发依赖。 |
-| `scripts/import_user_assets.py` | 复制并格式化 `assets/user_imports/` → `assets/build/`，生成 `metadata.json`。 |
-| `scripts/preview_user_assets.py` | 扫描 `assets/build/` 并写出 `preview_index.json`，供前端快速索引。 |
+| `scripts/import_user_assets.py` | 同步 `assets/user_imports/` → `assets/build/` 并写出 `asset_index.json`，仅执行文本级操作。 |
+| `scripts/preview_user_assets.py` | 汇总 `assets/build/` 并生成 `assets/preview_index.json`，供前端快速索引。 |
 | `tests/test_minibuild.py` | 集成测试：校验前端 dist、素材同步与索引可解析性。 |
 
 ---
@@ -94,8 +98,8 @@ python -m http.server 8000
 - `make miniworld-dev`：基于 pnpm 工作区启动 Vite 开发服务器（默认 `http://localhost:5173/`），实时读取共享素材。
 - `make miniworld-build`：执行 `pnpm --filter miniworld build`，产物输出至 `frontend/miniworld/dist/`。
 - `make miniworld-test`：运行 Vitest 用例，保证核心加载逻辑可用。
-- `make user-import`：调用 Python 脚本将 `assets/user_imports/` 复制到 `assets/build/`，生成 `metadata.json` 与 `preview_index.json`。
-- `make user-preview`：快速重建索引，并在 `logs/user_imports.log` 中写入明细，便于 Phaser 端调试。
+- `make user-import`：调用 Python 脚本将 `assets/user_imports/` 复制到 `assets/build/`，生成 `asset_index.json`，并保持所有操作为纯文本。
+- `make user-preview`：快速重建 `assets/preview_index.json`，并在 `logs/user_imports.log` 中写入明细，便于 Phaser 端调试。
 
 加载顺序：
 
@@ -107,12 +111,12 @@ python -m http.server 8000
 
 ### 用户素材导入指南
 
-- 目录结构：在 `assets/user_imports/` 下按照 `audio/`、`characters/`、`effects/`、`tiles/`、`ui/` 分类放置素材，根目录附带 `user_manifest.json` 示例文件。
-- 尺寸约定：`user_manifest.json` 中的 `tile_size`、`characters.player.frame_width/frame_height/fps` 会被导入脚本读取，并写入 `assets/build/metadata.json`。
-- 导入命令：`make user-import` 会清理 `assets/build/`，复制素材并统一文件名（小写 + 下划线），生成 `metadata.json` 与 `preview_index.json`。
-- 预览索引：`make user-preview` 专注于刷新 `preview_index.json`，终端与 `logs/user_imports.log` 会显示各分类文件数量，方便 Phaser 前端热重载。
+- 目录结构：在 `assets/user_imports/` 下按照 `audio/`（含 `bgm/`、`bgs/`、`me/`、`se/`）、`characters/`、`effects/`、`tiles/`、`ui/` 分类放置素材。
+- 素材命名：脚本保持原始文件名，只在 `assets/build/` 中重建相同的目录层级，不会修改或重新编码任何文件。
+- 导入命令：`make user-import` 会清理 `assets/build/`，复制素材并生成 `asset_index.json`，日志写入 `logs/user_imports.log`。
+- 预览索引：`make user-preview` 会扫描 `assets/build/`，输出 `assets/preview_index.json`，终端与日志会显示各分类文件数量，方便 Phaser 前端热重载。
 - 加载顺序：MiniWorld 先查找 `@sharedAssets`（即 `assets/user_imports/`），再尝试 `frontend/miniworld/assets_external/`，最后使用内置占位资源。
-- 常见问题：若素材缺失或命名不符合规范，可通过 `logs/user_imports.log` 查看同步详情；音频与图像均需启用透明通道/合理的采样率。
+- 常见问题：若素材缺失或命名不符合规范，可通过 `logs/user_imports.log` 查看同步详情；音频与图像需保持合适的采样率与透明通道。
 - 许可证：务必确认导入素材的版权与授权（推荐 CC0/CC-BY/CC-BY-SA/商业许可），并在 `assets/licenses/ASSETS_LICENSES.md` 中登记来源与作者，确保发布时合法。
 
 ---

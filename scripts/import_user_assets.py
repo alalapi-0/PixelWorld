@@ -1,43 +1,64 @@
 #!/usr/bin/env python3
-"""同步 `assets/user_imports` 到 `assets/build` 的实用脚本。
+"""Synchronise user-supplied assets into the shared build directory.
 
-本脚本承担以下责任：
-1. 读取用户素材清单（如存在），提取瓦片与角色的尺寸设定；
-2. 将素材目录完整复制到 `assets/build`，在复制过程中统一名称格式（去除空格、转为小写）；
-3. 生成一份 `metadata.json`，供 Phaser/Vite 前端快速获知帧尺寸与导入明细；
-4. 把执行日志写入 `logs/user_imports.log`，便于排查问题。
+This script is intentionally limited to *textual* operations.  It never
+encodes, compresses, or transforms binary payloads; instead it simply copies the
+files that already exist within the repository.  The workflow is:
 
-脚本仅依赖 Python 标准库，可安全在 CI 环境运行。
+1. Validate that the expected top-level categories exist beneath
+   ``assets/user_imports``.
+2. Mirror the directory structure into ``assets/build`` using ``shutil.copy2``
+   (which preserves timestamps without decoding the file contents).
+3. Produce a lightweight ``asset_index.json`` file that records the relative
+   path, size, and modification timestamp for every imported file.
+4. Append a log entry to ``logs/user_imports.log`` and emit a success message
+   to ``stdout`` so automated jobs can assert completion.
+
+The command accepts an optional ``--root`` argument so that CI pipelines can run
+it from arbitrary working directories.  All paths are resolved relative to the
+repository root, and only the Python standard library is required.
 """
 
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import logging
 import shutil
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, Iterable, List, Tuple
+from typing import Dict, Iterable, List
 
-DEFAULT_TILE_SIZE = 32
-DEFAULT_PLAYER_WIDTH = 16
-DEFAULT_PLAYER_HEIGHT = 32
-DEFAULT_PLAYER_FPS = 6
+# Allowed directory names inside ``assets/user_imports``.  Keeping this list
+# explicit ensures that accidental folders do not leak into ``assets/build``.
+ALLOWED_TOP_LEVEL = {
+    'audio',
+    'characters',
+    'tiles',
+    'ui',
+    'effects',
+}
 
-IGNORED_FILES = {'.DS_Store'}
+# Files that live directly under assets/user_imports/ but are not copied into
+# the build directory.
+ALLOWED_TOP_LEVEL_FILES = {'README.md', 'user_manifest.json'}
+
+# ``audio`` has a fixed set of sub-categories.  The script verifies these to
+# keep naming consistent with the MiniWorld runtime.
+ALLOWED_AUDIO_SUBDIRS = {'bgm', 'bgs', 'me', 'se'}
+
+LOG_FORMAT = '[%(asctime)s] %(levelname)s %(message)s'
 
 
 def configure_logger(log_path: Path) -> logging.Logger:
-    """创建写入文件与终端的日志记录器。"""
+    """Configure a file-and-console logger."""
 
     log_path.parent.mkdir(parents=True, exist_ok=True)
     logger = logging.getLogger('user-imports')
     logger.setLevel(logging.INFO)
     logger.handlers.clear()
 
-    formatter = logging.Formatter('[%(asctime)s] %(levelname)s %(message)s')
+    formatter = logging.Formatter(LOG_FORMAT)
 
     file_handler = logging.FileHandler(log_path, encoding='utf-8')
     file_handler.setFormatter(formatter)
@@ -51,133 +72,104 @@ def configure_logger(log_path: Path) -> logging.Logger:
 
 
 def parse_arguments() -> argparse.Namespace:
-    """解析命令行参数，允许覆盖仓库根目录。"""
+    """Parse CLI arguments."""
 
-    parser = argparse.ArgumentParser(description='Import user assets into the unified build directory.')
-    parser.add_argument('--root', type=Path, default=Path(__file__).resolve().parent.parent, help='仓库根目录。')
-    parser.add_argument('--no-clean', action='store_true', help='保留 build 目录中的旧文件（默认会清空）。')
+    parser = argparse.ArgumentParser(description='Mirror user assets into assets/build (text operations only).')
+    parser.add_argument(
+        '--root',
+        type=Path,
+        default=Path(__file__).resolve().parent.parent,
+        help='Repository root directory. Defaults to the project root detected from this script.',
+    )
+    parser.add_argument(
+        '--move',
+        action='store_true',
+        help='Move files instead of copying them. Copying is the default to preserve the source archive.',
+    )
     return parser.parse_args()
 
 
-def sanitize_component(component: str) -> str:
-    """对路径片段进行统一化处理。"""
-
-    safe = component.strip().replace(' ', '_').replace(':', '_')
-    return safe.lower()
-
-
 def iter_user_files(source_root: Path) -> Iterable[Path]:
-    """递归枚举用户素材文件。"""
+    """Yield all files contained within ``source_root``."""
 
-    for path in sorted(source_root.rglob('*')):
-        if not path.is_file():
+    for candidate in sorted(source_root.rglob('*')):
+        if candidate.is_file():
+            yield candidate
+
+
+def validate_path(relative: Path) -> None:
+    """Ensure that the provided relative path adheres to the naming policy."""
+
+    if not relative.parts:
+        raise ValueError('Empty asset path encountered during import.')
+    top_level = relative.parts[0]
+    if top_level not in ALLOWED_TOP_LEVEL:
+        raise ValueError(f'Unsupported asset category: {top_level}')
+    if top_level == 'audio' and len(relative.parts) > 1:
+        subcategory = relative.parts[1]
+        if subcategory not in ALLOWED_AUDIO_SUBDIRS:
+            raise ValueError(f'Unsupported audio sub-category: {subcategory}')
+
+
+def mirror_assets(
+    source_root: Path,
+    build_root: Path,
+    move_mode: bool,
+    logger: logging.Logger,
+) -> List[Dict[str, object]]:
+    """Mirror files into ``build_root`` and return manifest entries."""
+
+    manifest: List[Dict[str, object]] = []
+    build_root.mkdir(parents=True, exist_ok=True)
+
+    for file_path in iter_user_files(source_root):
+        relative = file_path.relative_to(source_root)
+        top_level = relative.parts[0] if relative.parts else ''
+        if top_level in ALLOWED_TOP_LEVEL_FILES:
+            logger.info('skipped %s (metadata file)', file_path)
             continue
-        if path.name in IGNORED_FILES:
-            continue
-        yield path
+        validate_path(relative)
 
-
-def clean_build_directory(build_root: Path) -> None:
-    """删除构建目录中的旧文件以防遗留。"""
-
-    if not build_root.exists():
-        return
-    for item in build_root.iterdir():
-        if item.is_file() or item.is_symlink():
-            item.unlink()
-        else:
-            shutil.rmtree(item)
-
-
-def copy_assets(source_root: Path, build_root: Path, logger: logging.Logger) -> Tuple[List[Dict[str, str]], Dict[str, int]]:
-    """复制素材并返回明细列表与类型统计。"""
-
-    manifest: List[Dict[str, str]] = []
-    counters: Dict[str, int] = {}
-    for source in iter_user_files(source_root):
-        relative_parts = [sanitize_component(part) for part in source.relative_to(source_root).parts]
-        relative_path = Path(*relative_parts)
-        destination = build_root / relative_path
+        destination = build_root / relative
         destination.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(source, destination)
-        digest = hashlib.sha1(destination.read_bytes()).hexdigest()
-        category = relative_parts[0] if relative_parts else 'root'
-        counters[category] = counters.get(category, 0) + 1
+
+        if move_mode:
+            operation = 'moved'
+            if destination.exists():
+                destination.unlink()
+            shutil.move(str(file_path), destination)
+        else:
+            operation = 'copied'
+            shutil.copy2(file_path, destination)
+
+        stat = destination.stat()
         manifest.append(
             {
-                'source': str(source.relative_to(source_root)),
-                'target': str(relative_path),
-                'sha1': digest,
-                'size': destination.stat().st_size,
-                'category': category,
+                'category': relative.parts[0],
+                'relativePath': str(relative).replace('\\', '/'),
+                'size': stat.st_size,
+                'modified': datetime.fromtimestamp(stat.st_mtime, tz=timezone.utc).isoformat(),
+                'operation': operation,
             }
         )
-        logger.info('copied %s -> %s', source, destination)
-    return manifest, counters
+        logger.info('%s %s -> %s', operation, file_path, destination)
+
+    return manifest
 
 
-def load_user_manifest(source_root: Path, logger: logging.Logger) -> Dict[str, object]:
-    """读取用户 manifest（如存在）。"""
+def write_index(build_root: Path, manifest: List[Dict[str, object]]) -> None:
+    """Write the manifest to ``asset_index.json`` within ``build_root``."""
 
-    manifest_path = source_root / 'user_manifest.json'
-    if not manifest_path.exists():
-        logger.info('user_manifest.json not found, falling back to defaults')
-        return {}
-    try:
-        return json.loads(manifest_path.read_text(encoding='utf-8'))
-    except json.JSONDecodeError as error:
-        logger.warning('failed to parse user_manifest.json: %s', error)
-        return {}
-
-
-def extract_meta(manifest: Dict[str, object]) -> Dict[str, object]:
-    """从 manifest 中提取前端需要的帧尺寸信息。"""
-
-    tiles = manifest.get('tiles', {}) if isinstance(manifest, dict) else {}
-    characters = manifest.get('characters', {}) if isinstance(manifest, dict) else {}
-    player_cfg = characters.get('player', {}) if isinstance(characters, dict) else {}
-    return {
-        'tiles': {
-            'frameWidth': int(manifest.get('tile_size', DEFAULT_TILE_SIZE)) if isinstance(manifest, dict) else DEFAULT_TILE_SIZE,
-            'frameHeight': int(manifest.get('tile_size', DEFAULT_TILE_SIZE)) if isinstance(manifest, dict) else DEFAULT_TILE_SIZE,
-        },
-        'player': {
-            'frameWidth': int(player_cfg.get('frame_width', DEFAULT_PLAYER_WIDTH)) if isinstance(player_cfg, dict) else DEFAULT_PLAYER_WIDTH,
-            'frameHeight': int(player_cfg.get('frame_height', DEFAULT_PLAYER_HEIGHT)) if isinstance(player_cfg, dict) else DEFAULT_PLAYER_HEIGHT,
-            'frameRate': int(player_cfg.get('fps', DEFAULT_PLAYER_FPS)) if isinstance(player_cfg, dict) else DEFAULT_PLAYER_FPS,
-        },
-    }
-
-
-def write_metadata(build_root: Path, manifest: List[Dict[str, str]], meta: Dict[str, object], logger: logging.Logger) -> None:
-    """写出 metadata.json 与 manifest.json。"""
-
-    build_root.mkdir(parents=True, exist_ok=True)
-    generated_at = datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
-    metadata = {
-        'generatedAt': generated_at,
+    index_path = build_root / 'asset_index.json'
+    payload = {
+        'generatedAt': datetime.now(timezone.utc).isoformat(),
         'files': manifest,
-        **meta,
     }
-    (build_root / 'metadata.json').write_text(json.dumps(metadata, ensure_ascii=False, indent=2), encoding='utf-8')
-    (build_root / 'preview_index.json').write_text(
-        json.dumps(_group_by_category(manifest), ensure_ascii=False, indent=2),
-        encoding='utf-8',
-    )
-    logger.info('metadata written to %s', build_root / 'metadata.json')
-
-
-def _group_by_category(manifest: List[Dict[str, str]]) -> Dict[str, List[Dict[str, str]]]:
-    grouped: Dict[str, List[Dict[str, str]]] = {}
-    for entry in manifest:
-        grouped.setdefault(entry['category'], []).append(entry)
-    for values in grouped.values():
-        values.sort(key=lambda item: item['target'])
-    return grouped
+    index_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding='utf-8')
 
 
 def main() -> None:
-    """脚本入口。"""
+    """Entry point for the import utility."""
 
     args = parse_arguments()
     root = args.root.resolve()
@@ -186,22 +178,28 @@ def main() -> None:
     log_path = root / 'logs/user_imports.log'
 
     logger = configure_logger(log_path)
-    logger.info('import start | source=%s build=%s', source_root, build_root)
+
     if not source_root.exists():
-        logger.error('source directory does not exist: %s', source_root)
+        logger.error('Source directory does not exist: %s', source_root)
         raise SystemExit(1)
 
-    if not args.no_clean:
-        clean_build_directory(build_root)
-        logger.info('cleaned build directory')
+    logger.info('user-import start | source=%s | build=%s | move=%s', source_root, build_root, args.move)
 
-    manifest = load_user_manifest(source_root, logger)
-    copied_files, counters = copy_assets(source_root, build_root, logger)
-    meta = extract_meta(manifest)
-    write_metadata(build_root, copied_files, meta, logger)
+    # Ensure the build directory is cleared without touching unrelated files.
+    if build_root.exists():
+        for entry in sorted(build_root.iterdir()):
+            if entry.name == '.gitkeep':
+                continue
+            if entry.is_file():
+                entry.unlink()
+            else:
+                shutil.rmtree(entry)
 
-    summary = ', '.join(f"{key}={value}" for key, value in sorted(counters.items())) or 'no files copied'
-    logger.info('import completed | %s', summary)
+    manifest = mirror_assets(source_root, build_root, args.move, logger)
+    write_index(build_root, manifest)
+
+    logger.info('user-import completed | %d files processed', len(manifest))
+    print('✅ Assets successfully imported (text-only operations)')
 
 
 if __name__ == '__main__':

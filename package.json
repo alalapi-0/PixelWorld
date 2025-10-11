@@ -1,10 +1,19 @@
 {
   "name": "pixelworld-monorepo",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
+  "packageManager": "pnpm@9.12.2",
   "workspaces": [
-    "frontend/*"
+    "frontend/miniworld",
+    "frontend/legacy/*"
   ],
+  "scripts": {
+    "miniworld:dev": "pnpm --filter miniworld dev",
+    "miniworld:build": "pnpm --filter miniworld build",
+    "miniworld:test": "pnpm --filter miniworld test",
+    "user:import": "python3 scripts/import_user_assets.py",
+    "user:preview": "python3 scripts/preview_user_assets.py"
+  },
   "devDependencies": {
     "typescript": "^5.6.2"
   }

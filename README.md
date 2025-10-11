@@ -112,6 +112,16 @@ python -m http.server 8000
 - AI 建议：调用前端 `AiDescribeStub` 依据文件名与类别生成“离线规则”描述，需手动点击保存后才会写入 JSON。
 - 安全性：只读取 `assets/build/**` 现有文件，不生成缩略图、不对音频执行转码，控制台会输出 `✅ ResourceManager initialized (text-only)`、`✅ Metadata loaded/saved via JSON`、`✅ No binary generated` 以便审计。
 
+### 运行时热重载与回滚（文本）
+
+- `make hot-run`：启动 MiniWorld Vite 开发服务器，并默认启用自动数据轮询器，前端会在右上角渲染开发者热栏。
+- `assets/auto/*.json` 或 `scripts/rules_mapping.json` 变更后，`AutoDataWatcher` 会通过 `/__fileHash` 端点检测 SHA1 摘要差异，然后调用 `HotReloadBus` 广播无刷新热重载事件。
+- 三大运行时仓库 `BlueprintStoreRuntime`、`ShopStoreRuntime` 与 `QuestStoreRuntime` 会在事件驱动下替换定义表，同时保留玩家核心状态（建造进度、库存与任务完成度）。
+- `make auto-snapshot`：调用 `scripts/snapshot_auto.py`，将当前自动 JSON 文本复制到 `assets/auto/.snapshots/`，文件名携带 UTC 时间戳，方便审计与回滚。
+- `make auto-rollback`：调用 `scripts/rollback_auto.py --latest`，从最近快照恢复 `assets/auto/*.json`，仅进行文本复制，不触碰任何二进制。
+- `make auto-snapshots`：调用 `scripts/list_auto_snapshots.py`，按时间倒序列出可用快照，便于挑选特定时间戳执行回滚。
+- 开发者热栏提供“⟳ 热重载”“⏪ 回滚”按钮，内部同样通过文本端点触发加载或提醒，始终遵守纯文本写入的安全准则。
+
 加载顺序：
 
 1. `@sharedAssets` → 指向仓库根的 `assets/user_imports/`

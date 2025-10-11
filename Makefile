@@ -1,4 +1,4 @@
-.PHONY: miniworld-dev miniworld-build miniworld-test user-import user-import-move user-import-rules user-preview build-all miniworld-preview miniworld-manager assets-analyze assets-rename-dry assets-rename-apply assets-rename-revert synth-defaults miniworld-auto hot-run auto-snapshot auto-rollback auto-snapshots # 声明新增命令
+.PHONY: miniworld-dev miniworld-build miniworld-test user-import user-import-move user-import-rules user-preview build-all miniworld-preview miniworld-manager assets-analyze assets-rename-dry assets-rename-apply assets-rename-revert synth-defaults miniworld-auto hot-run auto-snapshot auto-rollback auto-snapshots agents-demo agents-log # 声明新增命令
 
 miniworld-dev:
 	pnpm --filter miniworld dev
@@ -7,7 +7,13 @@ miniworld-build:
 	pnpm --filter miniworld build
 
 miniworld-test:
-	pnpm --filter miniworld test
+        pnpm --filter miniworld test
+# 空行用于分隔
+agents-demo: # 启动指令流演示场景
+        pnpm --filter miniworld dev -- --scene=CommandConsole # 启动控制台场景
+# 空行用于分隔
+agents-log: # 导出代理日志
+        python3 scripts/export_agent_log.py # 调用导出脚本
 
 miniworld-preview:
 	pnpm --filter miniworld dev -- --scene=ResourceBrowser

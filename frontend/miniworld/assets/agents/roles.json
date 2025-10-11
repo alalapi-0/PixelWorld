@@ -1,0 +1,6 @@
+{
+  "emperor": {"canCommand": true, "canApprove": true},
+  "princess": {"canCommand": true, "canApprove": true},
+  "butler": {"canCommand": true, "canApprove": true},
+  "worker": {"canCommand": false, "canApprove": false}
+}

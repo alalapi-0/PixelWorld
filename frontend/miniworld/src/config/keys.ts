@@ -18,3 +18,6 @@ export const KEY_BUILD_APPROVE = 'Y'; // 建造审批通过键
 export const KEY_BUILD_REJECT = 'N'; // 建造审批拒绝键
 export const KEY_RESOURCE_BROWSER = 'R'; // 资源浏览器键
 export const KEY_RESOURCE_MANAGER = 'M'; // 素材管理器键
+export const KEY_COMMAND_CONSOLE = 'K'; // 指令控制台键
+export const KEY_APPROVAL_PANEL = 'O'; // 审批面板键
+export const KEY_AGENT_MONITOR = 'P'; // 代理监控键

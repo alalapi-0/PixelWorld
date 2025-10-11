@@ -25,6 +25,10 @@ export class Inventory { // 定义背包类
     const item = this.items.get(id); // 获取物品
     return item !== undefined && item.count >= count; // 返回是否满足数量
   } // 方法结束
+  public getCount(id: string): number { // 获取物品数量
+    const item = this.items.get(id); // 获取物品
+    return item?.count ?? 0; // 返回数量或零
+  } // 方法结束
   // 分隔注释 // 保持行有注释
   public toJSON(): { items: Item[] } { // 序列化背包
     return { items: this.getAll() }; // 返回物品数组包装

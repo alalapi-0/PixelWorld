@@ -1,0 +1,6 @@
+{
+  "maxApprovedPerMinute": 20,
+  "maxConcurrency": 3,
+  "forbiddenZones": [{"x1": 0, "y1": 0, "x2": 0, "y2": 0}],
+  "allowedTasks": ["build", "collect", "haul"]
+}

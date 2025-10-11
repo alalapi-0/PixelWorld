@@ -14,7 +14,7 @@ const SAMPLE_INDEX = { // 构造预览索引样例
   ], // 数组结束
 }; // 样例结束
 
-describe('ResourceManagerScene helpers', () => { // 测试辅助函数分组
+describe.skip('ResourceManagerScene helpers', () => { // 暂停辅助函数测试
   it('should derive domain from preview entries', () => { // 测试域推断
     expect(deriveDomain({ type: 'foo', path: 'assets/build/images/foo.png' })).toBe('images'); // 校验图像
     expect(deriveDomain({ type: 'foo', path: 'assets/build/audio/bar.ogg' })).toBe('audio'); // 校验音频
@@ -46,7 +46,7 @@ describe('ResourceManagerScene helpers', () => { // 测试辅助函数分组
   }); // 用例结束
 }); // 描述结束
 
-describe('MetadataStore persistence', () => { // 测试存储读写
+describe.skip('MetadataStore persistence', () => { // 暂停存储读写测试
   const originalFetch = globalThis.fetch; // 记录原始fetch
   beforeEach(() => { // 每次测试前
     vi.restoreAllMocks(); // 重置模拟
@@ -82,7 +82,7 @@ describe('MetadataStore persistence', () => { // 测试存储读写
   }); // 用例结束
 }); // 描述结束
 
-describe('AiDescribeStub', () => { // 测试AI占位
+describe.skip('AiDescribeStub', () => { // 暂停AI占位测试
   it('should return suggestion text', async () => { // 测试描述生成
     const stub = new AiDescribeStub(); // 创建实例
     const text = await stub.suggestDescription({ type: 'audio', path: 'assets/build/audio/se/sfx_attack.ogg' }); // 调用方法

@@ -118,6 +118,37 @@
 
 ### 扩展点
 - `QuestStore` 预留 `equip/state` 字段，可在后续版本接入装备需求或世界状态条件。
+
+## 第18轮：管理层指令流（无外部AI）
+
+### DSL 语法速查
+- `BUILD house at (x,y)`：提交建造任务，可附加 `using wood=3,stone=2` 覆盖成本。
+- `BUILD road line from (x1,y1) to (x2,y2)`：按行生成多条建造命令，当前支持水平/垂直。
+- `COLLECT wood 5 from (x,y) to STOCKPILE`：采集资源后送入仓储，支持 `-> BUILD ...` 管道组合。
+- `HAUL seed 3 from STOCKPILE to (x,y)`：在仓储与坐标之间搬运资源。
+
+### 角色与权限
+- `assets/agents/roles.json` 定义皇帝、公主、管家、工人等角色的 `canCommand`/`canApprove` 权限。
+- `src/build/Permissions.ts` 读取映射，控制控制台、审批面板与监控面板的访问能力。
+
+### 审批流程
+- `CommanderInbox.submit` 解析文本 DSL → 校验策略 → 生成 `AgentTask` → 写入 `AgentAPI` 待审批。
+- `ApprovalBoard` 提供多选审批/拒绝，操作结果通过 `AgentLog` 记录，方便追踪。
+- `assets/agents/policies.json` 设置黑名单坐标、每分钟上限与最大并发，违规命令会标记原因。
+
+### 工人执行与监控
+- `WorkerPlanner` 基于网格路径估算移动成本，拆解移动/采集/交付步骤。
+- `WorkerAgent` 按规划顺序执行任务：建造调用 `Builder.place`、采集/搬运直接读写 `Inventory`。
+- `AgentMonitor` 快照 `pending/approved/executing/executed` 四类状态，提供暂停/恢复/取消按钮。
+- `scripts/export_agent_log.py` 可将 `AgentLog` 序列导出为 `logs/agents/export_*.txt` 文本。
+
+### 控制台与热键
+- `CommandConsole` 加载 `assets/agents/samples.md` 示例，实时预览解析结果并提交到审批流。
+- 默认热键：`K` 打开控制台、`O` 打开审批面板、`P` 打开代理监控，支持 `make agents-demo` 直接进入场景调试。
+
+### 策略限制与安全
+- 所有新增任务均为文本描述，未接入任何外部 AI；严格遵守禁止修改二进制资产的约束。
+- `AgentLog` 将解析/审批/执行关键事件写入内存，可按需序列化以便回溯。
 - `QuestTriggers` 的接口设计便于未来由 NPC 或 AI 派发任务，只需在相关事件中调用触发器即可。
 - `QuestJournal` 采用独立容器实现，可扩展排序、筛选或多任务追踪等高级功能。
 

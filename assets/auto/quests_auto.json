@@ -1,0 +1,62 @@
+{
+  "meta": {
+    "generatedAt": "2025-10-11T08:18:12.038268Z",
+    "rulesVersion": 1
+  },
+  "quests": [
+    {
+      "desc": "收集木头",
+      "id": "收集木头-001",
+      "kind": "side",
+      "rewards": {
+        "gold": 30
+      },
+      "source_asset": "rule:0",
+      "steps": [
+        {
+          "count": 10,
+          "id": "收集木头-001-step-1",
+          "itemId": "wood",
+          "title": "收集木头",
+          "type": "collect"
+        }
+      ],
+      "title": "收集木头"
+    },
+    {
+      "desc": "前往湖岸",
+      "id": "前往湖岸-001",
+      "kind": "side",
+      "rewards": {},
+      "source_asset": "rule:1",
+      "steps": [
+        {
+          "desc": "reach target: lake",
+          "id": "前往湖岸-001-step-1",
+          "radius": 1,
+          "title": "前往湖岸",
+          "type": "reach"
+        }
+      ],
+      "title": "前往湖岸"
+    },
+    {
+      "desc": "拜访店主",
+      "id": "拜访店主-001",
+      "kind": "main",
+      "rewards": {
+        "gold": 10
+      },
+      "source_asset": "rule:2",
+      "steps": [
+        {
+          "id": "拜访店主-001-step-1",
+          "npcId": "shopkeeper",
+          "title": "拜访店主",
+          "type": "talk"
+        }
+      ],
+      "title": "拜访店主"
+    }
+  ]
+}

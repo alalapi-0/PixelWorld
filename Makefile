@@ -1,4 +1,4 @@
-.PHONY: miniworld-dev miniworld-build miniworld-test user-import user-import-move user-import-rules user-preview build-all miniworld-preview miniworld-manager assets-analyze assets-rename-dry assets-rename-apply assets-rename-revert # 声明新增命令
+.PHONY: miniworld-dev miniworld-build miniworld-test user-import user-import-move user-import-rules user-preview build-all miniworld-preview miniworld-manager assets-analyze assets-rename-dry assets-rename-apply assets-rename-revert synth-defaults miniworld-auto # 声明新增命令
 
 miniworld-dev:
 	pnpm --filter miniworld dev
@@ -46,4 +46,11 @@ assets-rename-apply:
 
 assets-rename-revert:
 	python3 scripts/apply_renames.py --revert assets/rename/revert_log.json
+
+synth-defaults: # 生成智能默认草案
+	python3 scripts/synth_defaults.py # 调用脚本生成auto数据
+
+miniworld-auto: # 启动开发环境并确保先生成auto数据
+	make synth-defaults # 先执行数据合成
+	pnpm --filter miniworld dev # 启动前端开发服务器
 

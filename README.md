@@ -120,6 +120,16 @@ python -m http.server 8000
 
 若前两级素材缺失，MiniWorld 会自动生成程序化占位纹理并在 HUD 中显示“占位纹理”提示。
 
+### 智能默认映射（只读二进制）
+
+- **数据来源**：综合 `assets/preview_index.json`、`assets/metadata/tags.json`、`assets/metadata/descriptions.json` 与可选的 `assets/metadata/collections.json`，只读取文本元信息。
+- **规则表**：`scripts/rules_mapping.json` 控制标签到蓝图/商店/任务的映射，可按需编辑扩充；缺省时脚本会加载内置默认表。
+- **产物位置**：`python3 scripts/synth_defaults.py` 会生成 `assets/auto/blueprints_auto.json`、`assets/auto/shops_auto.json`、`assets/auto/quests_auto.json` 与 `assets/auto/report.txt`，全部为文本文件，明确声明“no binary generated”。
+- **合并原则**：运行时通过 `frontend/miniworld/src/config/AutoDataLoader.ts` 加载自动草案，并与人工文件（如 `assets/build/blueprints.json`、`assets/shops/shops.json`、`assets/quests/quests.json`）合并；同 ID 优先保留人工定义，仅对缺口兜底补全，并在控制台输出冲突警告。
+- **使用命令**：
+  - `make synth-defaults` —— 单独生成最新的自动草案，便于审阅文本结果。
+  - `make miniworld-auto` —— 先执行 `synth-defaults`，再启动 Phaser 开发服务器，可在建造/商店/任务界面直接查看草案效果。
+
 ### 资产流水线（纯文本操作）
 
 > 核心原则：**整个流程只读写文本文件、复制或移动已有素材，绝不重新编码任何二进制内容。**

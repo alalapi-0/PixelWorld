@@ -1,0 +1,65 @@
+{
+  "blueprints": [
+    {
+      "cost": [
+        {
+          "count": 1,
+          "id": "stone",
+          "name": "石头"
+        }
+      ],
+      "id": "road-001",
+      "name": "默认道路(fallback)",
+      "source_asset": "rule:0",
+      "tile": "ROAD"
+    },
+    {
+      "cost": [
+        {
+          "count": 2,
+          "id": "wood",
+          "name": "木头"
+        }
+      ],
+      "id": "fence-001",
+      "name": "默认栅栏(fallback)",
+      "source_asset": "rule:1",
+      "tile": "WALL"
+    },
+    {
+      "cost": [
+        {
+          "count": 5,
+          "id": "wood",
+          "name": "木头"
+        },
+        {
+          "count": 3,
+          "id": "stone",
+          "name": "石头"
+        }
+      ],
+      "id": "house-001",
+      "name": "默认房屋(fallback)",
+      "source_asset": "rule:2",
+      "tile": "HOUSE"
+    },
+    {
+      "cost": [
+        {
+          "count": 1,
+          "id": "seed",
+          "name": "树苗"
+        }
+      ],
+      "id": "tree-001",
+      "name": "默认树木(fallback)",
+      "source_asset": "rule:3",
+      "tile": "TREE"
+    }
+  ],
+  "meta": {
+    "generatedAt": "2025-10-11T08:18:12.038268Z",
+    "rulesVersion": 1
+  }
+}

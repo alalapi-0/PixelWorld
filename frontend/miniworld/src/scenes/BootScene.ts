@@ -20,12 +20,18 @@ export default class BootScene extends Phaser.Scene { // 定义启动场景
     } // 条件结束
     const requested = (window as typeof window & { __MINIWORLD_START_SCENE__?: string }).__MINIWORLD_START_SCENE__;
     const normalized = requested?.toLowerCase() ?? '';
-    let target: string = 'WorldScene'; // 默认进入世界场景
+    let target: string = 'TitleScene'; // 默认进入标题场景
     if (normalized === 'resourcebrowser' || normalized === 'resourcebrowserscene') { // 判断资源浏览器参数
       target = 'ResourceBrowserScene'; // 切换到浏览器
     }
     if (normalized === 'resourcemanager' || normalized === 'resourcemanagerscene') { // 判断素材管理器参数
       target = 'ResourceManagerScene'; // 切换到素材管理器
+    }
+    if (normalized === 'world' || normalized === 'worldscene') { // 判断直接进入世界的参数
+      target = 'WorldScene'; // 切换回世界场景
+    }
+    if (normalized === 'title' || normalized === 'titlescene') { // 判断显式标题参数
+      target = 'TitleScene'; // 保持标题场景
     }
     this.scene.start(target); // 根据参数切换到目标场景
   } // 方法结束

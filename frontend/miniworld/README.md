@@ -1,5 +1,21 @@
 # MiniWorld
 
+## 第21轮：角色选择与背包原型
+
+### 启动流程
+- 执行 `make game-run` 可直接从标题画面进入主菜单，再前往角色选择并进入世界。
+- `TitleScene` 提供按任意键继续的标题页；`MainMenuScene` 包含开始、设置与退出按钮；`CharacterSelectScene` 会读取 `assets/ui/characters.json` 展示角色。
+- 选择角色后 `SaveManager` 会初始化存档并把起始物品写入本地存储，后续进入世界时会复用。
+
+### 背包与建造
+- `InventorySystem` 负责维护物品栈，支持增减与拆分操作，`InventoryUI` 以 5x4 网格展示数据，按 `I` 可以开关界面。
+- 底部快捷栏 `HotbarUI` 显示前 9 个槽位，对应数字键快速切换；建造按钮会调用 `BuildFromInventory` 按蓝图扣除材料。
+- 新建造逻辑会在材料不足时显示“材料不足”弹窗，成功放置后同步更新 `SaveManager` 存档中的物品数量。
+
+### HUD 与暂停
+- 新的 `HUDScene` 位于顶部展示当前角色与时间，并提供背包、建造按钮以及 ESC 监听。
+- `PauseMenu` 负责 ESC 菜单，提供继续、保存与返回主菜单三项入口，并通过全局事件与主场景通信。
+
 ## 第5轮：像素世界探索 v1
 
 ### 如何运行

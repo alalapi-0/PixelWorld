@@ -1,0 +1,16 @@
+[
+  {
+    "id": "hero_male",
+    "name": "亚良",
+    "avatar": "images:characters/Actor1.png",
+    "startPos": { "x": 10, "y": 5 },
+    "inventory": { "wood": 10, "stone": 5 }
+  },
+  {
+    "id": "hero_female",
+    "name": "夏洛",
+    "avatar": "images:characters/People7.png",
+    "startPos": { "x": 8, "y": 8 },
+    "inventory": { "seed": 10, "wood": 5 }
+  }
+]

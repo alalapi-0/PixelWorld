@@ -1,0 +1,11 @@
+{
+  "player": {
+    "id": "hero_male",
+    "pos": { "x": 10, "y": 5 },
+    "inventory": { "wood": 9, "stone": 5 }
+  },
+  "world": {
+    "changes": []
+  },
+  "timestamp": 0
+}

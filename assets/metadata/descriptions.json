@@ -1,0 +1,5 @@
+{
+  "images:characters/Actor1.png": "8人角色行走图（3x4 帧），RPG Maker MV/MZ 标准布局。",
+  "images:effects/Fire3.png": "火焰特效序列图（逐帧）。",
+  "audio:audio/se/sfx_attack.ogg": "近战攻击音效（短促）。"
+}

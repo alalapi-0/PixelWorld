@@ -1,11 +1,21 @@
 import Phaser from 'phaser';
 import { TextureFactory, TilesMeta, SpritesMeta } from './TextureFactory';
 import { TileType } from '../world/Types';
-import { findAsset, AssetSource } from './AssetLocator';
+import { findAsset, AssetSource, LocatedAsset } from './AssetLocator';
 
 type AssetMeta = {
   tiles?: { frameWidth?: number; frameHeight?: number };
   player?: { frameWidth?: number; frameHeight?: number; frameRate?: number };
+};
+
+type PreviewAssetEntry = {
+  type: string;
+  path: string;
+};
+
+type PreviewManifest = {
+  audio: PreviewAssetEntry[];
+  images: PreviewAssetEntry[];
 };
 
 const TILE_SEQUENCE: TileType[] = ['GRASS', 'ROAD', 'TILE_FLOOR', 'WATER', 'LAKE', 'WALL', 'TREE', 'HOUSE', 'ROCK', 'LAVA'];
@@ -16,6 +26,68 @@ let assetSourceLabel = '占位纹理';
 let tilesheetSource: AssetSource | null = null;
 let playerSheetSource: AssetSource | null = null;
 let cachedMeta: AssetMeta | null = null;
+let previewManifestCache: PreviewManifest | null = null;
+
+async function loadPreviewManifest(): Promise<PreviewManifest | null> {
+  if (previewManifestCache) {
+    return previewManifestCache;
+  }
+  try {
+    const response = await fetch('assets/preview_index.json', { method: 'GET', cache: 'no-cache' });
+    if (!response.ok) {
+      return null;
+    }
+    const payload = (await response.json()) as PreviewManifest;
+    previewManifestCache = payload;
+    return previewManifestCache;
+  } catch (error) {
+    console.warn('Failed to load preview_index.json', error);
+    return null;
+  }
+}
+
+function resolvePreviewPath(entry: PreviewAssetEntry): LocatedAsset | null {
+  const stripped = entry.path.replace(/^assets\//, '');
+  return findAsset(stripped);
+}
+
+async function queuePreviewAssets(scene: Phaser.Scene): Promise<void> {
+  const manifest = await loadPreviewManifest();
+  if (!manifest) {
+    return;
+  }
+  const missing: PreviewAssetEntry[] = [];
+  let queued = 0;
+  manifest.audio.forEach((entry, index) => {
+    const located = resolvePreviewPath(entry);
+    if (!located) {
+      missing.push(entry);
+      return;
+    }
+    const key = `preview_audio_${entry.type}_${index}`;
+    scene.load.audio(key, located.url);
+    queued += 1;
+  });
+  manifest.images.forEach((entry, index) => {
+    const located = resolvePreviewPath(entry);
+    if (!located) {
+      missing.push(entry);
+      return;
+    }
+    const key = `preview_image_${entry.type}_${index}`;
+    scene.load.image(key, located.url);
+    queued += 1;
+  });
+  if (queued > 0) {
+    await new Promise<void>((resolve) => {
+      scene.load.once(Phaser.Loader.Events.COMPLETE, () => resolve());
+      scene.load.start();
+    });
+  }
+  if (missing.length > 0) {
+    console.warn('Preview manifest entries missing in asset map', missing);
+  }
+}
 
 async function loadMeta(): Promise<AssetMeta> {
   if (cachedMeta) {
@@ -126,6 +198,7 @@ async function loadExternalPlayer(scene: Phaser.Scene): Promise<boolean> {
 export async function loadOrFallback(scene: Phaser.Scene): Promise<void> {
   const tilesMeta: TilesMeta = TextureFactory.loadBuiltinTilesMeta();
   const spritesMeta: SpritesMeta = TextureFactory.loadBuiltinSpritesMeta();
+  await queuePreviewAssets(scene);
   const tilesLoaded = await loadExternalTiles(scene);
   const playerLoaded = await loadExternalPlayer(scene);
   if (!tilesLoaded) {

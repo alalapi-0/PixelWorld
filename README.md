@@ -22,15 +22,18 @@ project-root/
 │  ├─ data/
 │  ├─ mapping/
 │  ├─ user_imports/
-│  │  ├─ audio/
-│  │  │  ├─ bgm/
-│  │  │  ├─ bgs/
-│  │  │  ├─ me/
-│  │  │  └─ se/
-│  │  ├─ characters/
-│  │  ├─ effects/
-│  │  ├─ tiles/
-│  │  └─ ui/
+│  │  ├─ Audio/
+│  │  │  ├─ BGM/
+│  │  │  ├─ BGS/
+│  │  │  ├─ ME/
+│  │  │  └─ SE/
+│  │  └─ Graphics/
+│  │     ├─ Characters/
+│  │     ├─ Animations/
+│  │     ├─ Battlebacks1/
+│  │     ├─ Battlebacks2/
+│  │     ├─ Tilesets/
+│  │     └─ ...
 │  ├─ build/
 │  └─ licenses/
 ├─ frontend/
@@ -60,8 +63,8 @@ project-root/
 | `frontend/legacy/` | 保存历史 Phaser/Pixi 原型，避免影响现行模块。 |
 | `pnpm-workspace.yaml` | pnpm 工作区定义，收敛前端子项目管理。 |
 | `package.json` | 工作区根 package，集中记录开发依赖。 |
-| `scripts/import_user_assets.py` | 同步 `assets/user_imports/` → `assets/build/` 并写出 `asset_index.json`，仅执行文本级操作。 |
-| `scripts/preview_user_assets.py` | 汇总 `assets/build/` 并生成 `assets/preview_index.json`，供前端快速索引。 |
+| `scripts/import_user_assets.py` | 同步 `assets/user_imports/` → `assets/build/` 并写出 `index.json`，仅执行文本级操作。 |
+| `scripts/preview_user_assets.py` | 汇总 `assets/build/index.json` 并生成 `assets/preview_index.json`，供前端快速索引。 |
 | `tests/test_minibuild.py` | 集成测试：校验前端 dist、素材同步与索引可解析性。 |
 
 ---
@@ -98,7 +101,7 @@ python -m http.server 8000
 - `make miniworld-dev`：基于 pnpm 工作区启动 Vite 开发服务器（默认 `http://localhost:5173/`），实时读取共享素材。
 - `make miniworld-build`：执行 `pnpm --filter miniworld build`，产物输出至 `frontend/miniworld/dist/`。
 - `make miniworld-test`：运行 Vitest 用例，保证核心加载逻辑可用。
-- `make user-import`：调用 Python 脚本将 `assets/user_imports/` 复制到 `assets/build/`，生成 `asset_index.json`，并保持所有操作为纯文本。
+- `make user-import`：调用 Python 脚本将 `assets/user_imports/` 复制到 `assets/build/`，生成 `index.json`，并保持所有操作为纯文本。
 - `make user-preview`：快速重建 `assets/preview_index.json`，并在 `logs/user_imports.log` 中写入明细，便于 Phaser 端调试。
 
 加载顺序：
@@ -109,15 +112,36 @@ python -m http.server 8000
 
 若前两级素材缺失，MiniWorld 会自动生成程序化占位纹理并在 HUD 中显示“占位纹理”提示。
 
-### 用户素材导入指南
+### 资产流水线（纯文本操作）
 
-- 目录结构：在 `assets/user_imports/` 下按照 `audio/`（含 `bgm/`、`bgs/`、`me/`、`se/`）、`characters/`、`effects/`、`tiles/`、`ui/` 分类放置素材。
-- 素材命名：脚本保持原始文件名，只在 `assets/build/` 中重建相同的目录层级，不会修改或重新编码任何文件。
-- 导入命令：`make user-import` 会清理 `assets/build/`，复制素材并生成 `asset_index.json`，日志写入 `logs/user_imports.log`。
-- 预览索引：`make user-preview` 会扫描 `assets/build/`，输出 `assets/preview_index.json`，终端与日志会显示各分类文件数量，方便 Phaser 前端热重载。
-- 加载顺序：MiniWorld 先查找 `@sharedAssets`（即 `assets/user_imports/`），再尝试 `frontend/miniworld/assets_external/`，最后使用内置占位资源。
-- 常见问题：若素材缺失或命名不符合规范，可通过 `logs/user_imports.log` 查看同步详情；音频与图像需保持合适的采样率与透明通道。
-- 许可证：务必确认导入素材的版权与授权（推荐 CC0/CC-BY/CC-BY-SA/商业许可），并在 `assets/licenses/ASSETS_LICENSES.md` 中登记来源与作者，确保发布时合法。
+> 核心原则：**整个流程只读写文本文件、复制或移动已有素材，绝不重新编码任何二进制内容。**
+
+1. **目录规范**：
+   - 原始素材放置在 `assets/user_imports/`，保留 RPG Maker 风格的 `Audio/*` 与 `Graphics/*` 层级。
+   - 导入脚本会根据目录名与可选的 `assets/mapping/import_rules.json` 规则，把文件归类到 `assets/build/` 下的统一结构：
+     - `audio/{bgm,bgs,me,se}/`
+     - `characters/`
+     - `tiles/`
+     - `effects/`
+     - `ui/`
+2. **索引文件**：
+   - `assets/build/index.json`：`scripts/import_user_assets.py` 自动生成，字段包含：
+     - `generated_at`（UTC 时间戳）、`sources`（固定为 `assets/user_imports/`）。
+     - `audio` 与 `images`：以分类键（如 `bgm`、`characters`）列出相对于 `assets/build/` 的路径。
+     - `notes`：强调仅记录文本路径。
+   - `assets/preview_index.json`：由 `scripts/preview_user_assets.py` 构建的扁平数组，便于前端一次性列出所有音频/图像资源。
+3. **命令与日志**：
+   - `make user-import`：执行复制模式导入，并把详细日志写入 `logs/user_imports.log`。
+   - `make user-import-move`：以移动模式整理素材，适合迁移后清理源目录。
+   - `make user-import-rules`：强制使用 `assets/mapping/import_rules.json` 覆盖默认映射。
+   - `make user-preview`：基于最新的 `index.json` 重建 `preview_index.json`，同时在终端输出统计。
+4. **MiniWorld 前端读取方式**：
+   - `frontend/miniworld/src/core/Loader.ts` 会尝试获取 `assets/preview_index.json`，逐条向 Phaser Loader 注册音频与图像资源。
+   - 如果索引中的路径在构建资源映射中缺失，Loader 会自动回退到项目内置的占位纹理或音频标识，避免引发加载崩溃。
+5. **维护建议**：
+   - 若新增分类，可通过自定义规则映射至新的 build 子目录；脚本会在索引中自动创建对应的键。
+   - 在提交前运行 `make user-import && make user-preview`，再执行 `pytest tests/test_import_and_preview.py -q` 确认文本管线稳定。
+   - 所有素材的版权与来源需记录在 `assets/licenses/ASSETS_LICENSES.md`，确保团队与外部发行的合规性。
 
 ---
 

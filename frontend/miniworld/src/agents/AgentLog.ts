@@ -1,15 +1,17 @@
-export interface AgentLogEntry { timestamp: number; tag: string; message: string; taskId?: string; detail?: Record<string, unknown>; } // 定义日志条目结构
+import { Deadline, TimeWindow } from './CommandTypes'; // 引入时间相关类型
+// 空行用于分隔
+export interface AgentLogEntry { timestamp: number; tag: string; message: string; taskId?: string; detail?: Record<string, unknown>; timeWindow?: TimeWindow; perfTag?: string; deadline?: Deadline; } // 定义日志条目结构
 // 空行用于分隔
 export class AgentLog { // 定义日志存储类
   private entries: AgentLogEntry[] = []; // 保存日志数组
   public push(entry: AgentLogEntry): void { // 追加日志方法
     this.entries.push(entry); // 将条目加入数组
   } // 方法结束
-  public info(tag: string, message: string, taskId?: string, detail?: Record<string, unknown>): void { // 记录普通信息
-    this.push({ timestamp: Date.now(), tag, message, taskId, detail }); // 构造信息级别条目
+  public info(tag: string, message: string, taskId?: string, detail?: Record<string, unknown>, extra?: { timeWindow?: TimeWindow; perfTag?: string; deadline?: Deadline }): void { // 记录普通信息
+    this.push({ timestamp: Date.now(), tag, message, taskId, detail, timeWindow: extra?.timeWindow, perfTag: extra?.perfTag, deadline: extra?.deadline }); // 构造信息级别条目
   } // 方法结束
-  public error(tag: string, message: string, taskId?: string, detail?: Record<string, unknown>): void { // 记录错误信息
-    this.push({ timestamp: Date.now(), tag: `${tag}:error`, message, taskId, detail }); // 构造错误条目
+  public error(tag: string, message: string, taskId?: string, detail?: Record<string, unknown>, extra?: { timeWindow?: TimeWindow; perfTag?: string; deadline?: Deadline }): void { // 记录错误信息
+    this.push({ timestamp: Date.now(), tag: `${tag}:error`, message, taskId, detail, timeWindow: extra?.timeWindow, perfTag: extra?.perfTag, deadline: extra?.deadline }); // 构造错误条目
   } // 方法结束
   public list(): AgentLogEntry[] { // 获取日志列表
     return this.entries.map((entry) => ({ ...entry })); // 返回浅拷贝数组

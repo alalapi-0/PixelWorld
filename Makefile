@@ -72,3 +72,11 @@ auto-rollback: # 回滚至最近快照
 auto-snapshots: # 列出可用快照
         python3 scripts/list_auto_snapshots.py # 显示快照列表
 
+# 空行用于分隔
+.PHONY: schedule perf kpi-report # 声明新命令
+schedule: # 启动日程看板场景
+	pnpm --filter miniworld dev -- --scene=ScheduleBoard # 调用前端场景
+perf: # 启动绩效面板场景
+	pnpm --filter miniworld dev -- --scene=PerformancePanel # 调用前端场景
+kpi-report: # 输出KPI文本报告
+	python3 scripts/export_kpi_report.py # 调用汇总脚本

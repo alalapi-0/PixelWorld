@@ -80,6 +80,14 @@ project-root/
 ./gradlew lwjgl3:run
 ```
 
+若需要挂载外部图像并启用只读模式，可按以下方式设置系统属性：
+
+```bat
+set PIXELWORLD_USER_GRAPHICS=E:\PixelWorld\assets\user_imports\Graphics
+set PIXELWORLD_NO_WRITE=1
+.\gradlew.bat lwjgl3:run
+```
+
 网页构建（静态产物在 html/build/dist/）：
 
 ```bash

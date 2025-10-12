@@ -1,4 +1,4 @@
-.PHONY: miniworld-dev miniworld-build miniworld-test user-import user-import-move user-import-rules user-preview build-all miniworld-preview miniworld-manager assets-analyze assets-rename-dry assets-rename-apply assets-rename-revert synth-defaults miniworld-auto hot-run auto-snapshot auto-rollback auto-snapshots agents-demo agents-log scheduler scheduler-snapshot scheduler-rollback scheduler-validate game-run # 声明新增命令并加入游戏入口
+.PHONY: miniworld-dev miniworld-build miniworld-test user-import user-import-move user-import-rules user-preview build-all miniworld-preview miniworld-manager assets-analyze assets-rename-dry assets-rename-apply assets-rename-revert synth-defaults miniworld-auto hot-run auto-snapshot auto-rollback auto-snapshots agents-demo agents-log scheduler scheduler-snapshot scheduler-rollback scheduler-validate game-run game-run-22 # 声明新增命令并加入游戏入口
 
 miniworld-dev:
 	pnpm --filter miniworld dev
@@ -10,6 +10,9 @@ miniworld-test:
         pnpm --filter miniworld test
 # 空行用于分隔
 game-run: # 启动完整游戏流程
+        pnpm --filter miniworld dev -- --scene=Title # 指定从标题场景启动
+
+game-run-22: # 第22轮入口保持与标准流程一致
         pnpm --filter miniworld dev -- --scene=Title # 指定从标题场景启动
 
 agents-demo: # 启动指令流演示场景

@@ -1,0 +1,12 @@
+{
+  "medal_harvest": {
+    "title": "丰收勋章",
+    "description": "参加丰收节主赛后获得",
+    "inventoryTag": "medal"
+  },
+  "ribbon_flower": {
+    "title": "花之缎带",
+    "description": "在花舞会完成舞曲后获得",
+    "inventoryTag": "ribbon"
+  }
+}

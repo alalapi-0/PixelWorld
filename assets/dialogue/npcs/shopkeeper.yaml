@@ -1,0 +1,39 @@
+{
+  "meta": {
+    "id": "shopkeeper",
+    "displayName": "店主",
+    "requiresPresence": true
+  },
+  "vars": {
+    "introSeen": false
+  },
+  "nodes": {
+    "start": {
+      "text": "欢迎来到小店！需要点什么吗？",
+      "choices": [
+        {"text": "聊聊天", "next": "talk_small"},
+        {"text": "我想买点东西", "event": "open_shop"},
+        {"text": "送你一份礼物", "next": "gift_entry"},
+        {"text": "再见", "next": "end"}
+      ]
+    },
+    "talk_small": {
+      "text": "最近天气{{weather}}，适合外出走走。",
+      "effects": ["relationship:+1"],
+      "next": "end"
+    },
+    "gift_entry": {
+      "text": "哦？你要送我什么？",
+      "choicesFromInventory": {"tag": "gift"},
+      "onGift": {
+        "rules": "shopkeeper",
+        "effects": ["relationship:dynamic", "maybeEvent:unlock_shop_discount"]
+      },
+      "next": "end"
+    },
+    "end": {
+      "text": "下次再见。",
+      "end": true
+    }
+  }
+}

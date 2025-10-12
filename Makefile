@@ -1,4 +1,4 @@
-.PHONY: miniworld-dev miniworld-build miniworld-test user-import user-import-move user-import-rules user-preview build-all miniworld-preview miniworld-manager assets-analyze assets-rename-dry assets-rename-apply assets-rename-revert synth-defaults miniworld-auto hot-run auto-snapshot auto-rollback auto-snapshots agents-demo agents-log scheduler scheduler-snapshot scheduler-rollback scheduler-validate game-run game-run-22 # 声明新增命令并加入游戏入口
+.PHONY: miniworld-dev miniworld-build miniworld-test user-import user-import-move user-import-rules user-preview build-all miniworld-preview miniworld-manager assets-analyze assets-rename-dry assets-rename-apply assets-rename-revert synth-defaults miniworld-auto hot-run auto-snapshot auto-rollback auto-snapshots agents-demo agents-log scheduler scheduler-snapshot scheduler-rollback scheduler-validate game-run game-run-22 game-run-23 seed-data # 声明新增命令并加入游戏入口
 
 miniworld-dev:
 	pnpm --filter miniworld dev
@@ -14,6 +14,12 @@ game-run: # 启动完整游戏流程
 
 game-run-22: # 第22轮入口保持与标准流程一致
         pnpm --filter miniworld dev -- --scene=Title # 指定从标题场景启动
+
+game-run-23: # 第23轮入口保持一致
+        pnpm --filter miniworld dev -- --scene=Title # 指定从标题场景启动
+
+seed-data: # 生成节日与对话示例数据
+        python3 scripts/seed_demo_data.py # 调用文本生成脚本
 
 agents-demo: # 启动指令流演示场景
         pnpm --filter miniworld dev -- --scene=CommandConsole # 启动控制台场景

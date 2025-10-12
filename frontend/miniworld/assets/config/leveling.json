@@ -1,0 +1,51 @@
+{
+  "maxLevel": 30,
+  "xpForLevel": [
+    0,
+    55,
+    125,
+    210,
+    310,
+    425,
+    555,
+    700,
+    860,
+    1035,
+    1225,
+    1430,
+    1650,
+    1885,
+    2135,
+    2400,
+    2680,
+    2975,
+    3285,
+    3610,
+    3950,
+    4305,
+    4675,
+    5060,
+    5460,
+    5875,
+    6305,
+    6750,
+    7210,
+    7685,
+    8175
+  ],
+  "rewards": {
+    "onLevelUp": {
+      "hpMax": 5,
+      "staminaMax": 3,
+      "carryCap": 2
+    }
+  },
+  "xpSources": {
+    "buildHouse": 25,
+    "buildRoad": 3,
+    "plantTree": 6,
+    "collectWood": 1,
+    "questComplete": 40,
+    "dailyTask": 12
+  }
+}

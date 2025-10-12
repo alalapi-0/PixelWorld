@@ -1,0 +1,16 @@
+{
+  "harvest_fest": {
+    "name": "丰收节",
+    "date": "Spring-15",
+    "open": "10:00-18:00",
+    "activities": ["摊位折扣", "作物评比"],
+    "rewards": ["medal_harvest"]
+  },
+  "flower_ball": {
+    "name": "花舞会",
+    "date": "Summer-05",
+    "open": "18:00-22:00",
+    "activities": ["舞会", "烟花"],
+    "rewards": ["ribbon_flower"]
+  }
+}

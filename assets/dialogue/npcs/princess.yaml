@@ -1,0 +1,38 @@
+{
+  "meta": {
+    "id": "princess",
+    "displayName": "公主",
+    "requiresPresence": false
+  },
+  "vars": {
+    "storyBranch": "A"
+  },
+  "nodes": {
+    "start": {
+      "text": "你好，旅行者。今天的王城{{day}}可还安宁？",
+      "choices": [
+        {"text": "谈谈王城的故事", "next": "story"},
+        {"text": "献上一束花", "next": "gift_entry"},
+        {"text": "告辞", "next": "end"}
+      ]
+    },
+    "story": {
+      "text": "传说在{{season}}的丰收节会有新的篇章。",
+      "effects": ["relationship:+2"],
+      "next": "end"
+    },
+    "gift_entry": {
+      "text": "这是给我的吗？",
+      "choicesFromInventory": {"tag": "gift"},
+      "onGift": {
+        "rules": "princess",
+        "effects": ["relationship:dynamic", "maybeEvent:unlock_story_branch_A"]
+      },
+      "next": "end"
+    },
+    "end": {
+      "text": "愿你的旅途充满光辉。",
+      "end": true
+    }
+  }
+}

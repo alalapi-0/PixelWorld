@@ -1,0 +1,20 @@
+{
+  "shopkeeper": {
+    "like": ["material:wood", "item:seed"],
+    "dislike": ["item:trash"],
+    "love": ["item:rare_crystal"],
+    "hate": []
+  },
+  "princess": {
+    "like": ["item:flower"],
+    "dislike": ["material:stone"],
+    "love": ["item:rare_crystal"],
+    "hate": []
+  },
+  "farmer": {
+    "like": ["item:seed", "material:wood"],
+    "dislike": ["item:trash"],
+    "love": ["item:fertilizer"],
+    "hate": []
+  }
+}

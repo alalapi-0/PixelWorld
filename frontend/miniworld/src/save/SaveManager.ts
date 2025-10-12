@@ -3,6 +3,9 @@ import { Stats } from '../actors/Stats'; // 引入角色属性类以生成默认
 import type { StatsSnapshot } from '../actors/Stats'; // 引入属性快照类型
 import type { WeatherSnapshot } from '../time/WeatherSystem'; // 引入天气快照类型
 import type { TimeState } from '../systems/TimeSystem'; // 引入时间状态类型
+import type { NPCRelationshipState } from '../npc/RelationshipSystem'; // 引入好感状态类型
+import type { FieldState } from '../farming/CropSystem'; // 引入田地状态类型
+import type { FestivalState } from '../festival/FestivalManager'; // 引入节日存档类型
 // 分隔注释 // 保持行有注释
 export interface CharacterDefinition { // 定义角色配置接口
   id: string; // 角色唯一ID
@@ -16,6 +19,9 @@ export interface SaveData { // 定义存档数据接口
   player: { id: string; pos: { x: number; y: number }; inventory: Record<string, number>; stats?: StatsSnapshot }; // 玩家部分
   world: { changes: Array<{ x: number; y: number; tile: string }>; weather?: WeatherSnapshot; time?: TimeState }; // 世界部分
   timestamp: number; // 存档时间戳
+  npcs?: Record<string, NPCRelationshipState>; // NPC 好感数据
+  farming?: { fields: FieldState[] }; // 农田状态
+  festival?: FestivalState; // 节日状态
 } // 接口结束
 // 分隔注释 // 保持行有注释
 const CHARACTER_PATH = 'assets/ui/characters.json'; // 角色配置路径
@@ -59,6 +65,17 @@ export class SaveManager { // 定义存档管理器类
       save.player.stats = { ...DEFAULT_STATS }; // 填充默认属性
     } // 条件结束
   } // 方法结束
+  private static ensureExtendedSections(save: SaveData): void { // 确保新增子系统字段存在
+    if (!save.npcs) { // 若缺少好感数据
+      save.npcs = {}; // 初始化为空
+    } // 条件结束
+    if (!save.farming) { // 若缺少农田数据
+      save.farming = { fields: [] }; // 初始化空田地
+    } // 条件结束
+    if (!save.festival) { // 若缺少节日数据
+      save.festival = { claimedRewards: [] }; // 初始化节日状态
+    } // 条件结束
+  } // 方法结束
   // 分隔注释 // 保持行有注释
   public static async createNewSave(characterId: string): Promise<SaveData> { // 创建新存档
     const characters = await this.loadCharacters(); // 加载角色配置
@@ -69,8 +86,12 @@ export class SaveManager { // 定义存档管理器类
     const save: SaveData = { // 构造存档对象
       player: { id: target.id, pos: { ...target.startPos }, inventory: { ...target.inventory }, stats: { ...DEFAULT_STATS } }, // 初始化玩家
       world: { changes: [], weather: { ...DEFAULT_WEATHER }, time: { ...DEFAULT_TIME } }, // 初始化世界
+      npcs: {}, // 初始化好感数据
+      farming: { fields: [] }, // 初始化农田数据
+      festival: { claimedRewards: [] }, // 初始化节日数据
       timestamp: Date.now(), // 记录时间戳
     }; // 对象结束
+    this.ensureExtendedSections(save); // 补齐新增系统
     this.cachedSave = save; // 缓存存档
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(save)); // 写入存储
     localStorage.setItem(LOCAL_SLOT_KEY, `${SAVE_PREFIX}${target.id}`); // 记录槽位
@@ -87,6 +108,7 @@ export class SaveManager { // 定义存档管理器类
         const parsed = JSON.parse(stored) as SaveData; // 解析JSON
         this.cachedSave = parsed; // 缓存结果
         this.ensureWorldSection(parsed); // 确保补齐字段
+        this.ensureExtendedSections(parsed); // 补齐新增系统
         return parsed; // 返回存档
       } catch (error) { // 捕获错误
         console.error('解析本地存档失败', error); // 输出错误
@@ -173,11 +195,58 @@ export class SaveManager { // 定义存档管理器类
     return save?.world.time; // 返回时间或未定义
   } // 方法结束
   // 分隔注释 // 保持行有注释
+  public static updateNPCRelationships(data: Record<string, NPCRelationshipState>): void { // 更新 NPC 好感存档
+    const save = this.loadLatestSave(); // 读取存档
+    if (!save) { // 若无存档
+      return; // 直接返回
+    } // 条件结束
+    this.ensureExtendedSections(save); // 补齐子系统
+    const snapshot: Record<string, NPCRelationshipState> = {}; // 创建快照
+    Object.entries(data).forEach(([id, state]) => { // 遍历好感数据
+      snapshot[id] = { ...state, unlocks: [...state.unlocks] }; // 拷贝数据
+    }); // 结束遍历
+    save.npcs = snapshot; // 写入存档
+    save.timestamp = Date.now(); // 更新时间戳
+    this.persist(); // 持久化
+  } // 方法结束
+  public static updateFarmingFields(fields: FieldState[]): void { // 更新农田存档
+    const save = this.loadLatestSave(); // 读取存档
+    if (!save) { // 若无存档
+      return; // 返回
+    } // 条件结束
+    this.ensureExtendedSections(save); // 补齐子系统
+    save.farming = { fields: fields.map(field => ({ ...field })) }; // 拷贝田地
+    save.timestamp = Date.now(); // 更新时间戳
+    this.persist(); // 持久化
+  } // 方法结束
+  public static updateFestivalState(state: FestivalState): void { // 更新节日存档
+    const save = this.loadLatestSave(); // 读取存档
+    if (!save) { // 若无存档
+      return; // 返回
+    } // 条件结束
+    this.ensureExtendedSections(save); // 补齐子系统
+    save.festival = { ...state, claimedRewards: [...state.claimedRewards] }; // 拷贝节日数据
+    save.timestamp = Date.now(); // 更新时间戳
+    this.persist(); // 持久化
+  } // 方法结束
+  public static getNPCRelationships(): Record<string, NPCRelationshipState> | undefined { // 读取好感存档
+    const save = this.loadLatestSave(); // 读取存档
+    return save?.npcs; // 返回好感数据
+  } // 方法结束
+  public static getFarmingFields(): FieldState[] | undefined { // 读取田地存档
+    const save = this.loadLatestSave(); // 读取存档
+    return save?.farming?.fields; // 返回田地
+  } // 方法结束
+  public static getFestivalState(): FestivalState | undefined { // 读取节日存档
+    const save = this.loadLatestSave(); // 读取存档
+    return save?.festival; // 返回节日数据
+  } // 方法结束
   public static persist(): void { // 持久化存档
     if (!this.cachedSave) { // 如果没有缓存
       return; // 不执行
     } // 条件结束
     this.ensureWorldSection(this.cachedSave); // 确保存档完整
+    this.ensureExtendedSections(this.cachedSave); // 补齐新增系统
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(this.cachedSave)); // 写入本地存储
   } // 方法结束
 } // 类结束

@@ -1,0 +1,34 @@
+{
+  "shopkeeper": {
+    "weekdays": [
+      {"time": "08:00-12:00", "place": "shop_counter"},
+      {"time": "13:00-18:00", "place": "shop_counter"}
+    ],
+    "closed": ["Sun"],
+    "festivalOverride": {
+      "harvest_fest": [
+        {"time": "10:00-16:00", "place": "plaza"}
+      ]
+    }
+  },
+  "princess": {
+    "weekdays": [
+      {"time": "09:00-12:00", "place": "garden"},
+      {"time": "14:00-17:00", "place": "library"}
+    ],
+    "closed": [],
+    "festivalOverride": {}
+  },
+  "farmer": {
+    "weekdays": [
+      {"time": "06:00-11:00", "place": "fields"},
+      {"time": "13:00-17:00", "place": "barn"}
+    ],
+    "closed": ["Sun"],
+    "festivalOverride": {
+      "harvest_fest": [
+        {"time": "10:00-16:00", "place": "plaza"}
+      ]
+    }
+  }
+}

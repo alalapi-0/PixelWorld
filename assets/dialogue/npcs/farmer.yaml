@@ -1,0 +1,38 @@
+{
+  "meta": {
+    "id": "farmer",
+    "displayName": "农夫",
+    "requiresPresence": true
+  },
+  "vars": {
+    "tutorialDone": false
+  },
+  "nodes": {
+    "start": {
+      "text": "田里的作物得按时浇水，你懂的。",
+      "choices": [
+        {"text": "请教种田技巧", "next": "tips"},
+        {"text": "分享丰收", "next": "gift_entry"},
+        {"text": "改日再聊", "next": "end"}
+      ]
+    },
+    "tips": {
+      "text": "记得查看天气，雨天会帮你浇水。",
+      "effects": ["relationship:+1"],
+      "next": "end"
+    },
+    "gift_entry": {
+      "text": "哈哈，看看你带来了什么。",
+      "choicesFromInventory": {"tag": "gift"},
+      "onGift": {
+        "rules": "farmer",
+        "effects": ["relationship:dynamic"]
+      },
+      "next": "end"
+    },
+    "end": {
+      "text": "务农不易，保重。",
+      "end": true
+    }
+  }
+}

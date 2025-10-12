@@ -1,0 +1,18 @@
+{
+  "levels": [
+    {"name": "陌生", "min": 0},
+    {"name": "熟悉", "min": 20},
+    {"name": "朋友", "min": 50},
+    {"name": "要好", "min": 80}
+  ],
+  "dailyCap": 5,
+  "decayPerDay": 0,
+  "unlockEvents": {
+    "shopkeeper": [
+      {"at": 50, "event": "unlock_shop_discount"}
+    ],
+    "princess": [
+      {"at": 80, "event": "unlock_story_branch_A"}
+    ]
+  }
+}
